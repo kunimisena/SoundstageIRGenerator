@@ -1,0 +1,1 @@
+public static class TestFiles { public static string Get(string dir,string suffix)=>Directory.GetFiles(dir,"*_"+suffix).Single(); }

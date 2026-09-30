@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticalField.Core", "Core\StatisticalField.Core.csproj", "{962E9C72-B76C-4270-B5A7-95DE94BA8078}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticalFieldStudio", "App\StatisticalFieldStudio.csproj", "{12881B36-A886-4BB9-98FA-F00DE394E0A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticalField.Tests", "Tests\StatisticalField.Tests.csproj", "{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{962E9C72-B76C-4270-B5A7-95DE94BA8078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{962E9C72-B76C-4270-B5A7-95DE94BA8078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{962E9C72-B76C-4270-B5A7-95DE94BA8078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{962E9C72-B76C-4270-B5A7-95DE94BA8078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12881B36-A886-4BB9-98FA-F00DE394E0A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12881B36-A886-4BB9-98FA-F00DE394E0A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12881B36-A886-4BB9-98FA-F00DE394E0A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12881B36-A886-4BB9-98FA-F00DE394E0A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

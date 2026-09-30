@@ -1,0 +1,35 @@
+<UserControl x:Class="StatisticalFieldStudio.ReflectionBatchEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:StatisticalFieldStudio">
+ <StackPanel Margin="0,8,0,0">
+  <TextBlock x:Name="ScopeLabel" Style="{StaticResource Hint}"/>
+       <Expander Header="方向分布" IsExpanded="True" Background="{StaticResource Panel}" Padding="10" DataContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding Ready}"><StackPanel>
+        <WrapPanel><ComboBox ItemsSource="{Binding LayoutNames}" SelectedIndex="{Binding LayoutIndex}" Width="128"/><TextBox Text="{Binding TemplateCount}" Width="55" ToolTip="总方向数 2–32，偶数"/><TextBlock Text="个方向" VerticalAlignment="Center"/></WrapPanel>
+        <UniformGrid Columns="3"><StackPanel><TextBlock Text="朝向偏转 °" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateYaw}"/></StackPanel><StackPanel><TextBlock Text="仰角偏移 °" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateElevation}"/></StackPanel><StackPanel><TextBlock Text="半侧覆盖 °" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateCoverage}"/></StackPanel></UniformGrid>
+        <UniformGrid Columns="2"><StackPanel><TextBlock Text="新源相对权重 dB" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateEnergy}"/></StackPanel><StackPanel><TextBlock Text="组名" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateGroup}"/></StackPanel></UniformGrid>
+        <WrapPanel><CheckBox Content="替换现有方向" IsChecked="{Binding TemplateReplace}"/><Button Content="生成方向" Command="{Binding TemplateCommand}"/></WrapPanel>
+       </StackPanel></Expander>
+  <StackPanel x:Name="EditorBody">
+   <local:AdaptiveGrid ItemMinWidth="320">
+    <StackPanel Margin="0,0,12,0"><TextBlock Text="能量频谱 / dB" Style="{StaticResource Heading}"/><local:CurveEditor x:Name="SharedEnergy" Height="190"/></StackPanel>
+    <StackPanel Margin="0,0,12,0"><TextBlock Text="衰减时间尺度 / 秒 · 随频率" Style="{StaticResource Heading}"/><local:CurveEditor x:Name="SharedRt" Height="190"/><DockPanel Margin="0,5,0,0"><Button DockPanel.Dock="Right" Content="复位缩放" Click="ResetRtScale" Padding="7,4"/><TextBlock x:Name="RtScaleLabel" Foreground="{StaticResource Accent}" VerticalAlignment="Center"/></DockPanel><Slider x:Name="RtScaleSlider" Minimum="-2" Maximum="2" Value="0" SmallChange="0.05" LargeChange="0.25" ValueChanged="RtScaleChanged" ToolTip="向左缩短，向右延长；全部衰减时间控制点同比缩放，对数纵轴上等同整条曲线上下平移。"/><TextBlock Text="整体缩短 ← → 整体延长；边界内保留比例" Style="{StaticResource Hint}"/></StackPanel>
+    <StackPanel><DockPanel><WrapPanel DockPanel.Dock="Right"><Button Content="建立段" Click="ZoomEarly" Padding="7,4"/><Button Content="全程" Click="ZoomFull" Padding="7,4"/></WrapPanel><TextBlock Text="完整能量包络 / dB" Style="{StaticResource Heading}"/></DockPanel><local:CurveEditor x:Name="SharedEnvelope" Height="190"/></StackPanel>
+   </local:AdaptiveGrid>
+   <TextBlock Text="拖动控制点修改，双击新增，右键删除。三张曲线统一调整当前模板中的反射源。" Style="{StaticResource Hint}"/>
+   <local:AdaptiveGrid ItemMinWidth="180">
+    <StackPanel><TextBlock Text="首反射额外路程 / m" Style="{StaticResource Hint}"/><TextBox x:Name="FirstPathEditor" Text="{Binding Reference.FirstReflectionExtraPath,ValidatesOnExceptions=True}" LostFocus="ScalarChanged"/></StackPanel>
+    <StackPanel><TextBlock Text="反射变密路程 / m" Style="{StaticResource Hint}"/><TextBox Text="{Binding Reference.MixingPath,ValidatesOnExceptions=True}" LostFocus="ScalarChanged"/></StackPanel>
+    <StackPanel><TextBlock Text="R 相对增益调整 / dB" Style="{StaticResource Hint}"/><TextBox Text="{Binding RightGainDelta,ValidatesOnExceptions=True}"/></StackPanel>
+    <StackPanel><TextBlock Text="R tilt 调整 / dB/oct" Style="{StaticResource Hint}"/><TextBox Text="{Binding RightTiltDelta,ValidatesOnExceptions=True}"/></StackPanel>
+   </local:AdaptiveGrid>
+   <Expander Header="方向、启用与 R 激励模式"><local:AdaptiveGrid ItemMinWidth="180">
+    <StackPanel><TextBlock Text="方位偏移 / °" Style="{StaticResource Hint}"/><TextBox Text="{Binding AzimuthDelta,ValidatesOnExceptions=True}"/></StackPanel>
+    <StackPanel><TextBlock Text="仰角偏移 / °" Style="{StaticResource Hint}"/><TextBox Text="{Binding ElevationDelta,ValidatesOnExceptions=True}"/></StackPanel>
+    <StackPanel><TextBlock Text="源启用状态" Style="{StaticResource Hint}"/><ComboBox SelectedIndex="{Binding EnabledMode}"><ComboBoxItem Content="保留原状"/><ComboBoxItem Content="全部启用"/><ComboBoxItem Content="全部停用"/></ComboBox></StackPanel>
+    <StackPanel><TextBlock Text="R 激励方式" Style="{StaticResource Hint}"/><ComboBox SelectedIndex="{Binding RightMode}"><ComboBoxItem Content="保留原状"/><ComboBoxItem Content="自动衍生"/><ComboBoxItem Content="独立编辑（保留当前参数）"/></ComboBox></StackPanel>
+   </local:AdaptiveGrid></Expander>
+   <Expander Header="精确编辑曲线控制点"><StackPanel><ComboBox x:Name="CurveChoice" SelectedIndex="0" SelectionChanged="TableChanged"><ComboBoxItem Content="频谱：Hz / dB"/><ComboBoxItem Content="衰减时间：Hz / 秒"/><ComboBoxItem Content="包络：参考额外路程 m / dB"/></ComboBox><DataGrid x:Name="PointTable" Height="150" CellEditEnding="TableEdited"><DataGrid.Columns><DataGridTextColumn Header="横坐标" Binding="{Binding X,ValidatesOnExceptions=True}" Width="*"/><DataGridTextColumn Header="值" Binding="{Binding Y,ValidatesOnExceptions=True}" Width="*"/></DataGrid.Columns></DataGrid></StackPanel></Expander>
+  </StackPanel>
+
+  <TextBlock x:Name="Message" TextWrapping="Wrap" Foreground="{StaticResource Accent}"/>
+  <TextBlock Text="" Style="{StaticResource Hint}"/>
+ </StackPanel>
+</UserControl>

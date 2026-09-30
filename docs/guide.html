@@ -1,0 +1,251 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Statistical Field Studio · Guide</title><style>
+:root{color-scheme:light}body{margin:0;background:#f6f0e1;color:#39352d;font:16px/1.75 system-ui,"Microsoft YaHei",sans-serif}header{background:#eee7d8;padding:16px max(20px,calc((100vw - 1020px)/2));border-bottom:1px solid #324656}header b{letter-spacing:.12em;color:#426b71}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{padding:9px 16px;border:1px solid #405768;background:#e6decc;border-radius:5px;color:#39352d;cursor:pointer}button:hover{background:#dbe1d8}main{max-width:1020px;margin:auto;padding:24px}h1{font-size:30px}h2{margin-top:2em;color:#39352d}h3{color:#404040}a{color:#426b71}p{max-width:90ch}code,pre{font-family:Consolas,monospace;background:#eee7d8;border-radius:4px}code{padding:1px 4px}pre{padding:15px;overflow:auto;white-space:pre-wrap;font-size:14px}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td{padding:9px;border:1px solid #ddd}tr:first-child{background:#e6decc;font-weight:600}.bullet{margin:.4em 0}footer{padding:25px;color:#606060;border-top:1px solid #324656}article[hidden]{display:none}
+</style><header><b>STATISTICAL FIELD STUDIO</b><div>4.9.3 · 离线双语指南 / Offline bilingual guide</div><nav><button onclick="show('zh-guide')">使用指南</button><button onclick="show('zh-design')">设计哲学</button><button onclick="show('en-guide')">User guide</button><button onclick="show('en-design')">Design philosophy</button></nav></header><main><article id="zh-guide"><h1>使用与调音指南</h1>
+<p>English · 回到首页</p>
+<h2>三个页面</h2>
+<div class="table"><table>
+<tr><td>页面</td><td>用途</td></tr>
+<tr><td>模板选择</td><td>选择十套声场或空白模板；弹窗编辑整体曲线与方向分布</td></tr>
+<tr><td>配置</td><td>调整直达声、人头、混响比例、随机细节和 EQ，生成并查看卷积结果</td></tr>
+<tr><td>导出与后处理</td><td>导出 WAV、Equalizer APO 配置，或处理歌曲</td></tr>
+</table></div>
+<p>点击模板卡片打开参数窗口。<strong>确认</strong>载入参数并进入配置页；<strong>确认并生成卷积核</strong>还会开始计算。取消保留当前配置。模板页下方也提供“导入配置…”入口。</p>
+<p>模板参数窗口包含能量频谱、衰减时间、完整包络三张整体编辑图及方向生成器。回到模板选择页，点击“调整当前模板…”可以继续调整这一步。取消保留当前项目；确认才载入修改。</p>
+<p>配置页左侧调整人头、直达声、混响比例、随机细节和 EQ，右侧显示结果；拖动中间的分隔条调整两边比例。窄窗口改为上下排列，分隔条也随之改为上下调节；恢复宽窗口时使用设定的左右比例。“反射源详细配置…”打开独立窗口，编辑方向、多选、分组和单源 L/R 激励。窗口底部“完成”关闭编辑窗口，参数保留在当前项目中。</p>
+<p>结果图旁依次排列“生成卷积核”“导入配置…”和“导出配置…”，进度与结果状态显示在下方。导入和导出使用 JSON 配置文件，包含参数与随机种子；导出配置无需先生成卷积核。配置名称、卷积核采样率和输出增益在生成区填写；撤销和重做按钮也位于这里。修改参数后，图表显示已完成的结果，并标记“参数已修改 · 图表待更新”。</p>
+<p>整体曲线或方向分布改变后，模板向下重新生成反射源；逐源细调独立保存。重新打开模板但保持整体曲线不变，会保留逐源细调。确认新的模板设置后可以在配置页撤销。</p>
+<p>导出页也提供“生成卷积核”，并直接显示能否导出的原因：尚未生成、参数已修改、正在生成，或当前结果可导出。WAV、APO 和歌曲处理使用同一份当前卷积结果。歌曲处理位于导出页内。所有折叠区初始展开，点击带箭头的标题或右侧“收起／展开”切换。</p>
+<p>图表分析按生成结果缓存。拖动窗口边缘调整大小时，页面暂时显示缩放预览，松开后重新排版并恢复清晰图表。左右分栏与上下排列也在松开后切换。主窗口、模板参数窗口及反射源窗口都采用这一方式。图例、缩放和平移操作复用曲线路径和文字绘制。</p>
+<p>导出路径、结果信息和处理状态支持鼠标选中与 Ctrl+C。点击“复制路径”可复制 WAV 或 APO 导出目录，点击“复制结果信息”可复制完整分析文字。</p>
+<p>导出页显示当前导出名称。套用模板会更新配置名称并清除上次导出路径；修改配置名称后，WAV、APO 与 JSON 文件名同步使用新名称。单纯改名可直接导出，卷积核样本保持不变。</p>
+<h2>先动这几个参数</h2>
+<p>1. <strong>人头模型</strong>：内置模板使用 FABIAN，默认开启“去除共同频响”。可切换到球形头模型，模拟头部遮挡和到耳时差。配置文件记录所选模型及其参数。</p>
+<p>2. <strong>混响能量占比</strong>：决定直达声和混响的整体比例。比逐源改增益更适合调整干湿感。</p>
+<p>3. <strong>整体衰减时间倍率</strong>：改变拖尾长短；算法会重标定能量，不会只因为尾巴更长就增加设定的总能量。</p>
+<p>4. <strong>频谱轮廓</strong>：用宽范围的变化调整反射声的颜色；它与总输出 EQ 含义不同。</p>
+<p>5. <strong>二级 EQ 强度</strong>：默认 0%。想补偿同相测试响应时逐渐增加，再用实际音乐比较。</p>
+<p>先保持相同种子，一次改一项。对比时尽量匹配响度。</p>
+<h2>内置模板速览</h2>
+<p>以下是模板参考值，各方向仍有独立的频谱、衰减和权重差异。表中的 RT 为 1 kHz 尾长基准，不是每个方向完全相同的测量结果。都可在模板参数窗口整体修改。</p>
+<div class="table"><table>
+<tr><td>模板</td><td>方向</td><td>分布</td><td>RT 基准 s</td><td>首反额外 m</td><td>建立 m</td><td>混响能量 %</td></tr>
+<tr><td>紧凑监听</td><td>6</td><td>水平</td><td>0.20</td><td>0.35</td><td>0.8</td><td>8</td></tr>
+<tr><td>宽阔监听</td><td>8</td><td>水平</td><td>0.56–0.78</td><td>0.28–0.34</td><td>0.88–1.44</td><td>8</td></tr>
+<tr><td>前向空间</td><td>6</td><td>前向</td><td>0.24</td><td>0.30</td><td>0.7</td><td>9</td></tr>
+<tr><td>温暖环绕</td><td>12</td><td>水平</td><td>0.55</td><td>0.55</td><td>2.5</td><td>28</td></tr>
+<tr><td>明亮短厅</td><td>8</td><td>球形</td><td>0.48</td><td>0.60</td><td>3.0</td><td>32</td></tr>
+<tr><td>上方包围</td><td>12</td><td>上半球</td><td>0.62</td><td>0.65</td><td>3.5</td><td>24</td></tr>
+<tr><td>控制室</td><td>8</td><td>球形</td><td>0.22</td><td>0.65</td><td>1.0</td><td>5</td></tr>
+<tr><td>自由场</td><td>0</td><td>仅直达声</td><td>—</td><td>—</td><td>—</td><td>0</td></tr>
+<tr><td>柔和音乐厅</td><td>12</td><td>球形</td><td>1.35</td><td>0.75</td><td>6.0</td><td>65</td></tr>
+<tr><td>空白模板</td><td>0</td><td>无反射</td><td>—</td><td>—</td><td>—</td><td>实际 0；添加源后使用混响比例设定</td></tr>
+<tr><td>悠长大厅</td><td>12</td><td>球形</td><td>2.30</td><td>0.85</td><td>9.0</td><td>80</td></tr>
+</table></div>
+<p>内置模板的默认设置为 FABIAN、开启“去除共同频响”、关闭“强制随机镜像”、一级 EQ 100%、二级 EQ 0%。每套模板都可以继续调音，并通过“导出配置…”保存完整参数。</p>
+<p>宽阔监听是作者的听感推荐，表中列出各方向参数范围；直达声空气吸收距离为 5 m，一级平滑为 1/12 oct。其他模板一级为 1/24，二级强度均为 0%。内置源的默认数值实际取到三位小数，随机标识保留。用户输入的精度在编辑、保存和生成时保持一致。</p>
+<p>控制室以 5% 反射能量、克制早段和轻量短尾为起点，反射频谱在中高频逐渐降低。自由场保留人头和输出 EQ 设置，反射源为零、混响比例为 0%。</p>
+<h2>相对权重与混响百分比</h2>
+<p>源电平和频谱的 0 dB 是公共参考，不强迫某个源恰好为 0 dB。所有源统一 −6 dB 与统一 0 dB，在同一混响比例下给出相同的归一化结果；相互之间的差异才决定方向权重。</p>
+<p>百分比的定义是 <code>Ewet / (Edry + Ewet)</code>，在头部处理后、最终 EQ 前，以 20 Hz–20 kHz 平坦功率谱、左右独立等功率输入为参考，对两耳累计。干湿交叉项不计入这个组件比例；歌曲听感还受到输入声道相关性的影响。EQ 后的比例会变化，结果中同时报告前后数值。25% 对应 wet/dry = 1/3；对应的幅度系数取能量比的平方根。</p>
+<p>关闭“启用直达声”时，混响占比显示为 100%，输入框与滑条暂停调节；重新启用后恢复关闭前的占比。模板参数窗口显示相同的状态，配置文件保存开关及原占比。</p>
+<h2>三条曲线</h2>
+<p class="bullet">• <strong>能量频谱</strong>：整条方向核的宽尺度能量轮廓。频率为对数轴，控制点保形插值。</p>
+<p class="bullet">• <strong>衰减时间尺度</strong>：各频段的衰减时间尺度。自定义非指数包络时，它是尾长参考尺度，不等于任意测量算法拟合出的 RT60。</p>
+<p class="bullet">• <strong>完整包络</strong>：局部平均能量的演变，横轴是相对直达的额外累计路程。能量衰减图另外显示反向积分的 EDC。建立段可上升、持平或下降，反射变密不必意味着能量上升。</p>
+<p>首反额外路程 / 343 给出相对直达的起点。反射变密路程控制建立段和反射密度尺度。空气吸收距离另管直达声的频率损耗，不是音箱位置，也不直接施加自由空间距离电平或传播等待。显示零点取同侧直达参考主峰；实际文件仍保留共同前导样本和双耳时差。</p>
+<p>默认衰减范围 0.005–30 s，路程 0–3430 m，空气吸收 0–10000 m。极端参数会钳位；更长的核需要更多内存和时间。</p>
+<p>成品四路径使用共同标量校准到设定的输出参考电平，保留相对电平和时差。结果信息与导出说明列出频点增益及瞬态峰值上界，供设置播放余量；这些数值仅作提示。</p>
+<p>二级 EQ 旁路时，整体标定及残差以两耳各自的响应为参考；启用二级时，以其两耳复响应平均为参考。残差按设定的输出参考电平计算。生成提示可在图表下方的提示条悬停查看，导出页的“结果信息”列出完整内容。</p>
+<h2>镜像、方向与随机数</h2>
+<p>只编辑左半边参数，右半边始终镜像并交换 L/R 输入；对称面源不重复。强制随机镜像默认关闭：镜像双方的统计参数相同，随机实现可不同。打开后强制样本级镜像，EQ 使用共同一级。</p>
+<p>同一方向的 L/R 激励默认独立；自动 R 继承 L 时间参数，通过相对增益和 tilt 调整频谱。可以改成完整手动编辑。不同方向并不直接复制同一条噪声；同一方向、同一输入的核则同时送往两耳各自的人头滤波器。</p>
+<p>普通修改不刷新其他源的随机实现。复制源或粘贴参数会分配独立随机细节；稳定 ID 和种子保存于项目。方向生成支持水平、球形、半球、前向与镜像成对分布，上限 32；增加方向数不意味着必然更好听。</p>
+<h2>EQ 和图表</h2>
+<p>一级对每耳同相输入响应做平滑最小相位校正，默认 100%、1/24 oct。二级对一级之后的两耳复响应平均设计共同 EQ，默认 0%、1/3 oct。滑条改变校正 dB 的比例；0% 完全旁路。两级均按平滑目标计算完整增益。内部使用双精度，并按实际 EQ 频响误差自动延长核；强修正及残差会在生成提示中列出。</p>
+<p>二级 EQ 以两耳同相响应的复数平均为参考，对最终四条路径共同施加校正。</p>
+<p>分析可以查看最终路径、直达、当前反射源、人头前激励、EQ 滤波器和同相响应；图型包括频响、IR、EDC、相位和群延迟。滚轮缩放、拖动平移，双击绘图区或点“复位视图”恢复坐标。点击图例开关曲线，双击或右键独看，点“显示全部曲线”恢复。显示平滑只改变绘图，不改变卷积核。</p>
+<h2>导出和路由</h2>
+<p>文件夹采用 <code>模板名_日期_时间</code>，改名项目还会包含项目名。四条 WAV、路径包、JSON 和配置都带同一名称前缀；重名使用 <code>_02</code> 等序号，不覆盖原文件。</p>
+<p>下表为文件名后缀，名称始终表示“输入 → 耳朵”：</p>
+<div class="table"><table>
+<tr><td>文件</td><td>路径</td></tr>
+<tr><td><code>L_to_LeftEar.wav</code></td><td>左输入到左耳</td></tr>
+<tr><td><code>R_to_LeftEar.wav</code></td><td>右输入到左耳</td></tr>
+<tr><td><code>L_to_RightEar.wav</code></td><td>左输入到右耳</td></tr>
+<tr><td><code>R_to_RightEar.wav</code></td><td>右输入到右耳</td></tr>
+</table></div>
+<p><code>Matrix_PATHS_LL_RL_LR_RR.wav</code> 按上表顺序打包四条路径，供支持矩阵路由的卷积器读取。</p>
+<p>APO 导出会生成使用绝对路径的 <code>模板名_APO.txt</code>；将它 Include 到自己的配置。卷积后赋值 <code>L=LL+RL R=LR+RR</code>，得到处理后的双声道输出。移动导出文件后需重新导出。设备与核的采样率应一致。普通 WAV 导出也提供对应 APO 路由文件。</p>
+<p>参考增益、峰值界限和共同前导见导出说明，可据此设置播放增益。20 Hz 和 20 kHz 位于通带，陡峭边沿在范围外。</p>
+<h2>处理歌曲</h2>
+<p>在“导出与后处理 → 处理歌曲”里点击“选择 ffmpeg.exe…”，选择完整 FFmpeg 构建中的程序文件，同目录需有 <code>ffprobe.exe</code>，构建需支持 libsoxr。选择后自动检查，也可点击“检查可用性”重新检查。支持 WAV、FLAC、MP3、M4A 等输入，处理后导出 WAV、FLAC 或 M4A，并保留卷积尾部。</p>
+<p>路径单独保存在程序工作目录的 <code>settings/audio-tools.json</code>，不进入声场项目 JSON；导入其他配置不会覆盖本机工具路径。“自动查找”清除手动选择并搜索程序旁 <code>tools/ffmpeg/</code>、<code>%ProgramFiles%/ffmpeg/bin/</code> 与 PATH。手动路径失效时提示重新选择，不会悄悄改用另一个构建。</p>
+<p>工具检查会验证版本、卷积参数和重采样／响度／限幅功能；歌曲处理前再次检查。下载：<a href="https://ffmpeg.org/download.html">FFmpeg</a>。来源与许可见项目根目录 <code>THIRD_PARTY_NOTICES.md</code>。</p>
+<p>支持 mono/stereo 输入，自动重采样到当前核采样率，保留曲终拖尾；输出 float32 WAV、24-bit FLAC、AAC/M4A。输入不被覆盖。</p>
+<p class="bullet">• 默认：扫描卷积后响度，固定增益到 −18 LUFS，再双声道联动限幅。</p>
+<p class="bullet">• 仅限幅：不做 LUFS 增益补偿；触发限幅和编码安全修正时仍可能改变响度。</p>
+<p class="bullet">• 旁路：用于分析原始处理结果。</p>
+<p>−18 LUFS 是分享用的默认目标。成品会重新测量，实际响度和真峰值记录在 <code>render.json</code>。</p>
+<h2>数据放在哪里</h2>
+<p>完整便携文件夹可复制；配置、卷积文件、APO 配置和处理后歌曲分别在 EXE 旁的 <code>projects/</code>、<code>exports/</code>、<code>EqualizerAPO/</code>、<code>processed-audio/</code>。放在有写权限的目录。发布包不包含别人的个人数据；不要直接把自己使用过的整个文件夹上传 GitHub。</p></article><article id="zh-design" hidden><h1>设计哲学与信号模型</h1>
+<p>English · 首页</p>
+<h2>以听感和调校为中心</h2>
+<p>Statistical Field Studio 用可编辑的声场，为耳机中的音乐增加空间。能量频谱、衰减时间和方向分布对应具体可听的变化；保存参数和随机种子，让调校可以重现、比较和分享。</p>
+<p>我们以头部周围的一组等效入射方向描述反射声场。每个方向都有自己的统计核，经过头部遮挡、时差、耳廓和肩胸部响应，汇成两耳输出。六到十二个方向提供了实用的调音空间，少量不同的方向、频谱和时间结构就能产生丰富变化。</p>
+<p><strong>研究约束统计特征，听感决定具体调校。</strong> 宽尺度频谱和衰减曲线规定整体颜色与拖尾；因果随机核提供细密的时频结构。预设是这一模型下的人工调音起点，便于从干净监听逐步探索包围感与长尾。</p>
+<p>我们把声场当作可以设计的听音条件：通过分散的时间细节与人头方向线索打开空间，并自由选择反射的颜色与拖尾。平滑音色校正也是设计的一部分。最小相位 EQ 调整宽尺度频谱平衡，统计尾部仍以完整脉冲响应参与卷积，校正强度由听感决定。</p>
+<h2>从方向核到四条路径</h2>
+<p>对方向 d，分别构造 L/R 输入的固定核 <code>g[d,L]</code>、<code>g[d,R]</code>。同一方向、同一输入的核同时送往两耳对应的人头滤波器 <code>h[left,d]</code>、<code>h[right,d]</code>。</p>
+<pre class="formula">H_{e\leftarrow i}=H^{direct}_{e\leftarrow i}+\sum_d h_{e,d}*g_{d,i}</pre>
+<p>其中 i 为输入，e 为耳朵，<code>*</code> 为卷积。两个输出为：</p>
+<pre class="formula">y_l=H_{l\leftarrow L}*x_L+H_{l\leftarrow R}*x_R,\qquad
+y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
+<p>音箱直达声同样经过人头，可先施加按距离计算的空气吸收。最终得到固定的 2×2 线性系统，四条路径共同归一化，保留双耳幅度和时间关系。</p>
+<h2>能量、衰减和相位一起生成</h2>
+<p>生成器使用约三分之一倍频程的平滑重叠频带，权重功率互补。每个频带以高斯噪声和因果时间包络生成响应。能量曲线控制整条方向核的宽尺度频谱；衰减曲线控制各频段的时间尺度；完整包络控制首反、建立和尾部的局部平均能量。</p>
+<p>改变衰减时间会重新标定频带能量，因此尾长和混响总量可以分别调节。反射密度随建立尺度变化；建立期的能量可以上升、持平或下降。</p>
+<p>相位来自这条完整的时间信号，与幅度和衰减共同形成。以 <code>g(t)=a(t)w(t)</code>、w 为白噪声的简化模型为例：</p>
+<pre class="formula">\mathbb E[G(f)G^*(f+\Delta f)]=\int |a(t)|^2e^{j2\pi\Delta f t}\,dt.</pre>
+<p>这表达了时间能量分布与跨频率相关性的联系。较长尾部对应较细的频率变化尺度。独立、同统计的方向核相加时，协方差也相加；能量归一化后保留相同的相关结构。采用不同频谱或包络的方向，则按各自权重共同形成输出。</p>
+<p>种子、稳定源 ID、输入激励流和固定频带次序共同决定随机实现。修改单个源可保持其他源的随机细节，便于听辨参数影响。</p>
+<h2>人头与共同频响</h2>
+<p>球形头提供简洁的遮挡和到耳延时模型。FABIAN 提供头部、耳廓和肩胸部的方向响应，当前使用固定 HATO 0 数据的最近方向采样。渲染器对镜像耳响应做复数平均，使人头解剖响应匹配参数的左右镜像结构。</p>
+<p>FABIAN 默认启用作者提供的平滑最小相位逆共同传递函数。去掉共同频谱后，方向差异与已有耳机校准叠加；这个开关提供保留完整数据频谱的对照。耳机校准由用户现有播放链负责。</p>
+<p>数据在堵塞耳道入口测得，部分低频与下方方向采用原作者的数值补全。来源、变换和许可见 FABIAN 说明。</p>
+<h2>EQ 是可调的音色选择</h2>
+<p>同相测试输入下，两耳响应为：</p>
+<pre class="formula">M_l=H_{l\leftarrow L}+H_{l\leftarrow R},\quad M_r=H_{r\leftarrow L}+H_{r\leftarrow R}.</pre>
+<p>随机非严格镜像时，一级分别校正每耳响应的平滑幅度；二级以 <code>(Q_l M_l + Q_r M_r)/2</code> 设计共同 EQ。严格镜像采用一级共同 EQ。校正均为最小相位，强度按 dB 缩放后构造滤波器。</p>
+<p>EQ 增益由平滑目标确定，实际最小相位 FIR 的频响误差决定是否继续延长核。频段功率采用局部正值积分，避免强弱频段间的大数相减损失精度；对零响应或非有限数值明确报错。最终共同标量按设定参考电平校准，频点峰值作为播放余量提示。</p>
+<p>默认一级 100%、二级 0%，平滑宽度分别为 1/24 与 1/3 倍频程。二级根据同相参考校正，也会改变两侧内容的音色；保留强度控制便于按音乐和听感选择。</p>
+<p>EQ 后追加共同的 20 Hz–20 kHz 最小相位带通，再用共同标量增益校准输出。图表分析最终生成的核，显示细纹、平滑轮廓、脉冲和能量衰减，帮助把听感变化对应到实际结果。</p>
+<h2>模板的调配依据</h2>
+<p>宽阔监听内嵌作者认可的配置，保留源标识、曲线形状、8% 反射能量和一级 1/12 倍频程平滑。通用默认仍为 1/24。</p>
+<p>控制室参考控制室对照试听中清晰、克制的特征来调配：直达声占主导，早段较快下降，接一段更轻的短尾；反射频谱和衰减时间向高频逐渐降低。0.22 s 尾长尺度、5% 混响比例是人工调音选择。八个镜像方向有适度的电平和时间差别。完整包络在归一化坐标 −1、0、0.08、0.35、1 处分别取 −2、−6、−20、−36、−60 dB，使早段快速下降与低电平残余尾部分开。实际输出另行分析，区分参考尺度与测量结果。</p>
+<p>自由场去掉统计反射贡献，保留两只经人头滤波的音箱。共同频响去除、EQ 和输出带限与其他模板使用同一条处理链。</p>
+<h2>研究来源</h2>
+<p><a href="https://mcdermottlab.mit.edu/papers/Traer_McDermott_2016_reverberation.pdf">Traer 与 McDermott (2016)</a>研究自然混响的统计特征与感知作用，为频率相关衰减提供背景。<a href="https://doi.org/10.14279/depositonce-5718.4">FABIAN 数据与论文</a>提供方向响应。统计合成、人工预设和可调 EQ 构成本项目的声场设计方法。</p></article><article id="en-guide" hidden><h1>User and tuning guide</h1>
+<p>简体中文 · Home</p>
+<h2>Three pages</h2>
+<div class="table"><table>
+<tr><td>Page</td><td>Purpose</td></tr>
+<tr><td>模板选择 — Templates</td><td>Ten authored fields, a blank template and a parameter dialog</td></tr>
+<tr><td>配置 — Configuration</td><td>Direct sound, head model, reflection curves, randomness, EQ and result plots</td></tr>
+<tr><td>导出与后处理 — Export &amp; processing</td><td>WAV and Equalizer APO export, plus song rendering</td></tr>
+</table></div>
+<p>Click a template card to set its starting parameters. <strong>确认</strong> (Confirm) loads the configuration. <strong>确认并生成卷积核</strong> (Confirm and generate) also starts computation. Cancel retains the current project. The template page also provides <strong>导入配置…</strong> (Import configuration).</p>
+<p>The template dialog contains the overall spectrum, decay-time and envelope editors, plus the direction generator. Return to Templates and choose <strong>调整当前模板…</strong> (Edit current template) to revisit this stage. Cancel keeps the current project; confirmation loads the changes.</p>
+<p>Configuration places direct sound, head model, wet energy, random settings and EQ beside the result plot, or above it in a narrow window. Drag the divider to adjust their proportions; the narrow layout uses a horizontal divider and switching back retains the chosen column ratio. <strong>反射源详细配置…</strong> opens a separate window for direction, group, multi-selection and per-source L/R excitation editing. <strong>完成</strong> (Done) closes that window while retaining its edits in the project.</p>
+<p>The plot toolbar places <strong>导入配置…</strong> (Import configuration) and <strong>导出配置…</strong> (Export configuration) to the right of <strong>生成卷积核</strong> (Generate kernels). Configuration JSON files store parameters and random seeds; exporting a configuration does not require generated kernels. Configuration name, kernel sample rate and output gain are edited in the generation area, alongside Undo and Redo. Parameter changes mark the displayed result as requiring an update.</p>
+<p>Changing overall template curves or distribution generates downstream sources. Per-source details remain separate. Reopening the template without changing these overall parameters preserves detailed edits. Undo in Configuration can restore the state before confirming a changed template.</p>
+<p>Export has its own Generate kernels button. It explains whether kernels are missing, outdated, being generated or ready to export. WAV, APO and song rendering use the same current result. Song rendering is an expandable section on this page. All expandable sections start open; click the arrow header or its explicit expand/collapse label to toggle them.</p>
+<p>Analysis is cached per generated result. While dragging a window edge, a scaled preview follows the new size. Releasing the edge reflows the page and restores sharp plots; the wide/narrow layout transition also waits until release. This applies to the main window, template dialog and source editor. Legend, zoom and pan interactions reuse curve geometry and text drawings.</p>
+<p>Export paths, result information and processing status support text selection and Ctrl+C. Copy path copies the WAV or APO export directory; Copy result information copies the complete analysis text.</p>
+<p>Export displays the current output name. Applying a template updates the configuration name and clears the previous export path. Renaming updates WAV, APO and JSON filenames; a name-only edit can be exported immediately with unchanged kernel samples.</p>
+<h2>Tune these first</h2>
+<p>1. <strong>Head model:</strong> built-in templates use FABIAN with common-response removal enabled. The spherical model is an alternative that simulates head shadow and arrival-time differences. Configuration files store the selected model and its parameters.</p>
+<p>2. <strong>Wet energy percentage:</strong> adjusts the overall dry/reverberant balance more directly than changing every direction&#x27;s gain.</p>
+<p>3. <strong>Overall decay-time multiplier:</strong> changes tail length; envelope energy is recalibrated, so a longer tail alone does not increase the target integrated energy.</p>
+<p>4. <strong>Spectral contour:</strong> broad changes color the reflections. This is distinct from final-output EQ.</p>
+<p>5. <strong>Second EQ strength:</strong> starts at 0%. Increase it if you want more correction toward the coherent reference, then compare actual music.</p>
+<p>Keep the same seed and change one thing at a time. Match listening level when comparing.</p>
+<h2>Built-in template reference</h2>
+<p>These are template reference values; directions retain different spectral, decay and weight settings. RT is the 1 kHz tail reference, not an identical measured decay at every direction. The template dialog provides overall adjustments.</p>
+<div class="table"><table>
+<tr><td>Template / UI name</td><td>Directions</td><td>Layout</td><td>RT ref. s</td><td>First excess m</td><td>Mixing m</td><td>Wet energy %</td></tr>
+<tr><td>Compact monitor / 紧凑监听</td><td>6</td><td>Ring</td><td>0.20</td><td>0.35</td><td>0.8</td><td>8</td></tr>
+<tr><td>Wide monitor / 宽阔监听</td><td>8</td><td>Ring</td><td>0.56–0.78</td><td>0.28–0.34</td><td>0.88–1.44</td><td>8</td></tr>
+<tr><td>Front space / 前向空间</td><td>6</td><td>Front</td><td>0.24</td><td>0.30</td><td>0.7</td><td>9</td></tr>
+<tr><td>Warm surround / 温暖环绕</td><td>12</td><td>Ring</td><td>0.55</td><td>0.55</td><td>2.5</td><td>28</td></tr>
+<tr><td>Bright short hall / 明亮短厅</td><td>8</td><td>Sphere</td><td>0.48</td><td>0.60</td><td>3.0</td><td>32</td></tr>
+<tr><td>Overhead surround / 上方包围</td><td>12</td><td>Hemisphere</td><td>0.62</td><td>0.65</td><td>3.5</td><td>24</td></tr>
+<tr><td>Control room / 控制室</td><td>8</td><td>Sphere</td><td>0.22</td><td>0.65</td><td>1.0</td><td>5</td></tr>
+<tr><td>Free field / 自由场</td><td>0</td><td>Direct only</td><td>—</td><td>—</td><td>—</td><td>0</td></tr>
+<tr><td>Gentle concert hall / 柔和音乐厅</td><td>12</td><td>Sphere</td><td>1.35</td><td>0.75</td><td>6.0</td><td>65</td></tr>
+<tr><td>Blank / 空白模板</td><td>0</td><td>No reflections</td><td>—</td><td>—</td><td>—</td><td>Actual 0 until sources are added</td></tr>
+<tr><td>Long hall / 悠长大厅</td><td>12</td><td>Sphere</td><td>2.30</td><td>0.85</td><td>9.0</td><td>80</td></tr>
+</table></div>
+<p>Built-in templates use FABIAN with common-response removal enabled, strict random mirroring disabled, first-stage EQ at 100% and second-stage EQ at 0%. Each field can be tuned further and saved using Export configuration.</p>
+<p>Wide monitor is the author’s listening recommendation. Its table lists ranges across individual directions; it uses 5 m of direct-sound air absorption and 1/12-octave first-stage smoothing. Other templates use 1/24; second-stage strength is 0% throughout. Built-in source defaults are rounded to three decimal places in the actual parameter data. User-entered precision is retained in editing, JSON and synthesis. Random source identities are preserved.</p>
+<p>Control room uses a 5% reflected-energy share, a restrained early section and a lighter short tail. Its spectral energy falls gradually above the midrange. Free field uses the same head and output EQ controls, with zero reflection sources and 0% wet energy.</p>
+<h2>Relative weights and wet percentage</h2>
+<p>A source&#x27;s 0 dB uses a common reference across all directions. Setting every reflection to −6 dB is equivalent to setting every reflection to 0 dB at the same wet percentage. Relative differences determine directional weighting.</p>
+<p>The percentage is <code>Ewet / (Edry + Ewet)</code>, after head filtering and before final EQ, using independent equal-power inputs with flat PSD over 20 Hz–20 kHz, summed across both ears. Dry/wet interference terms are excluded from this component ratio. The perceived balance also depends on the correlation of the input channels. EQ can change it; both pre- and post-EQ figures are reported. 25% means wet/dry energy = 1/3; amplitude coefficients use the square root of the energy ratio.</p>
+<p>Disabling direct sound displays a locked 100% wet balance. Re-enabling it restores the requested percentage. The template dialog shows the same state, and configuration files retain both the switch and the requested balance.</p>
+<h2>The three curves</h2>
+<p class="bullet">• <strong>Energy spectrum:</strong> the broad integrated-energy contour of a direction kernel, with shape-preserving interpolation on a log-frequency axis.</p>
+<p class="bullet">• <strong>Decay time scale:</strong> a frequency-dependent decay time scale. With a custom non-exponential envelope, this is a tail reference scale, not necessarily the RT60 obtained by an arbitrary regression method.</p>
+<p class="bullet">• <strong>Full envelope:</strong> local mean energy against excess accumulated propagation distance. The energy-decay analysis separately shows the backward-integrated EDC. The buildup segment can rise, remain level or fall; increasing reflection density need not increase energy.</p>
+<p>First-reflection excess distance divided by 343 gives its onset relative to direct sound. Mixing distance controls the buildup segment and density scale. Air-absorption distance separately colors direct sound; it does not position a speaker or impose inverse-distance gain or a bulk propagation wait. Display zero is the reference ipsilateral direct peak; exported files retain a common lead-in and interaural timing.</p>
+<p>Editing ranges include 0.005–30 s decay, 0–3430 m excess/mixing distance and 0–10000 m air-absorption distance. Extreme values are clamped. Longer kernels take more memory and time.</p>
+<p>All four final paths share one scalar calibration to the selected output reference level, preserving relative levels and timing. Results and export notes report frequency gain and conservative transient peak bounds to help set playback headroom. These measurements are informational.</p>
+<p>With stage two bypassed, output calibration and residuals use the individual ear responses. When stage two is enabled, they use its complex ear-average reference. Residuals are measured against the selected output reference level. Hover over the generation-notes line beside the plot, or read the complete notes in Results information on the export page.</p>
+<h2>Symmetry, direction and randomness</h2>
+<p>Edit left-half parameters; the other half always mirrors them and swaps L/R inputs. Median-plane directions are not duplicated. 强制随机镜像 (Force random mirror) defaults off: corresponding statistics match, but realizations may differ. Enabling it enforces sample-level mirror symmetry and uses a single shared first EQ.</p>
+<p>L/R excitations at one direction are independent by default. Auto-R inherits L timing and changes its spectral energy through relative gain and tilt; manual R editing is available. Different directions do not simply reuse the same noise. The same direction/input kernel feeds both ear filters.</p>
+<p>Ordinary edits do not redraw unrelated sources. Copying a source or pasting parameters assigns independent random detail; stable IDs and the seed are saved. Layouts include a horizontal ring, sphere, hemisphere, front sector and mirrored pairs, up to 32 directions.</p>
+<h2>EQ and analysis</h2>
+<p>Stage 1 corrects each ear&#x27;s smoothed coherent-input response; defaults are 100% and 1/24 octave. Stage 2 designs a common EQ from the complex average of both corrected ear responses; defaults are 0% and 1/3 octave. Strength scales correction in dB, with 0% bypassing the stage. Both stages compute the full gain required by the smoothed target. Double-precision design extends the EQ kernel according to its actual frequency-response error; generation notes report strong correction and remaining errors.</p>
+<p>The second stage uses the complex mean of the two coherent-input ear responses as its reference. Its common correction applies to the entire output matrix.</p>
+<p>Plot subjects include final paths, direct sound, selected reflections, pre-head excitation, EQ filters and coherent-input responses. Plot types include magnitude, IR, EDC, phase and group delay. Use the wheel to zoom and drag to pan; double-click the plot or use 复位视图 (Reset view) to restore the axes. Click legends to toggle curves, double/right-click to isolate, and use 显示全部曲线 (Show all curves) to restore them. Display smoothing affects the graph only.</p>
+<h2>Export and routing</h2>
+<p>Folders use <code>template_date_time</code>; renamed projects also include the project name. WAVs, the path bundle, JSON and configuration files share that prefix. Collisions use readable <code>_02</code> counters without overwriting.</p>
+<p>The table lists filename suffixes, always meaning input → ear:</p>
+<div class="table"><table>
+<tr><td>File</td><td>Path</td></tr>
+<tr><td><code>L_to_LeftEar.wav</code></td><td>L input → left ear</td></tr>
+<tr><td><code>R_to_LeftEar.wav</code></td><td>R input → left ear</td></tr>
+<tr><td><code>L_to_RightEar.wav</code></td><td>L input → right ear</td></tr>
+<tr><td><code>R_to_RightEar.wav</code></td><td>R input → right ear</td></tr>
+</table></div>
+<p><code>Matrix_PATHS_LL_RL_LR_RR.wav</code> packs these paths in that order; for convolution engines with matrix routing.</p>
+<p>APO export writes absolute paths in <code>template_APO.txt</code>. Ordinary WAV export includes the matching APO configuration as well. Include it in your own configuration; the final assignment is <code>L=LL+RL R=LR+RR</code>, without an extra unprocessed dry copy. Re-export if files move. Match device and kernel sample rates. This program never changes the system configuration.</p>
+<p>Kernels use a shared gain calibration. Export notes report reference gain, peak bounds and common lead-in; allow playback headroom. The final steep bandpass keeps 20 Hz and 20 kHz inside the passband rather than making them −3 dB edges.</p>
+<h2>Song rendering</h2>
+<p>In <strong>导出与后处理 → 处理歌曲</strong> (Export &amp; processing → Song processing), click <strong>选择 ffmpeg.exe…</strong> and select a complete FFmpeg build with libsoxr support and <code>ffprobe.exe</code> in the same directory. Selection checks the tools automatically; <strong>检查可用性</strong> checks again. Supported input includes WAV, FLAC, MP3 and M4A; export WAV, FLAC or M4A with the full convolution tail.</p>
+<p>The path is stored separately in <code>settings/audio-tools.json</code> under the application workspace, outside project JSON. Opening a project preserves local tool settings. <strong>自动查找</strong> clears the explicit selection and searches nearby <code>tools/ffmpeg/</code>, <code>%ProgramFiles%/ffmpeg/bin/</code> and PATH. An invalid explicit selection produces an error instead of silently switching builds.</p>
+<p>Checks cover versions, convolution options, resampling, loudness and limiting, and run again before rendering. Obtain a build from <a href="https://ffmpeg.org/download.html">FFmpeg downloads</a>. Attribution and licenses are in the root <code>THIRD_PARTY_NOTICES.md</code>.</p>
+<p>Mono/stereo inputs are resampled to the kernel rate; the tail is retained. Outputs are float32 WAV, 24-bit FLAC or AAC/M4A, without overwriting input.</p>
+<p class="bullet">• Default: measure convolved loudness, apply fixed gain toward −18 LUFS, then linked stereo limiting.</p>
+<p class="bullet">• Limit only: no LUFS gain correction; limiting and encoding safety adjustments may change loudness.</p>
+<p class="bullet">• Bypass: inspect unmastered processing.</p>
+<p>−18 LUFS is the default target for sharing. The finished file is measured again; actual loudness and true peak are recorded in <code>render.json</code>.</p>
+<h2>Portable data</h2>
+<p>Keep the complete application folder in a writable location. Configurations, kernels, APO configurations and processed songs live beside the EXE in <code>projects/</code>, <code>exports/</code>, <code>EqualizerAPO/</code> and <code>processed-audio/</code>. Clean distribution archives exclude personal data. Do not upload an entire used application folder as a public release.</p></article><article id="en-design" hidden><h1>Design philosophy and signal model</h1>
+<p>简体中文 · Home</p>
+<h2>Listening and tuning come first</h2>
+<p>Statistical Field Studio adds space to headphone music through an editable sound field. Energy spectra, decay times and directional distributions correspond to audible changes. Saved parameters and random seeds make tuning reproducible and shareable.</p>
+<p>A set of equivalent arrival directions around the head describes the reflected field. Each direction has a statistical kernel, rendered through head shadow, interaural timing, pinnae and torso responses. Six to twelve directions provide a practical editing space: a few distinct spectral and temporal profiles offer considerable variety.</p>
+<p><strong>Research constrains the statistics; listening guides the settings.</strong> Broad spectra and decay curves set the overall color and tail, while causal random kernels supply fine temporal and spectral detail. The authored presets offer starting points from compact monitoring to enveloping, long-tailed fields.</p>
+<p>The field is authored for headphone listening: diffuse temporal detail and directional head cues can be tuned without prescribing a wall layout or particular loudspeaker. Broad tonal correction is part of that design. Minimum-phase EQ adjusts the smoothed spectral balance while preserving the statistical tail as a full impulse response; its strength remains a listening choice.</p>
+<h2>Direction kernels become four paths</h2>
+<p>For each direction d, fixed kernels <code>g[d,L]</code> and <code>g[d,R]</code> describe responses to the two inputs. The same direction/input kernel feeds both corresponding ear filters, <code>h[left,d]</code> and <code>h[right,d]</code>.</p>
+<pre class="formula">H_{e\leftarrow i}=H^{direct}_{e\leftarrow i}+\sum_d h_{e,d}*g_{d,i}</pre>
+<p>Here i identifies the input, e identifies the ear, and <code>*</code> denotes convolution. The outputs are:</p>
+<pre class="formula">y_l=H_{l\leftarrow L}*x_L+H_{l\leftarrow R}*x_R,\qquad
+y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
+<p>Direct speakers also pass through the head, optionally preceded by distance-dependent air absorption. The result is a fixed 2×2 linear system. Common normalization preserves relative path amplitudes and timing.</p>
+<h2>Energy, decay and phase are generated together</h2>
+<p>The generator uses smooth, overlapping bands spaced approximately one third of an octave apart, with power-complementary weights. Gaussian noise and a causal envelope create each band&#x27;s response. The energy curve controls the integrated broad spectrum, the decay curve controls frequency-dependent time scales, and the full envelope controls local mean energy through onset, buildup and the tail.</p>
+<p>Changing decay time recalibrates band energy, allowing tail length and total wet energy to be adjusted separately. Reflection density follows the buildup scale; energy during buildup may rise, remain level or fall.</p>
+<p>Phase emerges from the complete time signal alongside magnitude and decay. In the simplified model <code>g(t)=a(t)w(t)</code>, with white noise w:</p>
+<pre class="formula">\mathbb E[G(f)G^*(f+\Delta f)]=\int |a(t)|^2e^{j2\pi\Delta f t}\,dt.</pre>
+<p>The relation connects temporal energy distribution with cross-frequency correlation. Longer tails create finer spectral variation. Independent kernels with the same statistics add their covariances; energy normalization preserves their normalized correlation structure. Directions with different spectra or envelopes contribute according to their own profiles and weights.</p>
+<p>The seed, stable source ID, input stream and fixed band order determine each realization. Editing one source retains other sources&#x27; random detail, supporting controlled comparisons.</p>
+<h2>Head models and the common response</h2>
+<p>The sphere offers a compact head-shadow and arrival-time model. FABIAN supplies head, pinna and torso responses; the renderer samples the nearest direction from the fixed HATO 0 dataset. Complex averaging of mirrored ear responses makes anatomical symmetry match the parameter layout.</p>
+<p>FABIAN defaults to the dataset author&#x27;s smooth minimum-phase inverse common transfer function. Removing that shared spectrum lets directional differences combine with the listener&#x27;s existing headphone calibration. Disabling it provides the complete dataset spectrum for comparison. Headphone calibration remains in the listener&#x27;s playback chain.</p>
+<p>The data represents blocked ear-canal entrances, with author-provided numerical completion at some low frequencies and lower directions. Sources, transformations and attribution are documented in the FABIAN notices.</p>
+<h2>EQ is an adjustable tonal choice</h2>
+<p>For identical input signals, each ear receives:</p>
+<pre class="formula">M_l=H_{l\leftarrow L}+H_{l\leftarrow R},\quad M_r=H_{r\leftarrow L}+H_{r\leftarrow R}.</pre>
+<p>With independent mirrored random detail, stage one equalizes the smoothed magnitude of each ear response. Stage two designs a common EQ from <code>(Q_l M_l + Q_r M_r)/2</code>. Strict random mirroring uses one common first-stage EQ. Filters are minimum phase; strength scales the correction in dB before filter construction.</p>
+<p>EQ gain follows the smoothed target. Actual minimum-phase FIR response error determines whether its support needs extending. Local positive-power integration avoids cancellation between loud and quiet spectral regions; zero or nonfinite references produce an explicit error. A common scalar calibrates the selected output reference level. Frequency peaks are reported as playback-headroom information.</p>
+<p>Defaults are 100% for stage one, 0% for stage two, and smoothing of 1/24 and 1/3 octave respectively. Common correction designed from identical inputs also changes lateral content. Adjustable strength lets the listener choose the balance for their music.</p>
+<p>A shared 20 Hz–20 kHz minimum-phase bandpass and a common gain calibration follow EQ. Analysis uses the generated kernels, exposing fine detail, smoothed spectra, impulses and decay so that listening observations can be compared with actual output.</p>
+<h2>Preset authorship</h2>
+<p>Wide monitor embeds the author-approved configuration, including source identities, curve shapes, 8% reflected energy and 1/12-octave first-stage EQ smoothing. General defaults remain 1/24 octave.</p>
+<p>Control room is an authored statistical field informed by control-room listening comparisons: direct sound dominates, an early energy drop leads into a quieter short tail, and upper-frequency reflected energy and decay gradually decrease. The 0.22 s tail scale and 5% wet energy are design choices. The eight mirrored directions have modest differences in level and timing. The full envelope uses points −2, −6, −20, −36, −60 dB at normalized positions −1, 0, 0.08, 0.35, 1. This separates a quick early decline from a small residual tail. Measured output is checked separately from these reference scales.</p>
+<p>Free field removes the statistical reflection contribution and retains the two head-filtered speakers. Common-response removal, EQ and output band limiting remain available as in the other templates.</p>
+<h2>Research background</h2>
+<p><a href="https://mcdermottlab.mit.edu/papers/Traer_McDermott_2016_reverberation.pdf">Traer and McDermott (2016)</a> study the statistics and perception of natural reverberation, informing frequency-dependent decay. <a href="https://doi.org/10.14279/depositonce-5718.4">The FABIAN dataset and paper</a> provide directional head responses. Statistical synthesis, authored presets and adjustable EQ form this project&#x27;s field-design method.</p></article></main><footer>Original code and documentation: MIT / 自有代码与文档：MIT。FABIAN attribution: FABIAN-NOTICE.txt beside the application.</footer><script>function show(id){document.querySelectorAll('article').forEach(a=>a.hidden=a.id!==id);document.documentElement.lang=id.startsWith('en')?'en':'zh-CN';window.scrollTo(0,0);location.hash=id;}if(document.getElementById(location.hash.slice(1)))show(location.hash.slice(1));</script></html>

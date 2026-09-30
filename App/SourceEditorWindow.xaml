@@ -1,0 +1,43 @@
+<Window x:Class="StatisticalFieldStudio.SourceEditorWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:StatisticalFieldStudio" Style="{StaticResource {x:Type Window}}" Title="反射源详细配置" Width="1280" Height="880" MinWidth="780" MinHeight="620" WindowStartupLocation="CenterOwner">
+ <Grid Margin="16"><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="340"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+ <Grid x:Name="SourceLayout"><Grid.ColumnDefinitions><ColumnDefinition Width="180" MinWidth="160"/><ColumnDefinition Width="6"/><ColumnDefinition Width="*" MinWidth="110"/><ColumnDefinition Width="6"/><ColumnDefinition Width="340" MinWidth="300"/></Grid.ColumnDefinitions>
+      <DockPanel Background="{StaticResource Panel}">
+       <StackPanel DockPanel.Dock="Top" Margin="10"><TextBlock Text="反射源 / 左半边" Style="{StaticResource Heading}"/><TextBlock Text="{Binding DirectionSummary}" Style="{StaticResource Hint}"/><WrapPanel><Button Content="新建" Padding="8,7" Command="{Binding NewSourceCommand}"/><Button Content="操作 ▾" Padding="8,7" Click="OpenSourceActions"><Button.ContextMenu><ContextMenu><MenuItem Header="复制源" Command="{Binding DuplicateCommand}"/><MenuItem Header="删除所选源" Command="{Binding DeleteCommand}"/><Separator/><MenuItem Header="复制参数" Command="{Binding CopyCommand}"/><MenuItem Header="粘贴参数" Command="{Binding PasteCommand}"/><MenuItem Header="当前参数 → 全部所选" Command="{Binding BatchCommand}"/></ContextMenu></Button.ContextMenu></Button></WrapPanel></StackPanel>
+
+       <ListBox x:Name="SourceList" ToolTip="Ctrl / Shift 多选；点击组名选择整组。" ItemsSource="{Binding Sources}" SelectionMode="Extended" SelectionChanged="SourceSelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled"><ListBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Caption}" TextWrapping="Wrap" FontSize="11"/></DataTemplate></ListBox.ItemTemplate><ListBox.GroupStyle><GroupStyle><GroupStyle.HeaderTemplate><DataTemplate><Button Content="{Binding Name}" Click="SelectGroup" HorizontalContentAlignment="Left" Padding="5" Margin="0,8,0,3"/></DataTemplate></GroupStyle.HeaderTemplate></GroupStyle></ListBox.GroupStyle></ListBox>
+      </DockPanel>
+      <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource Edge}"/>
+      <Grid x:Name="DirectionArea" Grid.Column="2"><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><local:DirectionView x:Name="Directions"/><Button Content="复位视角" Click="ResetView" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="8,4"/>
+
+      </Grid>
+      <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource Edge}"/>
+      <ScrollViewer x:Name="SourceProperties" Grid.Column="4" VerticalScrollBarVisibility="Auto" Background="{StaticResource Panel}"><StackPanel Margin="12" IsEnabled="{Binding Ready}">
+       <TextBox Text="{Binding Selected.Name}" LostFocus="Edited" FontSize="16" FontWeight="SemiBold"/>
+       <DockPanel><ComboBox SelectedIndex="{Binding ExcitationIndex}" Width="165"><ComboBoxItem Content="L 输入激励"/><ComboBoxItem Content="R 输入激励"/></ComboBox><TextBlock Text="{Binding ExcitationHint}" Style="{StaticResource Hint}" VerticalAlignment="Center"/></DockPanel>
+       <TabControl x:Name="SourceSettingsTabs"><TabControl.Resources><Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}"><Setter Property="Padding" Value="5,8"/><Setter Property="FontSize" Value="11"/></Style></TabControl.Resources>
+        <TabItem Header="频谱与衰减"><StackPanel Margin="0,8">
+         <TextBlock Text="能量频谱轮廓 / dB" Margin="0,0,0,6"/><local:CurveEditor x:Name="EnergyCurve" Height="145"/>
+         <TextBlock Text="衰减时间尺度 / 秒" Margin="0,10,0,6"/><local:CurveEditor x:Name="DecayCurve" Height="145"/>
+         <TextBlock Text="拖点修改 · 双击新增 · 右键删除" Style="{StaticResource Hint}"/>
+
+         <Expander Header="精确编辑控制点"><StackPanel><ComboBox x:Name="CurveTableKind" SelectedIndex="0" SelectionChanged="CurveTableChanged"><ComboBoxItem Content="频谱：Hz / dB"/><ComboBoxItem Content="衰减：Hz / 秒"/><ComboBoxItem Content="包络：额外路程 m / dB"/></ComboBox><DataGrid x:Name="KnotGrid" IsEnabled="{Binding CanEditExcitation}" CellEditEnding="KnotEdited" Height="145"><DataGrid.Columns><DataGridTextColumn Header="横坐标" Binding="{Binding X,ValidatesOnExceptions=True}" Width="*"/><DataGridTextColumn Header="值" Binding="{Binding Y,ValidatesOnExceptions=True}" Width="*"/></DataGrid.Columns></DataGrid></StackPanel></Expander>
+        </StackPanel></TabItem>
+        <TabItem Header="方向与激励"><StackPanel Margin="0,8">
+         <UniformGrid Columns="2"><StackPanel><TextBlock Text="方位角 −180…0°" Style="{StaticResource Hint}"/><TextBox Text="{Binding Selected.Azimuth}" LostFocus="Edited"/><Slider Minimum="-180" Maximum="0" Value="{Binding Selected.Azimuth}" Thumb.DragCompleted="Edited" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="仰角 −90…90°" Style="{StaticResource Hint}"/><TextBox Text="{Binding Selected.Elevation}" LostFocus="Edited"/><Slider Minimum="-90" Maximum="90" Value="{Binding Selected.Elevation}" Thumb.DragCompleted="Edited" LostFocus="Edited"/></StackPanel></UniformGrid>
+         <TextBlock Text="组名" Style="{StaticResource Hint}"/><TextBox Text="{Binding Selected.Group}" LostFocus="Edited"/><CheckBox Content="启用此源及镜像" IsChecked="{Binding Selected.Enabled}" Click="Edited"/>
+         <StackPanel IsEnabled="{Binding CanEditExcitation}"><UniformGrid Columns="2"><StackPanel><TextBlock Text="{Binding WeightLabel}" Style="{StaticResource Hint}"/><TextBox Text="{Binding Editing.GainDb}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="tilt dB/oct" Style="{StaticResource Hint}"/><TextBox Text="{Binding Editing.TiltDbPerOct}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="首反射额外路程 m" Style="{StaticResource Hint}"/><TextBox Text="{Binding Editing.FirstReflectionExtraPath}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="反射变密路程 m" Style="{StaticResource Hint}"/><TextBox Text="{Binding Editing.MixingPath}" LostFocus="Edited"/></StackPanel></UniformGrid></StackPanel>
+         <TextBlock Text="{Binding ReflectionTimingHint}" Style="{StaticResource Hint}" Margin="0,8"/><CheckBox Content="自动生成 R 激励参数" IsChecked="{Binding Selected.AutoRight}" Click="Edited"/>
+         <UniformGrid Columns="2" IsEnabled="{Binding Selected.AutoRight}"><StackPanel><TextBlock Text="R 相对增益 dB" Style="{StaticResource Hint}"/><TextBox Text="{Binding Selected.RightGainDb}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="R tilt dB/oct" Style="{StaticResource Hint}"/><TextBox Text="{Binding Selected.RightTilt}" LostFocus="Edited"/></StackPanel></UniformGrid>
+        </StackPanel></TabItem>
+        <TabItem Header="包络">         <StackPanel Margin="0,8"><TextBlock Text="完整能量包络 / 额外路程" Foreground="{StaticResource Accent}" Margin="0,0,0,8"/>
+         <TextBlock x:Name="EnvelopeHint" Style="{StaticResource Hint}"/>
+         <WrapPanel><Button Content="完整曲线" Click="EnvelopeFull"/><Button Content="放大建立段" Click="EnvelopeEarly"/></WrapPanel>
+         <local:CurveEditor x:Name="ShapeCurve" Height="190"/>
+         <TextBlock Text="拖动控制点；双击增加；右键删除非锚点。先放大建立段，再编辑首反到变密之间的能量。" Style="{StaticResource Hint}"/><TextBlock Text="首反、建立和尾端的位置由路程与衰减参数控制。末端保持 −60 dB，之后继续衰减到约 −80 dB 再截断。" Style="{StaticResource Hint}"/></StackPanel></TabItem>
+       </TabControl>
+      </StackPanel></ScrollViewer>
+     </Grid>
+ <local:ResultPanel x:Name="AnalysisPanel" ShowProjectSettings="False" Grid.Row="1" Margin="0,12,0,0"/>
+ <DockPanel Grid.Row="2" Margin="0,12,0,0"><WrapPanel DockPanel.Dock="Right"><Button Content="完成" IsEnabled="{Binding Ready}" Click="Finish" IsDefault="True" MinWidth="90"/></WrapPanel><WrapPanel><Button Content="撤销" Command="{Binding UndoCommand}"/><Button Content="重做" Command="{Binding RedoCommand}"/></WrapPanel></DockPanel>
+ </Grid>
+</Window>

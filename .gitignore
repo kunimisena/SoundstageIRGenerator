@@ -1,0 +1,21 @@
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+*.suo
+*.log
+*.tmp
+__pycache__/
+.venv/
+.DS_Store
+publish/
+artifacts/
+exports/
+projects/
+user-presets/
+processed-audio/
+settings/
+EqualizerAPO/
+releases/
+# Core/Data/FABIAN.bin is required, intentionally tracked.

@@ -1,0 +1,29 @@
+FABIAN head-related transfer function database
+Copyright / authors: Fabian Brinkmann, Alexander Lindau, Stefan Weinzierl,
+Gunnar Geissler, Steven van de Par, Markus Mueller-Trapet, Rob Opdam,
+Michael Vorlaender. TU Berlin / University of Oldenburg / RWTH Aachen.
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+Database DOI: https://doi.org/10.14279/depositonce-5718.4
+Publication: Brinkmann et al. (2017), A High Resolution and Full-Spherical
+Head-Related Transfer Function Database for Different Head-Above-Torso
+Orientations. J. Audio Eng. Soc. 65(10), 841-848.
+https://doi.org/10.17743/jaes.2017.0033
+Source: https://sofacoustics.org/data/database/tu-berlin/
+Files: FABIAN_HRIR_measured_HATO_0.sofa and
+FABIAN_CTF_measured_inverted_smoothed.sofa (2020-01-22).
+
+Modifications by Statistical Field Studio:
+- float32 embedded table; original SOFA sample timing and gain retained.
+- nearest directional sample on the original approximately 2-degree grid.
+- mirror-paired complex FIR averaging to enforce anatomical left/right symmetry;
+  the same symmetric head is used in both random-mirror modes.
+- optional official 1/3-octave smoothed minimum-phase inverse CTF convolution.
+- 44.1/48/96 kHz windowed-sinc sample-rate conversion with explicit common lead-in.
+- no individual path normalization, independent peak alignment, or minimum-phase
+  reconstruction of the measured HRIR; room synthesis and final EQ are separate.
+Dataset limitations: blocked-ear-canal entrance measurements. Frequencies below
+200 Hz and elevations below -64 degrees include numerical substitutes; the
+200-500 Hz transition combines measured and numerical magnitude and phase.
+This is not an individual listener HRTF or a biological bone-conduction model.
+Source and converted table SHA256 values are in FABIAN-manifest.json.

@@ -1,0 +1,15 @@
+{
+  "dataset": "FABIAN measured HATO 0, release 2020-01-22",
+  "license": "CC BY 4.0",
+  "sourceUrl": "https://sofacoustics.org/data/database/tu-berlin/",
+  "sampleRate": 44100,
+  "directions": 11950,
+  "taps": 256,
+  "ctf": "official 1/3-octave smoothed minimum-phase inverse CTF, 256 taps",
+  "conversion": "float64 to float32 only; original phase, gains, shared time reference and SOFA coordinates retained",
+  "sourceSha256": {
+    "FABIAN_CTF_measured_inverted_smoothed.sofa": "68d79bf54ba8e0d7732bf14c525ac20404e751bba26a3e674036c53b71f70bfb",
+    "FABIAN_HRIR_measured_HATO_0.sofa": "83ebbcd9a09d17679b95d201c9775438c0bb1199d565c3fc7a25448a905cdc3c"
+  },
+  "outputSha256": "b0cc55129acae81126d49b03763cca1c35e5a1154b70306f30a2d0d9eedea76d"
+}
