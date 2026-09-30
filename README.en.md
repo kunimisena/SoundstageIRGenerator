@@ -90,6 +90,10 @@ Listening comes first; parameters remain inspectable. Smooth spectral and decay 
 
 Wide monitor is the author’s recommended everyday starting point. Control room offers a dry, short reflected field; Free field contains head-filtered direct speakers. Templates also cover surround and hall-like fields. Tune overall curves, refine individual directions, and save the parameters to reproduce the result. [Read the design and signal path](docs/en/design.md).
 
+## From kernels to headphone playback
+
+FABIAN supplies directional head responses, the generator's EQ shapes the digital sound field, and existing headphone EQ provides the physical playback reference. The headphones and their acoustic coupling turn those signals into eardrum pressure; similar playback responses at both ears can approximately preserve interaural cues. [From FABIAN to the sound at your ears](docs/en/design.md#from-fabian-to-the-sound-at-your-ears) explains the chain and the relationship between general-purpose field design and individual playback calibration.
+
 ## Repository
 
 | Location | Contents |

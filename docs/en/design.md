@@ -69,6 +69,44 @@ Defaults are 100% for stage one, 0% for stage two, and smoothing of 1/24 and 1/3
 
 A shared 20 Hz–20 kHz minimum-phase bandpass and a common gain calibration follow EQ. Analysis uses the generated kernels, exposing fine detail, smoothed spectra, impulses and decay so that listening observations can be compared with actual output.
 
+## From FABIAN to the sound at your ears
+
+The generator starts from an already tuned headphone playback system. FABIAN supplies directional head cues, statistical reverberation supplies an editable space, and the physical headphones turn the two electrical signals into sound at the ears. Existing headphone EQ continues to provide the listener's familiar tonal reference.
+
+The complete path from digital input to the eardrums is:
+
+```text
+Stereo music → four-path convolution matrix K → existing headphone EQ → headphones and acoustic coupling → ears
+```
+
+In the frequency domain, neglecting acoustic leakage between the two headphone channels, the left-ear relationship is:
+
+```text
+p_left(f) = P_left(f) × [K_left←L(f) × x_L(f) + K_left←R(f) × x_R(f)]
+```
+
+The right ear follows the same form. K includes the generator's head rendering, reverberation, final EQ and gain. P combines the user's headphone EQ, the headphones' electroacoustic response and their coupling to the pinna and ear canal when worn. This separates the digital sound field from the physical playback path.
+
+### What each correction does
+
+| Processing | What it addresses |
+|---|---|
+| FABIAN common-response compensation | Uses the dataset's smoothed inverse common transfer function (CTF) to compensate shared spectral structure while retaining directional differences |
+| Generator minimum-phase EQ | Shapes the smoothed digital output spectrum using the current four-path matrix and the selected reference input |
+| Existing headphone EQ | Brings the physical headphones toward the listener's chosen tonal target, providing the playback foundation |
+
+The plots describe the final digital kernels. Eardrum pressure also depends on P; predicting that path precisely requires the headphone transfer function for the listener wearing those headphones. Matching a preferred headphone target provides a practical playback reference, whereas measuring and inverting an individual headphone transfer function serves a different calibration goal. FABIAN's inverse CTF concerns the head dataset's common response rather than the inverse response of a particular headphone.
+
+### How spatial cues carry through playback
+
+When the two playback transfer functions are approximately equal, `P_left(f) ≈ P_right(f)`, they mainly act as a common filter. For a given virtual direction, that common factor cancels in the complex response ratio between the ears. The digital interaural level and relative phase differences can therefore be approximately preserved.
+
+Common filtering still changes the relative weighting of frequency bands, and monaural pinna spectral cues are also affected by playback. Differences in left/right coupling, headphone placement and the listener's anatomy relative to FABIAN all contribute to the resulting timbre, direction and externalization. The project therefore uses existing headphone tuning as a reference and leaves direction distribution, reverberation and spatial EQ available for listening-based adjustment.
+
+Headphone transfer functions and placement variability are also important in binaural reproduction research. [Schärer and Lindau (2009)](https://www2.users.ak.tu-berlin.de/akgroup/ak_pub/2009/Schaerer_2009_Evaluation_of_Equalization_Methods_for_Binaural_Signals.pdf) compare headphone equalization methods and discuss individual differences and repositioning effects.
+
+This approach serves the goal of adding adjustable space to a headphone tonal balance the listener already enjoys. Reproducing the sound pressure of real speakers more precisely can involve measuring individual headphone transfer functions and designing playback compensation at a consistent measurement reference position. FABIAN uses blocked ear-canal entrances as its reference; that extension also needs to account for entrance-to-eardrum transmission and the headphones' acoustic loading. The project's general-purpose approach combines existing headphone tuning, common-response compensation and adjustable digital tonal correction.
+
 ## Preset authorship
 
 Wide monitor embeds the author-approved configuration, including source identities, curve shapes, 8% reflected energy and 1/12-octave first-stage EQ smoothing. General defaults remain 1/24 octave.

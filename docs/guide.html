@@ -120,6 +120,26 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 <p>EQ 增益由平滑目标确定，实际最小相位 FIR 的频响误差决定是否继续延长核。频段功率采用局部正值积分，避免强弱频段间的大数相减损失精度；对零响应或非有限数值明确报错。最终共同标量按设定参考电平校准，频点峰值作为播放余量提示。</p>
 <p>默认一级 100%、二级 0%，平滑宽度分别为 1/24 与 1/3 倍频程。二级根据同相参考校正，也会改变两侧内容的音色；保留强度控制便于按音乐和听感选择。</p>
 <p>EQ 后追加共同的 20 Hz–20 kHz 最小相位带通，再用共同标量增益校准输出。图表分析最终生成的核，显示细纹、平滑轮廓、脉冲和能量衰减，帮助把听感变化对应到实际结果。</p>
+<h2>从 FABIAN 到实际听到的声音</h2>
+<p>这套生成器以已经调校好的耳机为播放基础：FABIAN 提供方向相关的人头线索，统计混响提供可编辑的空间，再由实际耳机把两路电信号变成两耳听到的声音。已有的耳机 EQ 继续负责听者熟悉的音色基准。</p>
+<p>从数字输入到耳膜，可以把整条链写成：</p>
+<pre>双声道音乐 → 四路径卷积矩阵 K → 已有耳机 EQ → 耳机及佩戴耦合 → 两耳</pre>
+<p>在频域中，忽略左右耳机之间的声学串漏，左耳的关系是：</p>
+<pre>p_left(f) = P_left(f) × [K_left←L(f) × x_L(f) + K_left←R(f) × x_R(f)]</pre>
+<p>右耳同理。这里的 K 包含生成器的人头处理、混响、最终 EQ 和增益；P 则把用户的耳机 EQ、耳机电声响应，以及佩戴时耳廓和耳道的声学耦合合在一起。这样，数字声场与实际播放端各自承担的作用就分开了。</p>
+<h3>三种校正各自负责什么</h3>
+<div class="table"><table>
+<tr><td>处理</td><td>校正的对象</td></tr>
+<tr><td>FABIAN 共同频响补偿</td><td>使用数据集提供的平滑逆共同传递函数（CTF），整理 FABIAN 的共同频谱成分，保留方向差异</td></tr>
+<tr><td>生成器的最小相位 EQ</td><td>根据当前四路径矩阵及设定的测试输入，整理数字输出的平滑频谱</td></tr>
+<tr><td>用户已有的耳机 EQ</td><td>让实际耳机趋近用户选择的音色目标，作为整个播放系统的基础</td></tr>
+</table></div>
+<p>图表展示的是最终数字核的响应。实际耳膜声压还取决于 P；要精确预测这一段，需要听者佩戴该耳机时的传递函数。达到一个满意的耳机目标曲线，提供了实用的播放基准，与测量并反演个人耳机传递函数是两种不同的校准目标。FABIAN 的逆 CTF 对应人头数据的共同响应，也有别于特定耳机的逆响应。</p>
+<h3>为什么这种组合可以保留空间线索</h3>
+<p>如果两耳的播放传递函数近似一致，即 <code>P_left(f) ≈ P_right(f)</code>，它们主要表现为两耳共同的滤波。对于同一个虚拟方向，该共同部分会在两耳复响应之比中相消，因此数字信号中的双耳幅度差和相对相位可以近似保留。</p>
+<p>共同滤波仍会改变各频段的相对权重，单耳的耳廓频谱线索也会受到播放端影响。实际左右耦合差异、佩戴位置，以及听者与 FABIAN 的耳廓差异，共同决定最终的音色、方向感和外化程度。因此，本项目把已有耳机调校作为基准，再通过方向分布、混响和空间 EQ 的试听调整来选择结果。</p>
+<p>耳机传递函数与佩戴变化也是双耳重放研究中的重要内容。<a href="https://www2.users.ak.tu-berlin.de/akgroup/ak_pub/2009/Schaerer_2009_Evaluation_of_Equalization_Methods_for_Binaural_Signals.pdf">Schärer 与 Lindau（2009）</a>比较了多种耳机均衡方法，并讨论了个体差异和重复佩戴对补偿的影响。</p>
+<p>这套取舍服务于“在满意的耳机音色上增加可调空间”的目标。若进一步追求真实音箱与虚拟音箱的声压匹配，可以测量个人耳机传递函数，在一致的测量参考位置设计重放补偿。FABIAN 数据采用堵塞耳道入口作为参考；处理这一层时，需要同时考虑入口到耳膜的传递与耳机的声学负载关系。项目目前采用的通用方案，则以既有耳机调校、共同频响处理和可调的数字音色校正相结合。</p>
 <h2>模板的调配依据</h2>
 <p>宽阔监听内嵌作者认可的配置，保留源标识、曲线形状、8% 反射能量和一级 1/12 倍频程平滑。通用默认仍为 1/24。</p>
 <p>控制室参考控制室对照试听中清晰、克制的特征来调配：直达声占主导，早段较快下降，接一段更轻的短尾；反射频谱和衰减时间向高频逐渐降低。0.22 s 尾长尺度、5% 混响比例是人工调音选择。八个镜像方向有适度的电平和时间差别。完整包络在归一化坐标 −1、0、0.08、0.35、1 处分别取 −2、−6、−20、−36、−60 dB，使早段快速下降与低电平残余尾部分开。实际输出另行分析，区分参考尺度与测量结果。</p>
@@ -245,6 +265,26 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 <p>EQ gain follows the smoothed target. Actual minimum-phase FIR response error determines whether its support needs extending. Local positive-power integration avoids cancellation between loud and quiet spectral regions; zero or nonfinite references produce an explicit error. A common scalar calibrates the selected output reference level. Frequency peaks are reported as playback-headroom information.</p>
 <p>Defaults are 100% for stage one, 0% for stage two, and smoothing of 1/24 and 1/3 octave respectively. Common correction designed from identical inputs also changes lateral content. Adjustable strength lets the listener choose the balance for their music.</p>
 <p>A shared 20 Hz–20 kHz minimum-phase bandpass and a common gain calibration follow EQ. Analysis uses the generated kernels, exposing fine detail, smoothed spectra, impulses and decay so that listening observations can be compared with actual output.</p>
+<h2>From FABIAN to the sound at your ears</h2>
+<p>The generator starts from an already tuned headphone playback system. FABIAN supplies directional head cues, statistical reverberation supplies an editable space, and the physical headphones turn the two electrical signals into sound at the ears. Existing headphone EQ continues to provide the listener&#x27;s familiar tonal reference.</p>
+<p>The complete path from digital input to the eardrums is:</p>
+<pre>Stereo music → four-path convolution matrix K → existing headphone EQ → headphones and acoustic coupling → ears</pre>
+<p>In the frequency domain, neglecting acoustic leakage between the two headphone channels, the left-ear relationship is:</p>
+<pre>p_left(f) = P_left(f) × [K_left←L(f) × x_L(f) + K_left←R(f) × x_R(f)]</pre>
+<p>The right ear follows the same form. K includes the generator&#x27;s head rendering, reverberation, final EQ and gain. P combines the user&#x27;s headphone EQ, the headphones&#x27; electroacoustic response and their coupling to the pinna and ear canal when worn. This separates the digital sound field from the physical playback path.</p>
+<h3>What each correction does</h3>
+<div class="table"><table>
+<tr><td>Processing</td><td>What it addresses</td></tr>
+<tr><td>FABIAN common-response compensation</td><td>Uses the dataset&#x27;s smoothed inverse common transfer function (CTF) to compensate shared spectral structure while retaining directional differences</td></tr>
+<tr><td>Generator minimum-phase EQ</td><td>Shapes the smoothed digital output spectrum using the current four-path matrix and the selected reference input</td></tr>
+<tr><td>Existing headphone EQ</td><td>Brings the physical headphones toward the listener&#x27;s chosen tonal target, providing the playback foundation</td></tr>
+</table></div>
+<p>The plots describe the final digital kernels. Eardrum pressure also depends on P; predicting that path precisely requires the headphone transfer function for the listener wearing those headphones. Matching a preferred headphone target provides a practical playback reference, whereas measuring and inverting an individual headphone transfer function serves a different calibration goal. FABIAN&#x27;s inverse CTF concerns the head dataset&#x27;s common response rather than the inverse response of a particular headphone.</p>
+<h3>How spatial cues carry through playback</h3>
+<p>When the two playback transfer functions are approximately equal, <code>P_left(f) ≈ P_right(f)</code>, they mainly act as a common filter. For a given virtual direction, that common factor cancels in the complex response ratio between the ears. The digital interaural level and relative phase differences can therefore be approximately preserved.</p>
+<p>Common filtering still changes the relative weighting of frequency bands, and monaural pinna spectral cues are also affected by playback. Differences in left/right coupling, headphone placement and the listener&#x27;s anatomy relative to FABIAN all contribute to the resulting timbre, direction and externalization. The project therefore uses existing headphone tuning as a reference and leaves direction distribution, reverberation and spatial EQ available for listening-based adjustment.</p>
+<p>Headphone transfer functions and placement variability are also important in binaural reproduction research. <a href="https://www2.users.ak.tu-berlin.de/akgroup/ak_pub/2009/Schaerer_2009_Evaluation_of_Equalization_Methods_for_Binaural_Signals.pdf">Schärer and Lindau (2009)</a> compare headphone equalization methods and discuss individual differences and repositioning effects.</p>
+<p>This approach serves the goal of adding adjustable space to a headphone tonal balance the listener already enjoys. Reproducing the sound pressure of real speakers more precisely can involve measuring individual headphone transfer functions and designing playback compensation at a consistent measurement reference position. FABIAN uses blocked ear-canal entrances as its reference; that extension also needs to account for entrance-to-eardrum transmission and the headphones&#x27; acoustic loading. The project&#x27;s general-purpose approach combines existing headphone tuning, common-response compensation and adjustable digital tonal correction.</p>
 <h2>Preset authorship</h2>
 <p>Wide monitor embeds the author-approved configuration, including source identities, curve shapes, 8% reflected energy and 1/12-octave first-stage EQ smoothing. General defaults remain 1/24 octave.</p>
 <p>Control room is an authored statistical field informed by control-room listening comparisons: direct sound dominates, an early energy drop leads into a quieter short tail, and upper-frequency reflected energy and decay gradually decrease. The 0.22 s tail scale and 5% wet energy are design choices. The eight mirrored directions have modest differences in level and timing. The full envelope uses points −2, −6, −20, −36, −60 dB at normalized positions −1, 0, 0.08, 0.35, 1. This separates a quick early decline from a small residual tail. Measured output is checked separately from these reference scales.</p>
