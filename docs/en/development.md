@@ -10,7 +10,7 @@ Windows x64 with a .NET 8 SDK. `global.json` accepts the latest installed stable
 ./build.ps1
 ```
 
-This builds Release, runs eight targeted core suites (recommended/new presets, EQ strengths, head model, presets, shared editing, release naming, energy and EQ accuracy), and publishes a self-contained application to `publish/StatisticalFieldStudio/`. It does not copy personal projects into a distribution. It retains existing local runtime data when publishing over your own portable folder.
+This builds Release, runs eight targeted core suites (recommended/new presets, EQ strengths, head model, presets, shared editing, release naming, energy and EQ accuracy), and publishes a self-contained application to `publish/SoundstageIRGenerator/`. It does not copy personal projects into a distribution. It retains existing local runtime data when publishing over your own portable folder.
 
 ```powershell
 # Full DSP, statistics, long-tail, audio mastering and offscreen WPF checks:
@@ -27,7 +27,7 @@ Full audio tests need FFmpeg/ffprobe available before tests (e.g. under Program 
 
 ## Public source vs local portable data
 
-The repository root is the folder containing StatisticalFieldStudio.sln. Track App, Core, Tests, tools, docs, .github and root build/docs files. `Core/Data/FABIAN.bin` is required and intentionally tracked (about 24 MiB), with its notice and provenance manifest.
+The repository root is the folder containing SoundstageIRGenerator.sln. Track App, Core, Tests, tools, docs, .github and root build/docs files. `Core/Data/FABIAN.bin` is required and intentionally tracked (about 24 MiB), with its notice and provenance manifest.
 
 Do not track `bin`, `obj`, `publish`, `artifacts`, `projects`, `exports`, `EqualizerAPO`, `processed-audio` or backup folders. They are covered by `.gitignore`. Publishing a used application folder directly may expose personal paths, audio and settings.
 
@@ -39,17 +39,11 @@ Packaging copies an explicit source allowlist into a fresh staging directory, co
 
 Original code and documentation are MIT-licensed. FABIAN retains its CC BY 4.0 attribution. The packaging script produces local files.
 
-## Suggested GitHub presentation
+## Repository and releases
 
-Repository name: `StatisticalFieldStudio`.
+Source: [SoundstageIRGenerator](https://github.com/kunimisena/SoundstageIRGenerator). [Releases](https://github.com/kunimisena/SoundstageIRGenerator/releases) contain the Windows portable application, source archive and SHA-256 checksums.
 
-Suggested description: “An offline editor for statistical binaural sound fields: directional reverb, FABIAN HRTFs, tunable EQ and WAV/Equalizer APO export.”
-
-Suggested topics: `audio`, `dsp`, `binaural`, `hrtf`, `convolution`, `equalizer-apo`, `wpf`.
-
-Use the README screenshot and short listening-oriented introduction. Keep theory in the design document rather than making the first page a research diary. Put portable binaries in Releases, not Git history. A first announcement can invite parameter exchange and reproducible headphone comparisons, without claiming universal superiority over another product.
-
-For a release, review the source allowlist and attribution and upload the clean artifacts. CI has read-only repository permissions and no deployment step. Update the Chinese/English docs together.
+CI builds and runs core checks on pushes and pull requests. For a release, run `./build.ps1 -HeadlessChecks` and `./tools/package.ps1`, tag the version and upload the archives from `publish/packages/`. Maintain Chinese and English documentation together.
 
 ## Source map
 
@@ -63,7 +57,7 @@ For a release, review the source allowlist and attribution and upload the clean 
 - `App/MainWindow.xaml`, `ReflectionBatchEditor*`, `VisualControls.cs`: workflow and plots.
 - `Tests/`: reproducibility, routing, EQ, statistics, media and export checks.
 
-Run `StatisticalFieldStudio.exe --headless-check <output-folder>` for offscreen controls, workflow checks and rendered layout images. Test projects and exports stay under the supplied folder. Manual keyboard, pointer and native monitor-DPI acceptance remains a separate check.
+Run `SoundstageIRGenerator.exe --headless-check <output-folder>` for offscreen controls, workflow checks and rendered layout images. Test projects and exports stay under the supplied folder. Manual keyboard, pointer and native monitor-DPI acceptance remains a separate check.
 
 ## Optional FABIAN table regeneration
 

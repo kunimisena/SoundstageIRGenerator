@@ -1,4 +1,4 @@
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 
 /// <summary>Editing normalization only. DSP validation still rejects malformed structure.</summary>
 public static class EditingLimits

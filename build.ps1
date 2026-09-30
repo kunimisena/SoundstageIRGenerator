@@ -7,27 +7,27 @@ param(
 )
 $ErrorActionPreference='Stop'
 $studioRoot=$PSScriptRoot
-if(-not $OutputDirectory){$OutputDirectory=Join-Path $studioRoot 'publish\StatisticalFieldStudio'}
+if(-not $OutputDirectory){$OutputDirectory=Join-Path $studioRoot 'publish\SoundstageIRGenerator'}
 $OutputDirectory=[IO.Path]::GetFullPath($OutputDirectory)
 Push-Location -LiteralPath $studioRoot
 try {
-    dotnet build '.\StatisticalFieldStudio.sln' -c Release
+    dotnet build '.\SoundstageIRGenerator.sln' -c Release
     if($LASTEXITCODE -ne 0){throw 'Build failed'}
     if(-not $SkipTests){
         if($FullTests){
-            dotnet run --no-build --project '.\Tests\StatisticalField.Tests.csproj' -c Release -- "$studioRoot\artifacts\acceptance" --statistics --long
+            dotnet run --no-build --project '.\Tests\SoundstageIR.Tests.csproj' -c Release -- "$studioRoot\artifacts\acceptance" --statistics --long
             if($LASTEXITCODE -ne 0){throw 'Full validation failed'}
         }else{
             foreach($suite in @('final-presets','eq-strength-only','head-only','preset-only','shared-edit','release-only','energy-only','eq-accuracy')){
-                dotnet run --no-build --project '.\Tests\StatisticalField.Tests.csproj' -c Release -- "$studioRoot\artifacts\$suite" "--$suite"
+                dotnet run --no-build --project '.\Tests\SoundstageIR.Tests.csproj' -c Release -- "$studioRoot\artifacts\$suite" "--$suite"
                 if($LASTEXITCODE -ne 0){throw "Validation failed: $suite"}
             }
         }
     }
-    dotnet publish '.\App\StatisticalFieldStudio.csproj' -c Release -r win-x64 --self-contained true -o $OutputDirectory
+    dotnet publish '.\App\SoundstageIRGenerator.csproj' -c Release -r win-x64 --self-contained true -o $OutputDirectory
     if($LASTEXITCODE -ne 0){throw 'Publish failed'}
     # Retain notices from the exact runtime packs used by the self-contained build.
-    $deps=Get-Content -LiteralPath (Join-Path $OutputDirectory 'StatisticalFieldStudio.deps.json') -Raw | ConvertFrom-Json
+    $deps=Get-Content -LiteralPath (Join-Path $OutputDirectory 'SoundstageIRGenerator.deps.json') -Raw | ConvertFrom-Json
     $cache=$env:NUGET_PACKAGES
     if(-not $cache){$cache=Join-Path $env:USERPROFILE '.nuget\packages'}
     foreach($lib in $deps.libraries.PSObject.Properties.Name | Where-Object { $_ -like 'runtimepack.*' }){
@@ -56,7 +56,7 @@ try {
     # Keep user configuration and output files outside the distributable package.
     if($HeadlessChecks){
         $report=Join-Path $studioRoot 'artifacts\published-headless'
-        $process=Start-Process -FilePath (Join-Path $OutputDirectory 'StatisticalFieldStudio.exe') -ArgumentList @('--headless-check',('"'+$report+'"')) -WindowStyle Hidden -Wait -PassThru
+        $process=Start-Process -FilePath (Join-Path $OutputDirectory 'SoundstageIRGenerator.exe') -ArgumentList @('--headless-check',('"'+$report+'"')) -WindowStyle Hidden -Wait -PassThru
         if($process.ExitCode -ne 0){throw 'Published offscreen validation failed'}
     }
 }

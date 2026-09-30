@@ -13,7 +13,7 @@ Source: https://sofacoustics.org/data/database/tu-berlin/
 Files: FABIAN_HRIR_measured_HATO_0.sofa and
 FABIAN_CTF_measured_inverted_smoothed.sofa (2020-01-22).
 
-Modifications by Statistical Field Studio:
+Modifications by Soundstage IR Generator:
 - float32 embedded table; original SOFA sample timing and gain retained.
 - nearest directional sample on the original approximately 2-degree grid.
 - mirror-paired complex FIR averaging to enforce anatomical left/right symmetry;

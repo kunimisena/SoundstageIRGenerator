@@ -2,8 +2,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 using Microsoft.Win32;
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 public sealed partial class MainViewModel
 {
     string audioInput="";

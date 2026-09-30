@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-namespace StatisticalFieldStudio;
+namespace SoundstageIRGenerator;
 
 // Hidden HWND notifications + full client-tree resizing, not chart panning.
 internal static class ResizePreviewChecks

@@ -2,8 +2,8 @@ using System.IO;
 using System.Text.Json;
 using System.Windows.Input;
 using Microsoft.Win32;
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 
 public sealed partial class MainViewModel
 {

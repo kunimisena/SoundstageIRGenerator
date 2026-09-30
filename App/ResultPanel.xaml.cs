@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-namespace StatisticalFieldStudio;
+namespace SoundstageIRGenerator;
 public partial class ResultPanel:UserControl
 {
     MainViewModel? vm;

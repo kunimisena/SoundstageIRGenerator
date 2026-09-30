@@ -1,13 +1,13 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticalField.Core", "Core\StatisticalField.Core.csproj", "{962E9C72-B76C-4270-B5A7-95DE94BA8078}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundstageIR.Core", "Core\SoundstageIR.Core.csproj", "{962E9C72-B76C-4270-B5A7-95DE94BA8078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticalFieldStudio", "App\StatisticalFieldStudio.csproj", "{12881B36-A886-4BB9-98FA-F00DE394E0A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundstageIRGenerator", "App\SoundstageIRGenerator.csproj", "{12881B36-A886-4BB9-98FA-F00DE394E0A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticalField.Tests", "Tests\StatisticalField.Tests.csproj", "{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundstageIR.Tests", "Tests\SoundstageIR.Tests.csproj", "{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

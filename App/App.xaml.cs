@@ -1,5 +1,5 @@
-﻿using System.Windows;
-namespace StatisticalFieldStudio;
+using System.Windows;
+namespace SoundstageIRGenerator;
 public partial class App:Application
 {
     internal static string? TestRoot;

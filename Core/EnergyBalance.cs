@@ -1,4 +1,4 @@
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 // Reference: independent equal-power inputs, flat PSD over 20 Hz--20 kHz,
 // summed across both ears. Component energies exclude dry/wet cross terms.
 public static class EnergyBalance

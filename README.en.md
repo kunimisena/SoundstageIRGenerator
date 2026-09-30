@@ -1,8 +1,14 @@
-# Statistical Field Studio
+# Soundstage IR Generator
 
-[Download Windows x64](https://github.com/kunimisena/StatisticalFieldStudio/releases/latest)
+**Custom HRTF-based convolution kernels for headphone spatial audio**
 
-## Works well with Equalizer APO
+Design a headphone soundstage for stereo music and generate impulse responses (IRs) for convolution playback. Combine FABIAN head-related transfer functions (HRTFs), statistical reverberation and minimum-phase EQ, then export four-path WAV convolution kernels and Equalizer APO configurations.
+
+[Download Windows x64](https://github.com/kunimisena/SoundstageIRGenerator/releases/latest) · [简体中文](README.md) · [User guide](docs/en/guide.md) · [Design philosophy](docs/en/design.md) · [Build instructions](docs/en/development.md)
+
+An offline Windows tool for customizable binaural audio and virtual speaker playback over headphones. Start with Wide monitor, then shape reverb energy, spectrum, decay and direction. The application UI is Chinese; the guides are available in Chinese and English.
+
+![Headphone soundstage, HRTF and convolution response editing](docs/images/editor.png)
 
 ## Author’s foreword
 
@@ -55,16 +61,7 @@ Finally, please do not take everything the AI wrote in the documentation at face
 I asked the AI to check the project's open-source licensing. If there is any infringement, please let me know.
 <!-- AUTHOR_FOREWORD_END -->
 
-
-**Design a headphone sound field. Export the convolution. Keep your own headphone EQ.**
-
-[简体中文](README.md) · [User guide](docs/en/guide.md) · [Design philosophy](docs/en/design.md) · [Build & repository](docs/en/development.md)
-
-An offline Windows editor for stereo-to-binaural convolution kernels. Shape a field of virtual reflection directions, give each direction an energy spectrum and decay envelope, and render the direct speakers and reflections through a head model.
-
-The goal is enjoyable, spacious headphone stereo with flexible tuning. The editor combines authored statistical reverberation, measured FABIAN head responses and inspectable EQ, exporting ordinary WAV convolution files.
-
-![Preset editing and analysis](docs/images/editor.png)
+---
 
 ## What you can do
 
@@ -78,7 +75,7 @@ The goal is enjoyable, spacious headphone stereo with flexible tuning. The edito
 
 ## Start listening
 
-1. Open `StatisticalFieldStudio.exe` from the complete Windows x64 portable folder. The .NET runtime is included. **The UI is Chinese**; the English guide maps the controls.
+1. Open `SoundstageIRGenerator.exe` from the complete Windows x64 portable folder. The .NET runtime is included. **The UI is Chinese**; the English guide maps the controls.
 2. Click a template, set its initial parameters, then choose **确认** (Confirm) or **确认并生成卷积核** (Confirm and generate). Edit overall curves in the template dialog, then head and EQ controls in Configuration. Generate kernels beside the plot; import and export JSON configurations with the buttons to its right. Edit individual sources in a separate window.
 3. Select **导出与后处理** (Export & processing) for WAV, Equalizer APO or optional song rendering.
 4. Choose **导出配置…** (Export configuration) to save your settings. Changes require regeneration. Project, WAV, APO and song outputs carry the template name, with readable counters for collisions.
@@ -117,7 +114,7 @@ FABIAN supplies the measured head responses (CC BY 4.0). Brown–Duda supplies t
 
 ## Status and attribution
 
-Application version: **4.9.3**. [Build and validation record](docs/VALIDATION.md).
+Application version: **4.10.0**. [Build and validation record](docs/VALIDATION.md).
 
 Original code and documentation use the [MIT License](LICENSE): use, modify and redistribute them while retaining the copyright and license notice.
 

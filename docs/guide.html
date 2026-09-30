@@ -1,7 +1,8 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Statistical Field Studio · Guide</title><style>
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soundstage IR Generator · Guide</title><style>
 :root{color-scheme:light}body{margin:0;background:#f6f0e1;color:#39352d;font:16px/1.75 system-ui,"Microsoft YaHei",sans-serif}header{background:#eee7d8;padding:16px max(20px,calc((100vw - 1020px)/2));border-bottom:1px solid #324656}header b{letter-spacing:.12em;color:#426b71}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{padding:9px 16px;border:1px solid #405768;background:#e6decc;border-radius:5px;color:#39352d;cursor:pointer}button:hover{background:#dbe1d8}main{max-width:1020px;margin:auto;padding:24px}h1{font-size:30px}h2{margin-top:2em;color:#39352d}h3{color:#404040}a{color:#426b71}p{max-width:90ch}code,pre{font-family:Consolas,monospace;background:#eee7d8;border-radius:4px}code{padding:1px 4px}pre{padding:15px;overflow:auto;white-space:pre-wrap;font-size:14px}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td{padding:9px;border:1px solid #ddd}tr:first-child{background:#e6decc;font-weight:600}.bullet{margin:.4em 0}footer{padding:25px;color:#606060;border-top:1px solid #324656}article[hidden]{display:none}
-</style><header><b>STATISTICAL FIELD STUDIO</b><div>4.9.3 · 离线双语指南 / Offline bilingual guide</div><nav><button onclick="show('zh-guide')">使用指南</button><button onclick="show('zh-design')">设计哲学</button><button onclick="show('en-guide')">User guide</button><button onclick="show('en-design')">Design philosophy</button></nav></header><main><article id="zh-guide"><h1>使用与调音指南</h1>
+</style><header><b>SOUNDSTAGE IR GENERATOR</b><div>4.10.0 · 离线双语指南 / Offline bilingual guide</div><nav><button onclick="show('zh-guide')">使用指南</button><button onclick="show('zh-design')">设计哲学</button><button onclick="show('en-guide')">User guide</button><button onclick="show('en-design')">Design philosophy</button></nav></header><main><article id="zh-guide"><h1>耳机空间音效与 HRTF 卷积核使用指南</h1>
 <p>English · 回到首页</p>
+<p>Soundstage IR Generator 生成双耳空间音效的四路径脉冲响应（IR），供 Equalizer APO 或矩阵卷积器播放。HRTF（头相关传递函数）描述不同方向到两耳的响应，混响参数决定空间的湿度、频谱与拖尾。</p>
 <h2>三个页面</h2>
 <div class="table"><table>
 <tr><td>页面</td><td>用途</td></tr>
@@ -90,7 +91,7 @@
 <p>完整便携文件夹可复制；配置、卷积文件、APO 配置和处理后歌曲分别在 EXE 旁的 <code>projects/</code>、<code>exports/</code>、<code>EqualizerAPO/</code>、<code>processed-audio/</code>。放在有写权限的目录。发布包不包含别人的个人数据；不要直接把自己使用过的整个文件夹上传 GitHub。</p></article><article id="zh-design" hidden><h1>设计哲学与信号模型</h1>
 <p>English · 首页</p>
 <h2>以听感和调校为中心</h2>
-<p>Statistical Field Studio 用可编辑的声场，为耳机中的音乐增加空间。能量频谱、衰减时间和方向分布对应具体可听的变化；保存参数和随机种子，让调校可以重现、比较和分享。</p>
+<p>Soundstage IR Generator 用可编辑的声场，为耳机中的音乐增加空间。能量频谱、衰减时间和方向分布对应具体可听的变化；保存参数和随机种子，让调校可以重现、比较和分享。</p>
 <p>我们以头部周围的一组等效入射方向描述反射声场。每个方向都有自己的统计核，经过头部遮挡、时差、耳廓和肩胸部响应，汇成两耳输出。六到十二个方向提供了实用的调音空间，少量不同的方向、频谱和时间结构就能产生丰富变化。</p>
 <p><strong>研究约束统计特征，听感决定具体调校。</strong> 宽尺度频谱和衰减曲线规定整体颜色与拖尾；因果随机核提供细密的时频结构。预设是这一模型下的人工调音起点，便于从干净监听逐步探索包围感与长尾。</p>
 <p>我们把声场当作可以设计的听音条件：通过分散的时间细节与人头方向线索打开空间，并自由选择反射的颜色与拖尾。平滑音色校正也是设计的一部分。最小相位 EQ 调整宽尺度频谱平衡，统计尾部仍以完整脉冲响应参与卷积，校正强度由听感决定。</p>
@@ -124,8 +125,9 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 <p>控制室参考控制室对照试听中清晰、克制的特征来调配：直达声占主导，早段较快下降，接一段更轻的短尾；反射频谱和衰减时间向高频逐渐降低。0.22 s 尾长尺度、5% 混响比例是人工调音选择。八个镜像方向有适度的电平和时间差别。完整包络在归一化坐标 −1、0、0.08、0.35、1 处分别取 −2、−6、−20、−36、−60 dB，使早段快速下降与低电平残余尾部分开。实际输出另行分析，区分参考尺度与测量结果。</p>
 <p>自由场去掉统计反射贡献，保留两只经人头滤波的音箱。共同频响去除、EQ 和输出带限与其他模板使用同一条处理链。</p>
 <h2>研究来源</h2>
-<p><a href="https://mcdermottlab.mit.edu/papers/Traer_McDermott_2016_reverberation.pdf">Traer 与 McDermott (2016)</a>研究自然混响的统计特征与感知作用，为频率相关衰减提供背景。<a href="https://doi.org/10.14279/depositonce-5718.4">FABIAN 数据与论文</a>提供方向响应。统计合成、人工预设和可调 EQ 构成本项目的声场设计方法。</p></article><article id="en-guide" hidden><h1>User and tuning guide</h1>
+<p><a href="https://mcdermottlab.mit.edu/papers/Traer_McDermott_2016_reverberation.pdf">Traer 与 McDermott (2016)</a>研究自然混响的统计特征与感知作用，为频率相关衰减提供背景。<a href="https://doi.org/10.14279/depositonce-5718.4">FABIAN 数据与论文</a>提供方向响应。统计合成、人工预设和可调 EQ 构成本项目的声场设计方法。</p></article><article id="en-guide" hidden><h1>Headphone spatial audio and HRTF convolution guide</h1>
 <p>简体中文 · Home</p>
+<p>Soundstage IR Generator creates four-path binaural impulse responses (IRs) for Equalizer APO or matrix convolution. Head-related transfer functions (HRTFs) describe directional responses at both ears; reverb controls shape ambience, spectrum and decay.</p>
 <h2>Three pages</h2>
 <div class="table"><table>
 <tr><td>Page</td><td>Purpose</td></tr>
@@ -214,7 +216,7 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 <p>Keep the complete application folder in a writable location. Configurations, kernels, APO configurations and processed songs live beside the EXE in <code>projects/</code>, <code>exports/</code>, <code>EqualizerAPO/</code> and <code>processed-audio/</code>. Clean distribution archives exclude personal data. Do not upload an entire used application folder as a public release.</p></article><article id="en-design" hidden><h1>Design philosophy and signal model</h1>
 <p>简体中文 · Home</p>
 <h2>Listening and tuning come first</h2>
-<p>Statistical Field Studio adds space to headphone music through an editable sound field. Energy spectra, decay times and directional distributions correspond to audible changes. Saved parameters and random seeds make tuning reproducible and shareable.</p>
+<p>Soundstage IR Generator adds space to headphone music through an editable sound field. Energy spectra, decay times and directional distributions correspond to audible changes. Saved parameters and random seeds make tuning reproducible and shareable.</p>
 <p>A set of equivalent arrival directions around the head describes the reflected field. Each direction has a statistical kernel, rendered through head shadow, interaural timing, pinnae and torso responses. Six to twelve directions provide a practical editing space: a few distinct spectral and temporal profiles offer considerable variety.</p>
 <p><strong>Research constrains the statistics; listening guides the settings.</strong> Broad spectra and decay curves set the overall color and tail, while causal random kernels supply fine temporal and spectral detail. The authored presets offer starting points from compact monitoring to enveloping, long-tailed fields.</p>
 <p>The field is authored for headphone listening: diffuse temporal detail and directional head cues can be tuned without prescribing a wall layout or particular loudspeaker. Broad tonal correction is part of that design. Minimum-phase EQ adjusts the smoothed spectral balance while preserving the statistical tail as a full impulse response; its strength remains a listening choice.</p>

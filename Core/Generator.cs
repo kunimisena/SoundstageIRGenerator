@@ -1,5 +1,5 @@
 using System.Numerics;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public readonly record struct HeadFilter(double B0,double B1,double A1,double Delay);
 public static class HeadModel
 {

@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-namespace StatisticalFieldStudio;
+namespace SoundstageIRGenerator;
 
 // During a native window size/move loop, retain the whole page at its previous
 // layout size and scale its cached surface. Release schedules one normal reflow.

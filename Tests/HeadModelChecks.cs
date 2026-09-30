@@ -1,5 +1,5 @@
 using System.Numerics;
-using StatisticalField.Core;
+using SoundstageIR.Core;
 
 public static class HeadModelChecks
 {

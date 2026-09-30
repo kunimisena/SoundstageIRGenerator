@@ -1,4 +1,4 @@
-using StatisticalField.Core;
+using SoundstageIR.Core;
 using System.Numerics;
 using System.Diagnostics;
 int passed=0;void Check(bool c,string text){if(!c)throw new Exception("FAIL "+text);passed++;Console.WriteLine("PASS "+text);}

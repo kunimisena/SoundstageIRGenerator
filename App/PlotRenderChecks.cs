@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
-namespace StatisticalFieldStudio;
+namespace SoundstageIRGenerator;
 
 // Records real WPF drawing commands offscreen. No visible window or mouse input.
 internal static class PlotRenderChecks

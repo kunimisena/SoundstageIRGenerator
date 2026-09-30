@@ -1,5 +1,5 @@
 using System.Text;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public static class ApoExporter
 {
     public static string Export(GenerationResult result,string executableDirectory)
@@ -11,7 +11,7 @@ public static class ApoExporter
     }
     public static void WriteConfig(GenerationResult result,string path)
     {
-        var config=new StringBuilder("# Statistical Field Studio — 四路径双耳卷积\n# 配置使用绝对路径，更换位置后请重新导出。\n# 设备采样率须与 WAV 一致："+result.Project.SampleRate+" Hz\nCopy: LL=L LR=L RL=R RR=R\n");
+        var config=new StringBuilder("# Soundstage IR Generator — 四路径双耳卷积\n# 配置使用绝对路径，更换位置后请重新导出。\n# 设备采样率须与 WAV 一致："+result.Project.SampleRate+" Hz\nCopy: LL=L LR=L RL=R RR=R\n");
         int[] routes=[0,2,1,3];string[] channels=["LL","LR","RL","RR"];
         for(int i=0;i<4;i++)
         {

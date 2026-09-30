@@ -2,8 +2,8 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 internal static class Paint
 {
     [ThreadStatic] public static double PixelsPerDip;

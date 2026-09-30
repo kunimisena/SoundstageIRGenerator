@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 
 public sealed class Knot
 {

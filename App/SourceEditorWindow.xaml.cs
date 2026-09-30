@@ -5,8 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Threading;
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 public partial class SourceEditorWindow:Window
 {
     public MainViewModel VM {get;}

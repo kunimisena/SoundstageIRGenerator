@@ -1,4 +1,4 @@
-<UserControl x:Class="StatisticalFieldStudio.ResultPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:StatisticalFieldStudio">
+<UserControl x:Class="SoundstageIRGenerator.ResultPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:SoundstageIRGenerator">
  <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
   <StackPanel><WrapPanel><TextBlock Text="卷积结果" FontSize="18" FontWeight="SemiBold" Margin="0,0,12,4"/><TextBlock Text="{Binding ResultState}" Margin="0,4"/></WrapPanel>
    <Grid x:Name="GenerationSettings" IsEnabled="{Binding Ready}">

@@ -1,6 +1,8 @@
-# User and tuning guide
+# Headphone spatial audio and HRTF convolution guide
 
 [简体中文](../zh-CN/guide.md) · [Home](../../README.en.md)
+
+Soundstage IR Generator creates four-path binaural impulse responses (IRs) for Equalizer APO or matrix convolution. Head-related transfer functions (HRTFs) describe directional responses at both ears; reverb controls shape ambience, spectrum and decay.
 
 ## Three pages
 

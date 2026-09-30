@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public static class OutputNames
 {
     static readonly object Gate=new();

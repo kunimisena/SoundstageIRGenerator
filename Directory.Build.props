@@ -1,1 +1,13 @@
-<Project><PropertyGroup><Version>4.9.3</Version><Deterministic>true</Deterministic></PropertyGroup></Project>
+<Project>
+  <PropertyGroup>
+    <Version>4.10.0</Version>
+    <Deterministic>true</Deterministic>
+    <Product>Soundstage IR Generator</Product>
+    <AssemblyTitle>Soundstage IR Generator</AssemblyTitle>
+    <Authors>kunimisena</Authors>
+    <Description>Custom HRTF-based convolution kernels for headphone spatial audio. WAV and Equalizer APO export.</Description>
+    <Copyright>Copyright (c) 2026 kunimisena</Copyright>
+    <RepositoryUrl>https://github.com/kunimisena/SoundstageIRGenerator</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>

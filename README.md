@@ -1,8 +1,15 @@
-# Statistical Field Studio · 统计声场编辑器
+# Soundstage IR Generator
 
-[下载 Windows x64](https://github.com/kunimisena/StatisticalFieldStudio/releases/latest)
+**耳机空间音效与 HRTF 卷积核生成器**
 
-## 配合Equalizer APO 使用更佳！
+为双声道音乐设计可调的耳机声场，生成用于卷积播放的脉冲响应（IR）。结合 FABIAN 头相关传递函数（HRTF）、统计混响和最小相位 EQ，调整空间感与音色，导出四路径 WAV 卷积核及 Equalizer APO 配置。
+
+[下载 Windows x64](https://github.com/kunimisena/SoundstageIRGenerator/releases/latest) · [English](README.en.md) · [使用指南](docs/zh-CN/guide.md) · [设计哲学](docs/zh-CN/design.md) · [构建说明](docs/zh-CN/development.md)
+
+Windows 离线工具，配合 Equalizer APO 使用。可以从“宽阔监听”开始，调节混响能量、频谱、衰减与方向分布，生成自己的双耳空间音效。
+
+![耳机声场、HRTF 与卷积核频响编辑](docs/images/editor.png)
+
 ## 作者前言
 
 <!-- AUTHOR_FOREWORD_START -->
@@ -58,16 +65,6 @@
 
 ---
 
-**给耳机设计一个喜欢的声场，导出卷积核，继续使用自己的耳机 EQ。**
-
-[English](README.en.md) · [使用指南](docs/zh-CN/guide.md) · [设计哲学](docs/zh-CN/design.md) · [构建与仓库](docs/zh-CN/development.md)
-
-这是一个 Windows 离线双耳卷积核编辑器。你可以在头部周围布置虚拟反射方向，为每个方向设计能量频谱和衰减包络，再让音箱直达声和反射声一起经过人头模型。
-
-目标是让耳机立体声更舒展、更好听，并提供自由调校。编辑器组合可调的统计混响、FABIAN 人头响应和可检查的 EQ，输出普通 WAV 卷积文件。
-
-![预设编辑与分析](docs/images/editor.png)
-
 ## 能做什么
 
 - 十套声场模板加空白模板；启动时选择宽阔监听。配置可通过 JSON 文件保存和载入。
@@ -80,7 +77,7 @@
 
 ## 开始听
 
-1. 从完整 Windows x64 便携文件夹打开 `StatisticalFieldStudio.exe`，无需另外安装 .NET。界面为中文，文档提供中英两版。
+1. 从完整 Windows x64 便携文件夹打开 `SoundstageIRGenerator.exe`，无需另外安装 .NET。界面为中文，文档提供中英两版。
 2. 点击模板，在弹窗中调整起始参数，选择“确认”或“确认并生成卷积核”。整体曲线在模板窗口编辑；配置页调整人头与 EQ，图表旁生成卷积核，右侧按钮导入或导出 JSON 配置。逐源细调使用独立窗口。
 3. 点击“导出与后处理”，导出 WAV、Equalizer APO 配置，或处理歌曲。
 4. 通过“导出配置…”保存调好的参数；修改参数后需要重新生成。项目、WAV、APO 和歌曲输出都带模板名称，重名时用序号区分。
@@ -121,7 +118,7 @@ FABIAN 提供实测人头响应，采用 CC BY 4.0；球形头参考 Brown–Dud
 
 ## 状态与致谢
 
-程序版本：**4.9.3**。[构建与验收记录](docs/VALIDATION.md)。
+程序版本：**4.10.0**。[构建与验收记录](docs/VALIDATION.md)。
 
 项目自有代码与文档采用 [MIT 许可证](LICENSE)：允许使用、修改和再分发，保留版权与许可声明即可。
 

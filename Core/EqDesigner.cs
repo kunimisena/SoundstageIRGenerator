@@ -1,5 +1,5 @@
 using System.Numerics;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public sealed record EqReport(string Stage,double MaximumBoostDb,double MaximumCutDb,double RelativeBoostDb,double RelativeCutDb,double BoostHz,double CutHz,int Taps,double DesignErrorDb,double ResponseResidualDb);
 public sealed record EqDesign(double[] Impulse,EqReport Report);
 public static class EqDesigner

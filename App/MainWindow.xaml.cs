@@ -1,7 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-namespace StatisticalFieldStudio;
+namespace SoundstageIRGenerator;
 public partial class MainWindow:Window
 {
     public MainViewModel VM {get;}=new();

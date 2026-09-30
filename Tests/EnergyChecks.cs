@@ -1,4 +1,4 @@
-using StatisticalField.Core;
+using SoundstageIR.Core;
 using System.Globalization;
 public static class EnergyChecks
 {

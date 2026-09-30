@@ -1,4 +1,4 @@
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 
 public sealed record AudioTools(string Ffmpeg,string Ffprobe);
 public static partial class AudioRenderer

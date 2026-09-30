@@ -1,5 +1,5 @@
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 // One cache per project result, shared by the main view and the source editor.
 // Layout, focus and property notifications reuse completed analysis; FFT work is serialized.
 public sealed class AnalysisCache

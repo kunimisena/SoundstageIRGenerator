@@ -1,5 +1,5 @@
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 public sealed class EnvelopeRow(Excitation excitation,Knot knot)
 {
     public double X

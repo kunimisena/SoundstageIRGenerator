@@ -1,7 +1,7 @@
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public static class Dsp
 {
     public static int Pow2(int n){if(n<1||n>0x40000000)throw new ArgumentOutOfRangeException(nameof(n),"FFT 长度超出平台容量。");int p=1;while(p<n)p<<=1;return p;}

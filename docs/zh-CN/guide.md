@@ -1,6 +1,8 @@
-# 使用与调音指南
+# 耳机空间音效与 HRTF 卷积核使用指南
 
 [English](../en/guide.md) · [回到首页](../../README.md)
+
+Soundstage IR Generator 生成双耳空间音效的四路径脉冲响应（IR），供 Equalizer APO 或矩阵卷积器播放。HRTF（头相关传递函数）描述不同方向到两耳的响应，混响参数决定空间的湿度、频谱与拖尾。
 
 ## 三个页面
 

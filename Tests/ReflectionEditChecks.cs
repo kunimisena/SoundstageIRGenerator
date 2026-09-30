@@ -1,4 +1,4 @@
-using StatisticalField.Core;
+using SoundstageIR.Core;
 public static class ReflectionEditChecks
 {
     public static void Run(Action<bool,string> check,string folder)

@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 
 public enum HeadModelKind { Sphere, Fabian }
 
@@ -45,7 +45,7 @@ public static class FabianData
     public static int DirectionCount => database.Value.Directions.Length;
     static Data Read()
     {
-        using var stream = typeof(FabianData).Assembly.GetManifestResourceStream("StatisticalField.Core.FABIAN.bin")
+        using var stream = typeof(FabianData).Assembly.GetManifestResourceStream("SoundstageIR.Core.FABIAN.bin")
             ?? throw new InvalidDataException("缺少内置 FABIAN 数据，请重新复制完整发布程序。");
         using var reader = new BinaryReader(stream);
         if (new string(reader.ReadChars(8)) != "SFSHRTF1") throw new InvalidDataException("FABIAN 数据格式不匹配。");

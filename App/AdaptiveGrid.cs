@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-namespace StatisticalFieldStudio;
+namespace SoundstageIRGenerator;
 // Reflows complete editor groups rather than scaling their fonts and hit targets.
 public sealed class AdaptiveGrid:Panel
 {

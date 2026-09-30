@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 
 public sealed class ActionCommand(Action<object?> action, Func<bool>? can=null):ICommand
 {

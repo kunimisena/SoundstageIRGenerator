@@ -1,6 +1,6 @@
 using System.Numerics;
-using StatisticalField.Core;
-namespace StatisticalFieldStudio;
+using SoundstageIR.Core;
+namespace SoundstageIRGenerator;
 public static class Analysis
 {
     static readonly string[] Colors=["#52DBBF","#EAB66E","#7BAAFF","#D9A4ED","#FFFFFF","#EF8596"];

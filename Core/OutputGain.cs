@@ -1,4 +1,4 @@
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public readonly record struct OutputGainReport(double CommonGainDb,double FinalPeakDb,double SamplePeakBoundDb);
 public static class OutputGain
 {

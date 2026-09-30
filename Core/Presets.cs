@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public enum Distribution { Ring, Sphere, Hemisphere, Front, Pair }
 public sealed class PresetOptions
 {
@@ -118,7 +118,7 @@ public static class Presets
         new("紧凑监听","宽频短尾，平坦低中频、柔和高频滚降；轻量近场起点。",6,Distribution.Ring,.20,.35,.8,8,3)
             {Spectrum=[0,0,0,0,-1.5,-5,-13],Tail=[1,1,1,1,.85,.65,.4]},
         new("宽阔监听","（推荐）轻量混响、柔和反射起点与舒展尾部，适合日常听音乐。",8,Distribution.Ring,.78,.28,1.25,8,5)
-            {BaselineResource="StatisticalField.Core.WideMonitor.json",AirAbsorptionDefault=true,
+            {BaselineResource="SoundstageIR.Core.WideMonitor.json",AirAbsorptionDefault=true,
              Spectrum=[0,0,0,-.5,-2.5,-7,-16],Tail=[1.05,1.05,1.03,1,.9,.72,.45]},
         new("前向空间","近乎平坦的宽频短反射，少量前向空间；高频轻吸收。",6,Distribution.Front,.24,.3,.7,9,3)
             {Spectrum=[0,0,0,0,-.5,-2.5,-8],Tail=[1,1,1,1,.95,.8,.55]},

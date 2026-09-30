@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-namespace StatisticalFieldStudio;
+namespace SoundstageIRGenerator;
 internal static class EditorInput
 {
     public static void Update(TextBox box)

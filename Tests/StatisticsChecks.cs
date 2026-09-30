@@ -1,5 +1,5 @@
 using System.Numerics;
-using StatisticalField.Core;
+using SoundstageIR.Core;
 public static class StatisticsChecks
 {
     public static void Run(Action<bool,string> check,string folder)

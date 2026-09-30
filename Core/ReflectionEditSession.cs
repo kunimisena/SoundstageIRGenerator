@@ -1,4 +1,4 @@
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 
 /// <summary>Atomic, relative edits to an explicit source set; no persistent DSP layer.</summary>
 public sealed class ReflectionEditSession

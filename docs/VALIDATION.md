@@ -1,6 +1,10 @@
-# Release validation / 发布验收 — 4.9.3
+# Release validation / 发布验收 — 4.10.0
 
 2026-10-01 · Windows x64 · .NET 8
+
+Product, executable, assemblies, solution, export labels and publication materials use **Soundstage IR Generator**. This release changes naming and documentation; DSP and preset parameters are preserved.
+
+本版统一软件名、EXE、工程、导出说明和发布材料，并补充耳机空间音效、HRTF 与 IR 卷积核的用途介绍。
 
 Release build and self-contained publish completed with **zero warnings and errors**. The following checks were run for the public release:
 
@@ -16,6 +20,11 @@ Release build and self-contained publish completed with **zero warnings and erro
 | EQ accuracy / EQ 精度 | 50 |
 | **Core total / 核心合计** | **553** |
 | Published WPF offscreen checks / 发布程序离屏检查 | **171** |
+| Additional release suite with pre-rename baseline / 含改名前基准的额外发布检查 | 23 |
+
+Wide monitor WAV samples are **bit-identical** to the previous published version. Both author forewords and the recommended preset data are unchanged.
+
+宽阔监听导出样本与改名前发布版逐样本完全一致；中英文作者前言和推荐模板原始参数保持不变。
 
 Core checks cover reproducibility, preset parameters, head filtering, EQ strength, energy normalization, adaptive EQ support, WAV routing and configuration round trips. The actual generated kernels are checked. The head table SHA-256 matches `Core/Data/FABIAN-manifest.json`.
 
@@ -23,9 +32,9 @@ Offscreen checks cover the template/configuration/export workflow, numeric editi
 
 本次发布完成 553 项核心检查、171 项发布程序离屏检查，构建零警告、零错误。宽阔监听参数和声学算法未改动。检查实际生成的核，覆盖能量归一化、EQ、路由、命名、参数保存重开以及多种尺寸和 DPI 布局。
 
-Interactive desktop operation and listening are assessed separately by users. Song rendering was not rerun in this cleanup/documentation release; it requires a separately selected FFmpeg build with libsoxr and adjacent ffprobe. The distribution includes no FFmpeg binaries.
+Interactive desktop operation and listening are assessed separately by users. Song rendering was not rerun in this renaming/documentation release; it requires a separately selected FFmpeg build with libsoxr and adjacent ffprobe. The distribution includes no FFmpeg binaries.
 
-本轮清理与文档发布未重跑歌曲处理；该功能使用单独配置的 FFmpeg。实际桌面交互与试听由用户验收。
+本轮改名与文档发布未重跑歌曲处理；该功能使用单独配置的 FFmpeg。实际桌面交互与试听由用户验收。
 
 ## Reproduce / 复现
 

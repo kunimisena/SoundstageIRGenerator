@@ -1,6 +1,6 @@
 using System.Numerics;
 using System.Text.Json.Nodes;
-using StatisticalField.Core;
+using SoundstageIR.Core;
 public static class EqStrengthChecks
 {
     static Complex At(double[] h,double f,int sr){Complex z=0;for(int i=0;i<h.Length;i++)z+=h[i]*Complex.FromPolarCoordinates(1,-2*Math.PI*f*i/sr);return z;}

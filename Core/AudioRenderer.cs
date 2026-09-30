@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 
 public enum AudioFormat { Wav, Flac, Aac }
 public enum AudioLevelMode { NormalizeLoudness, LimitOnly, Bypass }

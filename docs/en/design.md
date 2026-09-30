@@ -4,7 +4,7 @@
 
 ## Listening and tuning come first
 
-Statistical Field Studio adds space to headphone music through an editable sound field. Energy spectra, decay times and directional distributions correspond to audible changes. Saved parameters and random seeds make tuning reproducible and shareable.
+Soundstage IR Generator adds space to headphone music through an editable sound field. Energy spectra, decay times and directional distributions correspond to audible changes. Saved parameters and random seeds make tuning reproducible and shareable.
 
 A set of equivalent arrival directions around the head describes the reflected field. Each direction has a statistical kernel, rendered through head shadow, interaural timing, pinnae and torso responses. Six to twelve directions provide a practical editing space: a few distinct spectral and temporal profiles offer considerable variety.
 

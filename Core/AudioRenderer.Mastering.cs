@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Globalization;
-namespace StatisticalField.Core;
+namespace SoundstageIR.Core;
 public static partial class AudioRenderer
 {
     // Scan only: the loudnorm output is discarded; normalization is a separate static-gain pass.

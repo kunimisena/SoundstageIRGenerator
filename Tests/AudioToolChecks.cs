@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-using StatisticalField.Core;
+using SoundstageIR.Core;
 public static class AudioToolChecks
 {
     public static async Task Run(Action<bool,string> check,string folder,string? ffmpeg)
