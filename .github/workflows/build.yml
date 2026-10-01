@@ -3,6 +3,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: Publish the current stable version after checks pass
+        type: boolean
+        default: true
 permissions:
   contents: read
 concurrency:
@@ -33,7 +38,7 @@ jobs:
           "Core validation: $count assertions passed." >> $env:GITHUB_STEP_SUMMARY
   release:
     needs: windows
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish_release))
     runs-on: windows-latest
     timeout-minutes: 30
     permissions:
@@ -45,13 +50,15 @@ jobs:
       - name: Check versioned release request
         id: request
         shell: pwsh
+        env:
+          MANUAL_RELEASE: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release }}
         run: |
           $ErrorActionPreference = 'Stop'
           $changed = @(git diff --name-only HEAD^ HEAD)
           if ($LASTEXITCODE -ne 0) { throw 'Cannot compare release version' }
           [xml]$props = Get-Content Directory.Build.props
           $version = [string]$props.Project.PropertyGroup.Version
-          if (($changed -contains 'Directory.Build.props') -and $version -match '^\d+\.\d+\.\d+$' -and (Test-Path "docs/releases/$version.md")) {
+          if ((($changed -contains 'Directory.Build.props') -or $env:MANUAL_RELEASE -eq 'true') -and $version -match '^\d+\.\d+\.\d+$' -and (Test-Path "docs/releases/$version.md")) {
             "version=$version" >> $env:GITHUB_OUTPUT
             'publish=true' >> $env:GITHUB_OUTPUT
           }
