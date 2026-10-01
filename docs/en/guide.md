@@ -10,7 +10,7 @@ Soundstage IR Generator creates a four-path convolution matrix for headphone pla
 
 Extract the complete Windows portable folder into a writable location and run `SoundstageIRGenerator.exe`. The download includes the .NET runtime. Kernel generation and WAV/APO export are ready to use; song rendering additionally uses FFmpeg.
 
-Choose **English** at the top right. On first launch, Chinese systems use Simplified Chinese and other systems use English. The saved choice in `settings/language.json` is used thereafter. Switching language updates pages, template descriptions, plots and result details while preserving parameters and generated kernels. The selector is temporarily disabled while processing.
+Choose **English** at the top right. Without a saved manual preference, startup follows the system UI language: Simplified Chinese on Chinese systems and English on other systems. Manual changes are saved in `settings/language.json` and take priority on later launches; simply opening the application does not save a language preference. Switching language updates pages, template descriptions, plots and result details while preserving parameters and generated kernels. The selector is temporarily disabled while processing.
 
 User-defined configuration names, source names and paths stay as written. Built-in templates created in English receive English default names. A configuration JSON works in either language, so an imported project can retain Chinese names in the English interface.
 

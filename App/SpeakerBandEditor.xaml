@@ -1,0 +1,17 @@
+<UserControl x:Class="SoundstageIRGenerator.SpeakerBandEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:SoundstageIRGenerator">
+ <GroupBox Header="{DynamicResource Speaker.Bands}" IsEnabled="{Binding Ready}"><StackPanel>
+  <TextBlock Text="{DynamicResource Speaker.UserHeadInverseHint}" Style="{StaticResource Hint}"/>
+  <TextBlock Text="{DynamicResource Speaker.Inverse}"/><TextBox Text="{Binding Speaker.MaximumInverseGainDb,ValidatesOnExceptions=True}" LostFocus="Edited"/>
+  <TextBlock Text="{DynamicResource Speaker.InverseHint}" Style="{StaticResource Hint}"/>
+  <UniformGrid Columns="2">
+   <StackPanel Margin="0,0,10,0"><TextBlock Text="{DynamicResource Speaker.BandLow}"/><TextBox x:Name="Low" Text="{Binding Speaker.InverseLowHz,ValidatesOnExceptions=True}" LostFocus="Edited"/><Slider x:Name="LowSlider" Minimum="0" Maximum="3" SmallChange="0.01" LargeChange="0.1" ValueChanged="CrossoverMoved" Thumb.DragStarted="CrossoverStarted" Thumb.DragCompleted="CrossoverCompleted" LostFocus="Edited" Margin="0,0,8,8" ToolTip="{Binding Text,ElementName=Low}" AutomationProperties.Name="{DynamicResource Speaker.BandLow}"/></StackPanel>
+   <StackPanel><TextBlock Text="{DynamicResource Speaker.BandHigh}"/><TextBox x:Name="High" Text="{Binding Speaker.InverseHighHz,ValidatesOnExceptions=True}" LostFocus="Edited"/><Slider x:Name="HighSlider" Minimum="0" Maximum="3" SmallChange="0.01" LargeChange="0.1" ValueChanged="CrossoverMoved" Thumb.DragStarted="CrossoverStarted" Thumb.DragCompleted="CrossoverCompleted" LostFocus="Edited" Margin="0,0,8,8" ToolTip="{Binding Text,ElementName=High}" AutomationProperties.Name="{DynamicResource Speaker.BandHigh}"/></StackPanel>
+  </UniformGrid>
+  <TextBlock Text="{DynamicResource Speaker.BandHint}" Style="{StaticResource Hint}"/>
+  <TextBlock Text="{DynamicResource Speaker.BandEnergy}" Style="{StaticResource Heading}"/>
+  <local:CurveEditor x:Name="Energy" Height="175"/>
+  <TextBlock Text="{DynamicResource Speaker.BandDecay}" Style="{StaticResource Heading}"/>
+  <local:CurveEditor x:Name="Decay" Height="175"/>
+  <TextBlock Text="{DynamicResource Speaker.BandCurveHint}" Style="{StaticResource Hint}"/>
+ </StackPanel></GroupBox>
+</UserControl>

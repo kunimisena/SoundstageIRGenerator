@@ -24,7 +24,7 @@ public static class SpeakerRiskCheck
         var probes=directions.Select(v=>new[]{Probe(v.Az,v.El,0),Probe(v.Az,v.El,1)}).ToArray();
         for(int k=0;k<Frequencies.Length;k++)
         {
-            ct.ThrowIfCancellationRequested();var a=g[0][k];var b=g[1][k];var c=g[2][k];var d=g[3][k];var det=a*d-b*c;
+            ct.ThrowIfCancellationRequested();if(p.BandLimited&&SpeakerBands.Weights(Frequencies[k],p.Field.SampleRate,p.InverseLowHz,p.InverseHighHz).Mid.Magnitude<.5)continue;var a=g[0][k];var b=g[1][k];var c=g[2][k];var d=g[3][k];var det=a*d-b*c;
             double norm=(Dsp.Power(a)+Dsp.Power(b)+Dsp.Power(c)+Dsp.Power(d))*.5;
             foreach(var probe in probes)
             {

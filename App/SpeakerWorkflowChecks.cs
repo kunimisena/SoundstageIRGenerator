@@ -54,7 +54,74 @@ public partial class MainWindow
         if(VM.SpatialSpeaker)
         {
             Check(SettingsBody.Children.IndexOf(ActualSpeakerControls)<SettingsBody.Children.IndexOf(DirectControls)&&SettingsBody.Children.IndexOf(DirectControls)<SettingsBody.Children.IndexOf(HeadControls),"Actual then virtual then head configuration order");
+            Check(SettingsBody.Children.IndexOf(SpeakerBands)==SettingsBody.Children.IndexOf(HeadControls)+1,"Listener-head inverse is directly below head settings");
+            Check(!Descendants<TextBox>(ActualSpeakerControls).Any(b=>b.GetBindingExpression(TextBox.TextProperty)?.ParentBinding.Path.Path=="Speaker.MaximumInverseGainDb")&&Descendants<TextBox>(SpeakerBands).Any(b=>b.GetBindingExpression(TextBox.TextProperty)?.ParentBinding.Path.Path=="Speaker.MaximumInverseGainDb"),"Inverse gain belongs to the listener-head inverse panel");
             Check(VM.Speaker!.AirAbsorption,"Actual-speaker air starts enabled");
+            Check(VM.Speaker!.InverseLowHz==200&&VM.Speaker.InverseHighHz==10000,"Default inverse crossovers");
+            var energy=(CurveEditor)SpeakerBands.FindName("Energy");var decay=(CurveEditor)SpeakerBands.FindName("Decay");
+            Check(!energy.CanEditAt(1000)&&energy.CanEditAt(80)&&energy.CanEditAt(20000),"Energy editor locks only the inverse band");
+            Check(!decay.CanEditAt(1000)&&decay.CanEditAt(80),"Decay editor shares locked region");
+            Check(energy.Points!.All(k=>k.X<=200||k.X>=10000)&&decay.Points!.All(k=>k.X<=200||k.X>=10000),"Editors contain no hidden middle-band knots");
+            Check(double.IsNaN(energy.ValueAt(1000))&&double.IsNaN(decay.ValueAt(1000)),"No middle-band curve is interpolated");
+            Check(energy.CanEditAt(200)&&energy.CanEditAt(10000),"Crossover endpoint values remain editable");
+            double lowDecay=decay.ValueAt(100);var highDecayPoint=decay.Points!.Last();double highDecayBefore=highDecayPoint.Y;highDecayPoint.Y*=2;
+            Check(decay.ValueAt(100)==lowDecay,"High-side decay edit cannot bend the low-side interpolation");highDecayPoint.Y=highDecayBefore;
+            var lowSlider=(Slider)SpeakerBands.FindName("LowSlider");var highSlider=(Slider)SpeakerBands.FindName("HighSlider");var lowBox=(TextBox)SpeakerBands.FindName("Low");
+            lowSlider.RaiseEvent(new System.Windows.Controls.Primitives.DragStartedEventArgs(0,0){RoutedEvent=System.Windows.Controls.Primitives.Thumb.DragStartedEvent});
+            lowSlider.Value=Math.Log10(400d/20);
+            Check(lowBox.Text=="400"&&energy.LockedMinX==400&&VM.Speaker.InverseLowHz==200,"Drag previews frequency and grey range without repeatedly committing the model");
+            lowSlider.RaiseEvent(new System.Windows.Controls.Primitives.DragCompletedEventArgs(0,0,false){RoutedEvent=System.Windows.Controls.Primitives.Thumb.DragCompletedEvent});
+            Check(VM.Speaker.InverseLowHz==400,"Slider release commits frequency");Check(VM.Speaker.OutsideParameters().Low.Decay.Last().X==400&&decay.Points!.All(k=>k.X<=400||k.X>=10000),"Slider moves the actual curve boundary without adding middle knots");VM.Undo();Check(VM.Speaker.InverseLowHz==200,"One undo restores the whole slider drag");VM.Redo();Check(VM.Speaker.InverseLowHz==400,"Slider redo restores frequency");VM.Undo();
+            lowSlider.Value=0;highSlider.Value=3;Check(VM.Speaker.InverseLowHz==20&&VM.Speaker.InverseHighHz==20000,"Sliders can select exact full-band endpoints");VM.Undo();VM.Undo();
+            lowBox.Text="200.125";lowBox.RaiseEvent(new RoutedEventArgs(UIElement.LostFocusEvent));
+            Check(VM.Speaker.InverseLowHz==200.125&&Math.Abs(lowSlider.Value-Math.Log10(200.125/20))<1e-12,"Typed precision is retained and slider follows it");VM.Undo();
+            lowSlider.Value=3;Check(VM.Speaker.InverseLowHz<VM.Speaker.InverseHighHz,"Dragging a crossover cannot cross the other one");VM.Undo();
+            double originalEnergy=VM.Speaker.OutsideParameters().Low.Energy[0].Y;
+            energy.Points![0].Y+=3;
+            typeof(SpeakerBandEditor).GetMethod("Changed",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!.Invoke(SpeakerBands,null);
+            Check(VM.Speaker.OutsideParameters().Low.Energy[0].Y==originalEnergy+3,"Curve edits reach the persisted project");
+            VM.Undo();Check(VM.Speaker.OutsideParameters().Low.Energy[0].Y==originalEnergy,"Band curve undo");VM.Redo();Check(VM.Speaker.OutsideParameters().Low.Energy[0].Y==originalEnergy+3,"Band curve redo");VM.Undo();
+            var savedBand=ProjectIO.Clone(VM.Speaker);VM.Speaker.InverseLowHz=20;VM.Speaker.InverseHighHz=20000;VM.Commit();
+            Check(!energy.CanEditAt(20)&&!energy.CanEditAt(20000),"Full range locks the whole curve");VM.SetSpeakerProject(savedBand);await Layout();
+            var settledPrecheck=VM.UpdateSpeakerPrecheckAsync(true);await settledPrecheck;await Layout();
+            SettingsScroll.ScrollToVerticalOffset(SpeakerBands.TranslatePoint(new Point(0,0),SettingsBody).Y);await Layout();
+            double scrollBefore=SettingsScroll.VerticalOffset,extentBefore=SettingsScroll.ExtentHeight,bandTopBefore=SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y;
+            var editedCurve=(CurveEditor)SpeakerBands.FindName("Energy");editedCurve.Points![0].Y+=1;
+            typeof(SpeakerBandEditor).GetMethod("Changed",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!.Invoke(SpeakerBands,null);
+            await Layout();
+            checks.Add($"MEASURE curve commit: scroll {SettingsScroll.VerticalOffset-scrollBefore:0.###}, extent {SettingsScroll.ExtentHeight-extentBefore:0.###}, panel top {SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y-bandTopBefore:0.###} DIP");
+            Check(ReferenceEquals(settledPrecheck,VM.UpdateSpeakerPrecheckAsync()),"Outside-band curve edit does not restart geometry precheck");
+            Check(Math.Abs(SettingsScroll.VerticalOffset-scrollBefore)<.1&&Math.Abs(SettingsScroll.ExtentHeight-extentBefore)<.1&&Math.Abs(SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y-bandTopBefore)<.1,"Curve commit keeps scroll position and layout height stable");
+            VM.Undo();await Layout();
+            await VM.UpdateSpeakerPrecheckAsync(true);await Layout();
+            double sliderScroll=SettingsScroll.VerticalOffset,sliderExtent=SettingsScroll.ExtentHeight,sliderTop=SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y;
+            lowSlider.RaiseEvent(new System.Windows.Controls.Primitives.DragStartedEventArgs(0,0){RoutedEvent=System.Windows.Controls.Primitives.Thumb.DragStartedEvent});
+            foreach(double hz in new[]{250d,300d,400d}){lowSlider.Value=Math.Log10(hz/20);await Layout();}
+            double duringTop=SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y-sliderTop;
+            lowSlider.RaiseEvent(new System.Windows.Controls.Primitives.DragCompletedEventArgs(0,0,false){RoutedEvent=System.Windows.Controls.Primitives.Thumb.DragCompletedEvent});
+            await Layout();
+            double pendingTop=SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y-sliderTop;
+            checks.Add($"MEASURE crossover: dragging top {duringTop:0.###}, pending top {pendingTop:0.###}, scroll {SettingsScroll.VerticalOffset-sliderScroll:0.###}, extent {SettingsScroll.ExtentHeight-sliderExtent:0.###} DIP");
+            await VM.UpdateSpeakerPrecheckAsync();await Layout();
+            double settledTop=SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y-sliderTop;
+            checks.Add($"MEASURE crossover settled: top {settledTop:0.###}, scroll {SettingsScroll.VerticalOffset-sliderScroll:0.###}, extent {SettingsScroll.ExtentHeight-sliderExtent:0.###} DIP");
+            Check(Math.Abs(duringTop)<.1&&Math.Abs(pendingTop)<.1&&Math.Abs(settledTop)<.1,"Crossover drag, commit and asynchronous precheck keep editor position stable");
+            VM.Undo();await VM.UpdateSpeakerPrecheckAsync();await Layout();
+            foreach(var (slider,hz) in new[]{(highSlider,8000d),(lowSlider,20d)})
+            {
+                double top=SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y,offset=SettingsScroll.VerticalOffset,extent=SettingsScroll.ExtentHeight;
+                slider.RaiseEvent(new System.Windows.Controls.Primitives.DragStartedEventArgs(0,0){RoutedEvent=System.Windows.Controls.Primitives.Thumb.DragStartedEvent});slider.Value=Math.Log10(hz/20);await Layout();
+                Check(Math.Abs(SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y-top)<.1,"Both crossover handles keep position during drag "+hz);
+                slider.RaiseEvent(new System.Windows.Controls.Primitives.DragCompletedEventArgs(0,0,false){RoutedEvent=System.Windows.Controls.Primitives.Thumb.DragCompletedEvent});await Layout();
+                Check(Math.Abs(SettingsScroll.ExtentHeight-extent)<.1&&Math.Abs(SettingsScroll.VerticalOffset-offset)<.1,"Checking status retains scroll extent and offset "+hz);
+                await VM.UpdateSpeakerPrecheckAsync();await Layout();
+                Check(Math.Abs(SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y-top)<.1&&Math.Abs(SettingsScroll.ExtentHeight-extent)<.1,"Completed crossover precheck retains layout "+hz);
+                VM.Undo();await VM.UpdateSpeakerPrecheckAsync();await Layout();
+            }
+            Check(SpeakerBands.ActualHeight>400&&SpeakerBands.TranslatePoint(new Point(0,0),SettingsScroll).Y<40,"Listener-head inverse panel appears in the settings viewport");
+            SpeakerWorkflowChecks.SaveImage((FrameworkElement)Content,Path.Combine(folder,$"bands-{language}.png"),1320,880);
+            SettingsScroll.ScrollToTop();await Layout();
+
             var backup=ProjectIO.Clone(VM.Speaker!);
             VM.Speaker!.RightSpeaker=ProjectIO.Clone(VM.Speaker.LeftSpeaker);VM.Commit();await VM.UpdateSpeakerPrecheckAsync(true);await Layout();
             // Wait for a coalesced automatic request, if it started on Commit.
@@ -107,7 +174,7 @@ public partial class MainWindow
             for(int group=0;group<5;group++)
             {
                 groups.SelectedIndex=group;await AnalysisArea.RefreshAsync();await Layout();
-                Check(combo.Items.Cast<ComboBoxItem>().Count(x=>x.Visibility==Visibility.Visible) is >=2 and <=4,"Plot category has a short visible list "+group);
+                Check(combo.Items.Cast<ComboBoxItem>().Count(x=>x.Visibility==Visibility.Visible) is >=2 and <=5,"Plot category has a short visible list "+group);
             }
             groups.SelectedIndex=1;await AnalysisArea.RefreshAsync();await Layout();
             Check(combo.SelectedIndex==13&&plot.Data!.Lines.Count==4,"Inverse category opens actual inverse operator");
@@ -121,16 +188,16 @@ public partial class MainWindow
             {
                 combo.SelectedIndex=subject;kindBox.SelectedIndex=kind;
                 await AnalysisArea.RefreshAsync();await Layout();
-                Check(combo.Items.Count==14,"Stable plot items after selection "+subject+"/"+kind);
+                Check(combo.Items.Count==17,"Stable plot items after selection "+subject+"/"+kind);
                 Check(plot.Data!=null&&plot.Data.Lines.All(l=>l.Y.All(double.IsFinite)),"Finite rendered plot "+subject+"/"+kind);
             }
             int builds=VM.SpeakerAnalysis.BuildCount;
-            for(int i=0;i<150;i++){combo.SelectedIndex=i%14;kindBox.SelectedIndex=i%5;}
+            for(int i=0;i<150;i++){combo.SelectedIndex=i%17;kindBox.SelectedIndex=i%5;}
             combo.SelectedIndex=12;kindBox.SelectedIndex=0;await AnalysisArea.RefreshAsync();await Layout();
             Check(VM.SpeakerAnalysis.BuildCount-builds<8,"Rapid plot switches discard obsolete queued analyses");
             Check(plot.Data?.Lines.Count==4,"Target/cascade overlay completes after rapid switching");
             Pages.SelectedItem=PresetPage;await Layout();Pages.SelectedItem=ConfigurationPage;await Layout();
-            await AnalysisArea.RefreshAsync();Check(combo.Items.Count==14,"Returning to configuration preserves subject list");
+            await AnalysisArea.RefreshAsync();Check(combo.Items.Count==17,"Returning to configuration preserves subject list");
             checks.Add(PlotRenderChecks.Measure(plot.Data!));
         }
         combo.SelectedIndex=1;kindBox.SelectedIndex=0;await AnalysisArea.RefreshAsync();await Layout();

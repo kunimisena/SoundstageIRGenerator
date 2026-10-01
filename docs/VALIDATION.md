@@ -1,3 +1,36 @@
+# 4.15.0 分频音箱 / Speaker crossover release
+
+默认求逆分频点为 200 Hz、10 kHz。参数模型只有这一组默认值；项目文件缺少分频字段时也使用它。主动设置 20 Hz–20 kHz 时走完整求逆链路，带外曲线不参与。
+
+The inverse crossovers default to 200 Hz and 10 kHz, including project files without those fields. Selecting 20 Hz–20 kHz uses the full inverse path and bypasses outside-band processing.
+
+用户人头求逆紧接人头设置；分频滑条按对数频率分布，拖动同步灰区，松开提交，单次撤销恢复整次拖动。低频和高频分别保存、插值和生成；灰区不保存独立能量或衰减控制点。边界值可编辑，移动分频点裁剪或延伸本侧曲线。摆位预检查只响应实际使用的几何、人头与求逆参数，不因能量／衰减曲线编辑而重跑。
+
+离屏复现：修复前，曲线提交以及分频滑条松手后的预检查更新，都曾令上方提示缩短，页面高度与编辑区位置变化 −17 DIP。提示区现采用固定高度，长内容可滚动阅读，风险边框只换颜色。修复后，中英文页面的曲线编辑、上下滑条拖动、松手和异步检查完成均保持位置稳定；滚动位置、页面高度和编辑区位移均为 0 DIP。
+
+混响分支使用功率互补权重，避免同等能量的独立随机混响在交界处产生约 3 dB 的系统性凹陷；不同能量连续过渡，保留分支相位。直达声仍使用原有相干交接。测试覆盖 44.1／48／96 kHz、单侧分频、完整范围和相近分频点，并验证最终干湿占比及实际 WAV。
+
+The listener-head inverse follows head settings, with logarithmic sliders, live grey-region updates and single-step undo. Low and high curves are stored, interpolated and generated independently, with no separate energy or decay knots in the grey region. Editable boundary values extend into the overlap; moving a crossover trims or extends that side. Geometry prechecks no longer restart for unrelated energy/decay edits. Crossover changes still refresh the check, in a fixed-height scrollable status area; risk styling changes colour without changing border thickness. Offscreen reproduction measured a −17 DIP layout shift before the fix and zero scroll, extent and panel-position changes afterward in both languages. Independent wet branches now use power-complementary weights, preserving expected crossover energy and branch phase; direct sound retains the coherent crossover. Core checks cover sample rates, endpoints, narrow bands, final wet energy and exported samples.
+
+| 检查 / Check | Assertions |
+|---|---:|
+| 分频重建、干湿能量、曲线响应、采样率及 WAV 回读 / Crossover reconstruction, wet energy, curve response, sample rates and WAV round trip | 75 |
+| 正式版输出逐样本对照 / Sample-exact comparison with stable output | 5 |
+| 中英文音箱离屏流程 / Bilingual offscreen speaker workflow | 584 |
+
+- 低、高两侧参数与随机核独立；将高侧衰减改成 20 秒、能量改成 −50 dB，低侧原始核的长度、相位和每个样本保持一致。灰区求值没有独立曲线；展开／关闭频段、边界编辑、撤销和保存读取通过。
+- 完整 20 Hz–20 kHz 求逆输出、简单混响和耳机输出均与 4.14.0 发布程序逐样本一致。
+- 在 44.1、48、96 kHz 下，三路交接对相同输入的合成幅度平直；覆盖仅低侧、仅高侧、完整范围和相近分频点。
+- 测试配置的目标混响占比 16%，实际导出核经固定播放模型后的结果约为 16.000000%。降低带外低频曲线后，局部低频干湿比下降，总占比保持。纯干、纯湿和关闭直达声分别验证。
+- 四条导出 float32 WAV 与预览逐样本一致；保存／读取保留分频点和曲线，取消计算生效。
+- 界面检查覆盖两种语言、两张曲线的灰区限制、编辑与撤销重做、17 种分析对象、快速切换、导出状态、三档布局宽度及离屏 DPI 缩放。已查看实际渲染的中英文曲线页截图。
+- Windows x64 Release 构建与发布完成，零警告、零错误。
+
+The full-range inverse, simple-reverb and headphone outputs match the 4.14.0 published build sample for sample. Hybrid checks cover 44.1/48/96 kHz, endpoint mixes, spectral redistribution with fixed total wet energy, deterministic generation, cancellation and actual WAV samples. Offscreen UI checks exercise curve locking, undo/redo, all 17 analysis subjects, rapid switching, exports and layout scaling in both languages. These checks validate the digital model and files; listening and physical-speaker behaviour remain to be evaluated with the generated configurations.
+
+Reports and offscreen images: `artifacts/band-preview/` (crossover regression: `slider-fixed/`). Executable: `publish/SoundstageIRGenerator/SoundstageSpeakers.exe`.
+
+---
 # 4.14.0 复杂音箱串联验证 / Complex speaker cascade validation
 
 复杂空间音效以普通生成器的完整自由场结果 F 为播放参考，以完整目标声场 T 为目标，直接求解 F × C ≈ T。F 与 T 均保留原有的人头功率校正、平滑 EQ、带通及归一化。实际音箱决定 F，虚拟音箱和反射源决定 T。

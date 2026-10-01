@@ -33,6 +33,10 @@ jobs:
           $report = Join-Path $PWD 'artifacts/language'
           $check = Start-Process -FilePath $app -ArgumentList @('--language-check', ('"' + $report + '"')) -WindowStyle Hidden -Wait -PassThru
           if ($check.ExitCode -ne 0) { throw 'Bilingual validation failed' }
+          $speakerApp = Join-Path $PWD 'publish/SoundstageIRGenerator/SoundstageSpeakers.exe'
+          $speakerReport = Join-Path $PWD 'artifacts/speaker-ui/results.txt'
+          $speakerCheck = Start-Process -FilePath $speakerApp -ArgumentList @('--check', ('"' + $speakerReport + '"')) -WindowStyle Hidden -Wait -PassThru
+          if ($speakerCheck.ExitCode -ne 0) { throw 'Speaker UI validation failed' }
           $count = 0
           Get-ChildItem artifacts -Recurse -Filter '*results.txt' | ForEach-Object {
             $text = Get-Content $_.FullName -Raw

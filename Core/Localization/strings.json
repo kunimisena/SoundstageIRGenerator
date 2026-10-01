@@ -2060,8 +2060,8 @@
     "en": "Mirror left position to right"
   },
   "Speaker.Inverse": {
-    "zh": "相对播放矩阵的求逆增益 / dB",
-    "en": "Inverse gain relative to playback matrix / dB"
+    "zh": "用户人头求逆增益预算 / dB",
+    "en": "Listener-head inverse gain budget / dB"
   },
   "Speaker.InverseHint": {
     "zh": "控制相对于播放矩阵 F 的求逆增益预算。转换通过精确控制两只音箱的相位与干涉来接近目标声场 T；增大预算可减少还原误差，但也可能需要更强相消，对听音位置、人头差异和摆位误差更敏感，出现意料之外的不稳定结果。局部功率约束抑制高 Q 窄谷求逆；请结合预检查和生成结果判断。",
@@ -2112,8 +2112,8 @@
     "en": "Cascade F × C · Final L/R responses"
   },
   "Speaker.InversePlot": {
-    "zh": "求逆算子 K",
-    "en": "Inverse operator K"
+    "zh": "用户人头求逆算子 K",
+    "en": "Listener-head inverse K"
   },
   "Speaker.PathLL": {
     "zh": "L 输入 → L 音箱",
@@ -2264,8 +2264,8 @@
     "en": "Comparison"
   },
   "Speaker.GroupTransform": {
-    "zh": "求逆与输出",
-    "en": "Inverse & output"
+    "zh": "用户人头求逆与输出",
+    "en": "Listener-head inverse & output"
   },
   "Speaker.GroupPlayback": {
     "zh": "实际音箱",
@@ -2324,8 +2324,8 @@
     "en": "Target vs reconstruction"
   },
   "Speaker.InversePlotHint": {
-    "zh": "求解时实际使用的正则化播放路径求逆算子，含人头、空气吸收及自由场校准的影响。C = I + K(T − F)。这里显示因果化前的频域算子；幅频、相位与群延迟可查看。最终可播放的卷积核请看输出核 C。",
-    "en": "The regularized playback inverse actually used by the solver, including the head, air absorption and free-field calibration. C = I + K(T − F). Shows the frequency-domain operator before causal projection, with magnitude, phase and group delay. Output C shows the final playable kernels."
+    "zh": "求解时实际使用的正则化播放路径求逆算子，含人头、空气吸收及自由场校准的影响。C = I + K(T − F)。这里显示因果化前的频域算子；幅频、相位与群延迟可查看。最终可播放的卷积核请看输出核 C。 分频模式显示含直达分支中段权重的算子；混响交接另用功率互补权重，最终共同 EQ 单独显示。",
+    "en": "The regularized playback inverse actually used by the solver, including the head, air absorption and free-field calibration. C = I + K(T − F). Shows the frequency-domain operator before causal projection, with magnitude, phase and group delay. Output C shows the final playable kernels. In hybrid mode this includes the direct branch’s middle-band crossover weight. Reverb uses power-complementary weights, and the final common EQ is shown separately."
   },
   "Speaker.KLL": {
     "zh": "左耳误差 → 左音箱",
@@ -2346,5 +2346,53 @@
   "Speaker.VirtualAngleHint": {
     "zh": "建议虚拟音箱角度接近实际音箱角度；相差过大可能需要极强相消，导致极端响应或明显还原误差。",
     "en": "Keep virtual speaker angles close to the actual speaker angles. Large differences may require extreme cancellation, causing extreme responses or substantial reconstruction errors."
+  },
+  "Speaker.Bands": {
+    "zh": "用户人头求逆",
+    "en": "Listener-head inverse"
+  },
+  "Speaker.BandLow": {
+    "zh": "用户人头求逆下分频点 / Hz",
+    "en": "Listener-head inverse lower crossover / Hz"
+  },
+  "Speaker.BandHigh": {
+    "zh": "用户人头求逆上分频点 / Hz",
+    "en": "Listener-head inverse upper crossover / Hz"
+  },
+  "Speaker.BandHint": {
+    "zh": "滑条按对数频率分布，也可手动输入 Hz。20 Hz–20 kHz 使用全频用户人头求逆；缩小范围后，两侧使用简单混响。分频点为平滑交接的中心，混响总能量由整体设置控制。",
+    "en": "Drag on a logarithmic frequency scale or type a value in Hz. 20 Hz–20 kHz uses the full-band listener-head inverse; narrowing the range uses simple reverb outside it. Crossovers mark smooth transition centres. Overall settings control total wet energy."
+  },
+  "Speaker.BandEnergy": {
+    "zh": "两侧混响相对能量 / dB",
+    "en": "Outside-band relative reverb energy / dB"
+  },
+  "Speaker.BandDecay": {
+    "zh": "两侧混响衰减时间 / s",
+    "en": "Outside-band reverb decay time / s"
+  },
+  "Speaker.BandLocked": {
+    "zh": "由方向声场决定",
+    "en": "Directional field"
+  },
+  "Speaker.BandCurveHint": {
+    "zh": "低频、高频分别编辑，灰区由方向声场决定，不设能量或衰减曲线。边界点可上下拖动，向过渡区延续本侧边缘值，按功率互补平滑混合。移动分频点会裁剪或延伸本侧曲线。双击加点，右键删点。",
+    "en": "Edit low and high bands separately. The grey region uses the directional field, with no energy or decay curve of its own. Drag boundary points vertically; each edge value extends into a power-complementary transition. Moving a crossover trims or extends that side. Double-click to add points; right-click to delete."
+  },
+  "Speaker.BandDry": {
+    "zh": "最终直达（预测耳端）",
+    "en": "Final direct (predicted ears)"
+  },
+  "Speaker.BandWet": {
+    "zh": "最终混响（预测耳端）",
+    "en": "Final reverb (predicted ears)"
+  },
+  "Speaker.BandEq": {
+    "zh": "分频合成共同 EQ",
+    "en": "Hybrid common EQ"
+  },
+  "Speaker.UserHeadInverseHint": {
+    "zh": "按实际音箱摆位，以 FABIAN 近似用户人头，求逆“实际音箱 → 双耳”的播放路径，将虚拟声场转换成音箱驱动信号。",
+    "en": "Uses actual speaker positions and FABIAN as the listener-head approximation to invert the speaker-to-ear playback paths and convert the virtual field into speaker-drive signals."
   }
 }

@@ -44,22 +44,40 @@ public sealed class CurveEditor:FrameworkElement
     public string XUnit {get;set;}="Hz";
     public bool Editable {get;set;}=true;
     public bool FullEnvelope {get;set;}
+    public double? LockedMinX {get;set;}
+    public double? LockedMaxX {get;set;}
+    public string LockedLabel {get;set;}="";
+    bool IsLocked(double x)=>LockedMinX is double lo&&LockedMaxX is double hi&&(x>lo&&x<hi||lo<=MinX&&x<=lo||hi>=MaxX&&x>=hi);
+    bool FixedEndpoint(double x)=>LockedMinX is double lo&&LockedMaxX is double hi&&(x==MinX||x==MaxX||x==lo||x==hi);
+    internal double ValueAt(double x)
+    {
+        if(Points==null||IsLocked(x))return double.NaN;
+        var points=LockedMinX is double lo&&LockedMaxX is double hi
+            ?Points.Where(k=>x<=lo?k.X<=lo:k.X>=hi).ToList():Points;
+        return points.Count==0?double.NaN:Curves.At(points,x,LogX,LogY);
+    }
+    public bool CanEditAt(double x)=>Editable&&!IsLocked(x);
     public double? Marker {get;set;}
     public Func<double,double> DisplayX {get;set;}=x=>x;
     public Func<double,double> ModelX {get;set;}=x=>x;
     public event Action? Changed;
     int drag=-1;bool changed;
-    int sampleHash;Point[]? sampled;
+    int sampleHash;Point[][]? sampled;
     internal int SampleBuildCount {get;private set;}
-    Point[] Samples()
+    Point[][] Samples()
     {
-        var hash=new HashCode();hash.Add(MinX);hash.Add(MaxX);hash.Add(LogX);hash.Add(LogY);
+        var hash=new HashCode();hash.Add(MinX);hash.Add(MaxX);hash.Add(LogX);hash.Add(LogY);hash.Add(LockedMinX);hash.Add(LockedMaxX);
         // Envelope coordinate mappings can change without changing knot coordinates.
         for(int i=0;i<3;i++)hash.Add(ModelX(Value(i/2.0,MinX,MaxX,LogX)));
         foreach(var knot in Points!){hash.Add(knot.X);hash.Add(knot.Y);}
         int next=hash.ToHashCode();if(sampled!=null&&sampleHash==next)return sampled;
         sampleHash=next;SampleBuildCount++;
-        return sampled=Enumerable.Range(0,400).Select(i=>{double x=ModelX(Value(i/399.0,MinX,MaxX,LogX));return new Point(x,Curves.At(Points!,x,LogX,LogY));}).ToArray();
+        Point[] Segment(double from,double to)=>Enumerable.Range(0,400).Select(i=>{double x=ModelX(i==0?from:i==399?to:Value(i/399.0,from,to,LogX));return new Point(x,ValueAt(x));}).ToArray();
+        if(LockedMinX is double lo&&LockedMaxX is double hi)
+        {
+            var segments=new List<Point[]>();if(lo>MinX)segments.Add(Segment(MinX,lo));if(hi<MaxX)segments.Add(Segment(hi,MaxX));return sampled=segments.ToArray();
+        }
+        return sampled=[Segment(MinX,MaxX)];
     }
     Rect Area=>new(44,12,Math.Max(10,ActualWidth-60),Math.Max(10,ActualHeight-44));
     static double Fraction(double x,double min,double max,bool log)=>log?Math.Log(x/min)/Math.Log(max/min):(x-min)/(max-min);
@@ -77,18 +95,28 @@ public sealed class CurveEditor:FrameworkElement
         if(Points is not {Count:>=2})return;
         if(Points.Any(p=>!double.IsFinite(p.X)||!double.IsFinite(p.Y)||LogX&&p.X<=0||LogY&&p.Y<=0)||Points.Zip(Points.Skip(1)).Any(p=>p.First.X>=p.Second.X)){Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("T4374175386"),50,50,Paint.Muted);return;}
         dc.PushClip(new RectangleGeometry(r));
-        var poly=Samples().Select(p=>Screen(new(p.X,p.Y)));
-        Paint.Line(dc,Editable?Paint.Accent:Paint.Muted,2,poly);
+        foreach(var segment in Samples())Paint.Line(dc,Editable?Paint.Accent:Paint.Muted,2,segment.Select(p=>Screen(new(p.X,p.Y))));
         if(Marker is double marker && marker>=MinX&&marker<=MaxX)
         {double x=r.Left+r.Width*Fraction(marker,MinX,MaxX,LogX);dc.DrawLine(new Pen(Paint.Muted,1){DashStyle=DashStyles.Dash},new(x,r.Top),new(x,r.Bottom));Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("TAD36B620F8"),Math.Min(x+4,r.Right-55),r.Top+5,Paint.Muted,10);}
-        foreach(var point in Points){Point pt=Screen(point);dc.DrawEllipse(Paint.Accent,new Pen(Paint.Paper,2),pt,5,5);}
+        if(LockedMinX is double lockedLow&&LockedMaxX is double lockedHigh)
+        {
+            double a=r.Left+r.Width*Fraction(Math.Clamp(lockedLow,MinX,MaxX),MinX,MaxX,LogX);
+            double b=r.Left+r.Width*Fraction(Math.Clamp(lockedHigh,MinX,MaxX),MinX,MaxX,LogX);
+            dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(218,216,208)),null,new(a,r.Top,Math.Max(0,b-a),r.Height));
+            dc.DrawLine(new Pen(Paint.Muted,1){DashStyle=DashStyles.Dash},new(a,r.Top),new(a,r.Bottom));
+            dc.DrawLine(new Pen(Paint.Muted,1){DashStyle=DashStyles.Dash},new(b,r.Top),new(b,r.Bottom));
+            if(b-a>70)Paint.Label(dc,LockedLabel,a+5,r.Top+8,Paint.Muted,10);
+        }
+        foreach(var point in Points.Where(p=>!IsLocked(p.X))){Point pt=Screen(point);dc.DrawEllipse(Paint.Accent,new Pen(Paint.Paper,2),pt,5,5);}
         dc.Pop();Paint.Label(dc,Unit,r.Right-20,0,Paint.Muted,10);
     }
     protected override void OnMouseDown(MouseButtonEventArgs e)
     {
-        if(!Editable||Points is not {Count:>1})return;var p=e.GetPosition(this);int nearest=Enumerable.Range(0,Points.Count).OrderBy(i=>(Screen(Points[i])-p).LengthSquared).First();
-        bool hit=(Screen(Points[nearest])-p).Length<14;
-        if(e.ChangedButton==MouseButton.Right){if(hit&&Points.Count>2&&(LogX||nearest>0&&nearest<Points.Count-1&&(!FullEnvelope||Points[nearest].X!=0))){Points.RemoveAt(nearest);Changed?.Invoke();InvalidateVisual();}return;}
+        if(!Editable||Points is not {Count:>1})return;var p=e.GetPosition(this);
+        int nearest=Enumerable.Range(0,Points.Count).Where(i=>!IsLocked(Points[i].X)).OrderBy(i=>(Screen(Points[i])-p).LengthSquared).DefaultIfEmpty(-1).First();
+        bool hit=nearest>=0&&(Screen(Points[nearest])-p).Length<14;
+        if(!CanEditAt(hit?Points[nearest].X:Data(p).X))return;
+        if(e.ChangedButton==MouseButton.Right){if(hit&&!FixedEndpoint(Points[nearest].X)&&Points.Count>2&&(LogX||nearest>0&&nearest<Points.Count-1&&(!FullEnvelope||Points[nearest].X!=0))){Points.RemoveAt(nearest);Changed?.Invoke();InvalidateVisual();}return;}
         if(e.ClickCount==2&&!hit&&Area.Contains(p)&&Points.Count<EditingLimits.MaxKnots){var point=Data(p);if(Points.Any(k=>Math.Abs(k.X-point.X)<1e-6))return;Points.Add(point);Points.Sort((a,b)=>a.X.CompareTo(b.X));Changed?.Invoke();InvalidateVisual();return;}
         if(hit){drag=nearest;changed=false;CaptureMouse();e.Handled=true;}
     }
@@ -98,6 +126,8 @@ public sealed class CurveEditor:FrameworkElement
         if(drag<0||e.LeftButton!=MouseButtonState.Pressed)return;
         double oldX=Points[drag].X;
         double low=drag>0?Points[drag-1].X+1e-7:ModelX(MinX),high=drag<Points.Count-1?Points[drag+1].X-1e-7:ModelX(MaxX);
+        if(LockedMinX is double lockedLow&&LockedMaxX is double lockedHigh)
+        {if(FixedEndpoint(oldX))low=high=oldX;else if(oldX<lockedLow)high=Math.Min(high,Math.BitDecrement(lockedLow));else if(oldX>lockedHigh)low=Math.Max(low,Math.BitIncrement(lockedHigh));else return;}
         if(low>high)return;q.X=Math.Clamp(q.X,low,high);
         if(!LogX)
         {

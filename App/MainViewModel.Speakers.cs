@@ -14,8 +14,8 @@ public sealed partial class MainViewModel
     public string SpeakerModeLabel=>TextCatalog.T(SimpleSpeaker?"Speaker.Simple":"Speaker.Spatial");
     public bool LinkSpeakerKernels {get=>Speaker?.LinkParameters??true;set{if(Speaker==null||Busy||value==Speaker.LinkParameters)return;Speaker.LinkParameters=value;Commit();}}
     public string SpeakerEnergySummary=>TextCatalog.English
-        ?$"{(SimpleSpeaker?"Speaker-drive":"Target-ear")} wet energy: {SpeakerResult!.WetPercent:0.0}%"
-        :$"{(SimpleSpeaker?"音箱驱动":"目标耳端")}混响能量：{SpeakerResult!.WetPercent:0.0}%";
+        ?$"{(SimpleSpeaker?"Speaker-drive":SpeakerResult!.BandResult!=null?"Predicted-ear":"Target-ear")} wet energy: {SpeakerResult!.WetPercent:0.0}%"
+        :$"{(SimpleSpeaker?"音箱驱动":SpeakerResult!.BandResult!=null?"预测耳端":"目标耳端")}混响能量：{SpeakerResult!.WetPercent:0.0}%";
     public string SpeakerMetrics=>SpeakerResult is not {} r?"":TextCatalog.English
         ?$"Kernel: {r.Duration:0.000} s · {r.SampleRate} Hz\nInverse delay: {r.LatencySamples*1000.0/r.SampleRate:0.00} ms\nRelative reconstruction error: {r.RelativeErrorDb:0.00} dB\nProjection residual: {r.InverseProjectionDb:0.00} dB\n{SpeakerEnergySummary}\n{GenerationNotes}"
         :$"核长：{r.Duration:0.000} s · {r.SampleRate} Hz\n求逆共同延迟：{r.LatencySamples*1000.0/r.SampleRate:0.00} ms\n相对还原误差：{r.RelativeErrorDb:0.00} dB\n投影残差：{r.InverseProjectionDb:0.00} dB\n{SpeakerEnergySummary}\n{GenerationNotes}";
@@ -34,7 +34,7 @@ public sealed partial class MainViewModel
     void ApplyTemplateProject(Project p)
     {
         if(Speaker==null){SetProject(p);return;}
-        var next=ProjectIO.Clone(Speaker);next.Field=p;
+        var next=ProjectIO.Clone(Speaker);next.Field=p;next.OutsideBand=OutsideReverb.Create(p,next.InverseLowHz,next.InverseHighHz);
         if(SimpleSpeaker){var e=p.Sources.FirstOrDefault()?.Left.Clone()??new Excitation();e.GainDb=0;next.Left=e;next.Right=e.Clone();}
         SetSpeakerProject(next);
     }

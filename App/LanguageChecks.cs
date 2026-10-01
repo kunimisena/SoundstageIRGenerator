@@ -38,6 +38,22 @@ internal static class LanguageChecks
             }
             Check(true,"All bilingual resources have English text and valid composite formats");
             Check(TextCatalog.ForSystem(CultureInfo.GetCultureInfo("zh-TW"))=="zh-CN"&&TextCatalog.ForSystem(CultureInfo.GetCultureInfo("de-DE"))=="en","System language mapping");
+            var savedUiCulture=CultureInfo.CurrentUICulture;
+            string automaticRoot=Path.Combine(folder,"automatic-language"),automaticFile=Path.Combine(automaticRoot,"settings","language.json");
+            if(File.Exists(automaticFile))File.Delete(automaticFile);
+            try
+            {
+                foreach(string culture in new[]{"zh-CN","en-US"})
+                {
+                    CultureInfo.CurrentUICulture=CultureInfo.GetCultureInfo(culture);UiLanguage.Initialize(automaticRoot);
+                    var modeDialog=new SpeakerModeDialog();
+                    Check(TextCatalog.Language==TextCatalog.ForSystem(CultureInfo.CurrentUICulture),"Fresh speaker dialog follows system UI language: "+culture);
+                    Check(!File.Exists(automaticFile),"Opening mode dialog does not create a manual language preference: "+culture);modeDialog.Close();
+                }
+                UiLanguage.Select("zh-CN");UiLanguage.Initialize(automaticRoot);
+                Check(TextCatalog.Language=="zh-CN","Explicit language preference overrides English system UI language");
+            }
+            finally{CultureInfo.CurrentUICulture=savedUiCulture;UiLanguage.Initialize(App.TestRoot!);}
             UiLanguage.Select("en");window=new MainWindow();var vm=window.VM;var view=(FrameworkElement)window.Content;var pages=(TabControl)window.FindName("Pages");
             window.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
             string original=ProjectIO.Serialize(vm.P);var originalCulture=CultureInfo.CurrentCulture.Name;var selected=vm.Selected;

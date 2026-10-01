@@ -72,7 +72,7 @@ public static class SpeakerTransform
     }
     // Observe the exact operator K used in C = I + K(T-F), before causal projection.
     // Unwrap at every FFT bin, but retain only a small logarithmic plot grid.
-    sealed class ResponseRecorder
+    internal sealed class ResponseRecorder
     {
         readonly Dictionary<int,int> indices;
         readonly double[] previous=new double[4],unwrapped=new double[4];

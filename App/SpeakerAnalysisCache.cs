@@ -41,6 +41,9 @@ public sealed class SpeakerAnalysisCache
         string[] driveNames=[T("Speaker.PathLL"),T("Speaker.PathRL"),T("Speaker.PathLR"),T("Speaker.PathRR")];
         switch(subject)
         {
+            case 14: paths=r.BandResult?.PredictedDry??original.FinalDirectPaths;names=[T("T9D3F49D4CD"),T("TA2E15EF348"),T("TB1B8C7B14B"),T("T39DA9A8DC4")];break;
+            case 15: paths=r.BandResult?.PredictedWet??original.FinalReflectionPaths;names=[T("T9D3F49D4CD"),T("TA2E15EF348"),T("TB1B8C7B14B"),T("T39DA9A8DC4")];break;
+            case 16: paths=[r.BandResult?.CommonEq??[1.0]];names=[T("Speaker.BandEq")];zero=0;break;
             case 0: paths=r.Drive;names=driveNames;break;
             case 1: paths=[Dsp.Sum(r.Drive[0],r.Drive[1]),Dsp.Sum(r.Drive[2],r.Drive[3])];names=[T("Speaker.FinalL"),T("Speaker.FinalR")];break;
             case 7: paths=r.Target;names=[T("T9D3F49D4CD"),T("TA2E15EF348"),T("TB1B8C7B14B"),T("T39DA9A8DC4")];zero=r.ZeroSample-r.LatencySamples;break;

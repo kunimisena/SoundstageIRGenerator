@@ -6,7 +6,7 @@ public static class SpeakerGenerator
     {
         var p=ProjectIO.Clone(project);p.Validate();ct.ThrowIfCancellationRequested();
         double[][] target,drive,predicted,playback=[],inverse=[];double wet,zero;int delay=0;double projection=-300,error=-300;
-        var warnings=new List<string>();int sr=p.Field.SampleRate;GenerationResult? analysis=null,playbackAnalysis=null;InverseResponse? inverseResponse=null;
+        BandSynthesis? band=null;var warnings=new List<string>();int sr=p.Field.SampleRate;GenerationResult? analysis=null,playbackAnalysis=null;InverseResponse? inverseResponse=null;
         if(p.Mode==SpeakerMode.SimpleReverb)
         {
             progress?.Report((.05,L("生成左右混响核","Generating left and right kernels")));
@@ -36,12 +36,24 @@ public static class SpeakerGenerator
             var generated=Generator.Generate(p.Field,new ProgressForward(progress,.0,.65),ct);analysis=generated;target=generated.Kernels;wet=generated.ReflectionPercentAfterEq;zero=generated.ZeroSample;
             warnings.AddRange(generated.Warnings);
             progress?.Report((.67,L("建立实际音箱模型","Modelling actual speakers")));playbackAnalysis=SpeakerPlayback.Calibrated(p,ct);playback=playbackAnalysis.Kernels;
+            if(p.BandLimited)
+            {
+                progress?.Report((.75,L("合成分频声场","Rendering hybrid field")));
+                band=SpeakerBands.Generate(p,generated,playbackAnalysis,ct,message=>progress?.Report((.85,message)));
+                drive=band.Drive;target=band.Target;predicted=band.Predicted;inverse=drive;
+                delay=band.Delay;projection=band.ProjectionDb;inverseResponse=band.Inverse;wet=band.WetPercent;
+                double expected=p.Field.Direct.Enabled?p.Field.ReflectionEnergyPercent:100;
+                if(Math.Abs(wet-expected)>.05)warnings.Add(L($"最终耳端混响占比 {wet:0.00}%，目标 {expected:0.00}%。",$"Final ear wet energy {wet:0.00}%, target {expected:0.00}%."));
+            }
+            else
+            {
             progress?.Report((.75,L("设计播放端求逆","Designing playback inverse")));var solution=SpeakerTransform.Design(playback,target,sr,p.MaximumInverseGainDb,ct);
             inverse=solution.Kernels;inverseResponse=solution.Response;delay=solution.Delay;projection=solution.ProjectionErrorDb;
             progress?.Report((.84,L("合成音箱驱动核","Rendering speaker drives")));drive=solution.Kernels;
             // Verify the actual float32 export, not an ideal frequency-domain inverse.
             drive=drive.Select(h=>h.Select(v=>(double)(float)v).ToArray()).ToArray();
             progress?.Report((.92,L("验证预测耳端响应","Verifying predicted ear response")));predicted=SpeakerInverse.Multiply(playback,drive,ct);
+            }
             error=RelativeError(predicted,target,delay,sr);
             if(projection>-60)warnings.Add(L($"求逆截断残差：{projection:0.0} dB",$"Inverse projection residual: {projection:0.0} dB"));
             if(error>-12)warnings.Add(L($"播放模型还原残差：{error:0.0} dB",$"Playback reconstruction residual: {error:0.0} dB"));
@@ -50,7 +62,7 @@ public static class SpeakerGenerator
         if(drive.Any(h=>h.Any(v=>!double.IsFinite(v))))throw new InvalidOperationException("Non-finite output / 输出存在非有限数值");
         double peak=new[]{0,1}.Max(row=>Dsp.PowerAt(Dsp.Sum(drive[row*2],drive[row*2+1]),sr).Max());
         if(Dsp.Db(peak)>18)warnings.Add(L($"同相最大增益：{Dsp.Db(peak):0.0} dB",$"Peak coherent gain: {Dsp.Db(peak):0.0} dB"));
-        var result=new SpeakerResult(p,drive,target,predicted,playback,inverse,delay,projection,error,Dsp.Db(peak),wet,zero+delay,warnings){TargetAnalysis=analysis,PlaybackAnalysis=playbackAnalysis,InverseResponse=inverseResponse};
+        var result=new SpeakerResult(p,drive,target,predicted,playback,inverse,delay,projection,error,Dsp.Db(peak),wet,zero+delay,warnings){TargetAnalysis=analysis,PlaybackAnalysis=playbackAnalysis,InverseResponse=inverseResponse,BandResult=band};
         if(p.Mode==SpeakerMode.SpatialField){progress?.Report((.97,L("检查相消与位置敏感性","Checking cancellation and position sensitivity")));result=result with {Checks=SpeakerRiskCheck.Final(result,ct)};}
         progress?.Report((1,L("已完成","Ready")));return result;
     }
@@ -67,6 +79,7 @@ public static class SpeakerGenerator
 }
 public static class SpeakerExporter
 {
+    static string wetText(SpeakerResult r)=>r.WetPercent.ToString("0.00");
     public static readonly string[] Routes=["L_to_LeftSpeaker","R_to_LeftSpeaker","L_to_RightSpeaker","R_to_RightSpeaker"];
     public static string Export(SpeakerResult result,string parent)
     {
@@ -85,7 +98,7 @@ public static class SpeakerExporter
         File.WriteAllText(Path.Combine(folder,FileName("Import_Guide.txt")),TextCatalog.English
             ?$"Import this file in Equalizer APO:\n{config}\n\nKeep this directory in place: the configuration uses absolute WAV paths. Set the playback device to {result.SampleRate} Hz. Complex mode uses the saved speaker positions and a fixed, forward-facing FABIAN listener.\n"
             :$"在 Equalizer APO 中导入：\n{config}\n\n配置使用 WAV 绝对路径，请保持此目录位置不变。设备采样率设为 {result.SampleRate} Hz。复杂模式按已保存的音箱摆位和固定朝前的 FABIAN 听音位置计算。\n");
-        File.WriteAllText(Path.Combine(folder,FileName("metadata.json")),ProjectIO.Serialize(new{p.Mode,result.SampleRate,result.Duration,result.LatencySamples,result.ZeroSample,result.RelativeErrorDb,result.InverseProjectionDb,result.MaximumDriveGainDb,result.WetPercent,result.Warnings,result.Checks,positionSamples="centre, lateral +/-5 cm, fore-aft +/-5 cm, yaw +/-5 degrees; same fixed C and calibration",p.LeftSpeaker,p.RightSpeaker,p.AirAbsorption,p.MaximumInverseGainDb,inverseNotchControl="1/6-octave local weakest-singular-value power floor; complex matrix phase retained",routes=routes.Select(c=>Routes[c]),reference="F = calibrated headphone free field at actual positions; T = calibrated target headphone field; solve F*C=T with shared causal delay; both F and T include head-power EQ, smooth EQ and output bandpass; wet fraction is target-ear fraction",playbackGeometry="far-field FABIAN; no near-field correction; optional per-speaker air absorption; relative distance level and travel time retained",normalization="target common calibration retained; no drive re-EQ or individual path normalization"}));
+        File.WriteAllText(Path.Combine(folder,FileName("metadata.json")),ProjectIO.Serialize(new{p.Mode,result.SampleRate,result.Duration,result.LatencySamples,result.ZeroSample,result.RelativeErrorDb,result.InverseProjectionDb,result.MaximumDriveGainDb,result.WetPercent,result.Warnings,result.Checks,positionSamples="centre, lateral +/-5 cm, fore-aft +/-5 cm, yaw +/-5 degrees; same fixed C and calibration",p.LeftSpeaker,p.RightSpeaker,p.AirAbsorption,p.MaximumInverseGainDb,p.InverseLowHz,p.InverseHighHz,bandLimited=p.BandLimited,inverseNotchControl="1/6-octave local weakest-singular-value power floor; complex matrix phase retained",routes=routes.Select(c=>Routes[c]),energyReference=p.BandLimited?"measured post-EQ predicted ear dry/wet component energy":"target ear component energy",reference=p.BandLimited?"F = calibrated free field; target = middle directional field plus outside stereo reverb, with final common EQ; same fixed F*C predicts exported output":"F = calibrated headphone free field at actual positions; T = calibrated target headphone field; solve F*C=T with shared causal delay; both F and T include head-power EQ, smooth EQ and output bandpass; wet fraction is target-ear fraction",playbackGeometry="far-field FABIAN; no near-field correction; optional per-speaker air absorption; relative distance level and travel time retained",normalization=p.BandLimited?"common post-mix EQ; predicted ear component-energy calibration; no individual path normalization":"target common calibration retained; no drive re-EQ or individual path normalization"}));
         if(!simple)
         {
             string reference=Path.Combine(folder,"FreeField_Reference");Directory.CreateDirectory(reference);
@@ -100,10 +113,12 @@ public static class SpeakerExporter
             string cascade=Path.Combine(folder,FileName("Cascade_Test.txt"));
             File.WriteAllLines(cascade,["# Headphone comparison: transform C first, calibrated free field F second.","# Import this file by itself; do not enable the main C configuration again.","Include: "+config,"Include: "+freeConfig]);
             File.AppendAllText(Path.Combine(folder,FileName("Import_Guide.txt")),TextCatalog.English
-                ?$"\nHeadphone cascade comparison: import {cascade} by itself. It runs C then F and reproduces the target headphone field, subject to regularization and a common {result.LatencySamples*1000.0/result.SampleRate:0.00} ms delay. The FreeField_Reference subfolder contains the exact calibrated F used in the solve.\n"
-                :$"\n耳机串联对照：单独导入 {cascade}，先运行 C，再运行 F；不要同时启用上面的主配置。结果对应原耳机版目标声场，包含求逆约束残差和 {result.LatencySamples*1000.0/result.SampleRate:0.00} ms 共同延迟。FreeField_Reference 子目录是此次求逆使用的完整自由场 F。\n");
+                ?$"\nHeadphone cascade comparison: import {cascade} by itself. It runs C then F and reproduces the displayed target field, subject to regularization and a common {result.LatencySamples*1000.0/result.SampleRate:0.00} ms delay. The FreeField_Reference subfolder contains the exact calibrated F used in the solve.\n"
+                :$"\n耳机串联对照：单独导入 {cascade}，先运行 C，再运行 F；不要同时启用上面的主配置。结果对应图表中的目标声场，包含求逆约束残差和 {result.LatencySamples*1000.0/result.SampleRate:0.00} ms 共同延迟。FreeField_Reference 子目录是此次求逆使用的完整自由场 F。\n");
         }
         if(result.Checks?.HasRisk==true)File.AppendAllText(Path.Combine(folder,FileName("Import_Guide.txt")),"\n"+result.Checks.Text+"\n");
-        var notice=Path.Combine(AppContext.BaseDirectory,"FABIAN-NOTICE.txt");if(!simple&&System.IO.File.Exists(notice))System.IO.File.Copy(notice,Path.Combine(folder,"FABIAN-NOTICE.txt"));return folder;
+        var notice=Path.Combine(AppContext.BaseDirectory,"FABIAN-NOTICE.txt");if(!simple&&System.IO.File.Exists(notice))System.IO.File.Copy(notice,Path.Combine(folder,"FABIAN-NOTICE.txt"));if(p.BandLimited)File.AppendAllText(Path.Combine(folder,FileName("Import_Guide.txt")),TextCatalog.English
+            ?$"\nHybrid: inverse crossovers {p.InverseLowHz:0.###}–{p.InverseHighHz:0.###} Hz; outside bands use stereo reverb. Wet energy measured at predicted ears after final processing: {wetText(result)}%.\n"
+            :$"\n分频：求逆分频点 {p.InverseLowHz:0.###}–{p.InverseHighHz:0.###} Hz；两侧使用立体声混响。最终预测耳端混响占比：{wetText(result)}%。\n");return folder;
     }
 }

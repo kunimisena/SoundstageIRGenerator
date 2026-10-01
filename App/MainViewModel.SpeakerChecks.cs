@@ -22,8 +22,14 @@ public sealed partial class MainViewModel
     public Task UpdateSpeakerPrecheckAsync(bool immediate=false)
     {
         CheckNotify();if(!SpatialSpeaker){StopSpeakerPrecheck();return Task.CompletedTask;}
-        Speaker!.Field=P;var input=ProjectIO.Clone(Speaker);input.Field.Name="";input.Field.TemplateName="";
-        string key=ProjectIO.Serialize(input);if(key==precheckKey)return precheckTask;precheckKey=key;
+        Speaker!.Field=P;
+        // Geometry probes do not depend on random kernels, energy curves, decay or EQ.
+        // Rechecking those edits replaces the text above the editor and shifts its layout.
+        string key=ProjectIO.Serialize(new{Speaker.Mode,Speaker.LeftSpeaker,Speaker.RightSpeaker,Speaker.AirAbsorption,
+            Speaker.MaximumInverseGainDb,Speaker.InverseLowHz,Speaker.InverseHighHz,
+            P.SampleRate,P.HeadModel,P.FabianCtfCompensation,P.HeadRadius,P.HeadShadow,
+            Directions=HeadReferenceEq.Directions(P).Select(v=>new{v.Az,v.El})});
+        if(key==precheckKey)return precheckTask;precheckKey=key;var input=ProjectIO.Clone(Speaker);
         precheckCancellation?.Cancel();precheckCancellation?.Dispose();var source=precheckCancellation=new();var token=source.Token;
         return precheckTask=RunPrecheck(input,source,immediate);
     }

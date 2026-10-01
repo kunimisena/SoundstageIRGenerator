@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Diagnostics;
 int passed=0;void Check(bool c,string text){if(!c)throw new Exception("FAIL "+text);passed++;Console.WriteLine("PASS "+text);}
 var target=args.FirstOrDefault()??Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,"../../../../../artifacts/tests"));Directory.CreateDirectory(target);
+if(args.Contains("--speaker-bands")){SpeakerBandChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"speaker-band-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--speaker-regression")){SpeakerRegressionChecks.Run(Check,Path.GetFullPath("publish/SoundstageIRGenerator/SoundstageIR.Core.dll"));File.WriteAllText(Path.Combine(target,"speaker-regression-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--speaker-cascade")){SpeakerCascadeChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"speaker-cascade-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--speaker-free-field")){SpeakerFreeFieldChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"speaker-free-field-results.txt"),$"PASS {passed} assertions\n");return;}

@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>4.14.0</Version>
+    <Version>4.15.0</Version>
     <Deterministic>true</Deterministic>
     <Product>Soundstage IR Generator</Product>
     <AssemblyTitle>Soundstage IR Generator</AssemblyTitle>

@@ -20,6 +20,7 @@ static class SpeakerRegressionChecks
         var drives=(double[][])oldResult.GetType().GetProperty("Drive")!.GetValue(oldResult)!;var now=SpeakerGenerator.Generate(simple);
         check(now.Drive.Zip(drives).All(x=>x.First.SequenceEqual(x.Second)),"Simple reverb remains sample-identical to previous published executable");
         var complex=SpeakerProject.FromPreset(Presets.BuiltIn.Single(x=>x.Name=="宽阔监听"),SpeakerMode.SpatialField);
+        complex.InverseLowHz=20;complex.InverseHighHz=20000;
         var oldComplex=JsonSerializer.Deserialize(ProjectIO.Serialize(complex),assembly.GetType("SoundstageIR.Core.Speakers.SpeakerProject")!)!;
         var oldComplexResult=assembly.GetType("SoundstageIR.Core.Speakers.SpeakerGenerator")!.GetMethod("Generate")!.Invoke(null,[oldComplex,null,CancellationToken.None])!;
         var oldDrive=(double[][])oldComplexResult.GetType().GetProperty("Drive")!.GetValue(oldComplexResult)!;

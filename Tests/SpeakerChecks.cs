@@ -19,7 +19,7 @@ static class SpeakerChecks
             var q=SpeakerInverse.Solve(1,1,1,1,gain);check(q.All(v=>double.IsFinite(v.Magnitude)),"Singular playback remains finite");
             for(int k=0;k<20;k++){double v=k*.1;var d=SpeakerInverse.Solve(v,0,0,v,gain);check(d[0].Magnitude<=gain+1e-10,"Regularized inverse singular gain bound");}
         }
-        var p=SpeakerProject.FromPreset(Presets.BuiltIn.Single(v=>v.Name=="自由场"),SpeakerMode.SpatialField);p.Field.Equalize=false;p.MaximumInverseGainDb=18;
+        var p=SpeakerProject.FromPreset(Presets.BuiltIn.Single(v=>v.Name=="自由场"),SpeakerMode.SpatialField);p.Field.Equalize=false;p.MaximumInverseGainDb=18;p.InverseLowHz=20;p.InverseHighHz=20000;
         var g=SpeakerPlayback.Build(p);check(g[0].SequenceEqual(g[3])&&g[1].SequenceEqual(g[2]),"Playback exact mirror");
         var inverse=SpeakerInverse.Design(g,48000,18,suppressNarrowNotches:false);var reconstructed=SpeakerInverse.Multiply(g,SpeakerInverse.Multiply(inverse.Kernels,g));
         double identity=SpeakerGenerator.RelativeError(reconstructed,g,inverse.Delay,48000);

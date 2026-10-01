@@ -83,6 +83,20 @@ Complex exports also contain `name_Cascade_Test.txt`. **For a headphone software
 
 Configuration paths are absolute: keep the export directory in place and match device sample rate. Offline song processing uses output C, with external FFmpeg selection, −18 LUFS plus limiting, limiting only or original-level float WAV.
 
+## Listener-head inverse and outside-band reverb
+
+Configuration orders actual speakers, virtual speakers, head settings, then the listener-head inverse. This uses FABIAN as the listener-head approximation for the actual speaker-to-ear playback paths, with the gain budget and crossover controls together. Both crossovers accept logarithmic sliders and numeric Hz input. Dragging previews the grey graph region; release commits the change as one undo step.
+
+The lower and upper inverse crossovers default to **200 Hz and 10 kHz**. Each marks the centre of a fixed 24 dB/oct Linkwitz–Riley transition. Setting the lower edge to 20 Hz disables the low-band substitute; 20 kHz disables the high-band substitute. **20–20 kHz directly uses the full inverse pipeline**, ignoring both outside-band curves.
+
+With a narrower range, the middle uses the directional-field inverse, while the outside bands use ordinary speaker direct sound and stereo statistical reverb. The two curves set relative reverb energy before EQ and the synthesis-envelope decay time. Low and high curves are stored, interpolated and synthesized separately, using only their own control points. The grey region has no extra energy or decay curve: its response comes from the directional field. Boundary points can be dragged vertically; each branch extends its edge value into the transition. Moving a crossover trims or extends that side, with undo available. Double-click to add points and right-click to delete interior points. Onset and build-up envelopes come from the template. Project files retain parameters and random identity; edits support undo and redo.
+
+Zero dB uses an internal flat reference and need not correspond to any reflection source. Raising one band reallocates the wet energy across frequencies. A single overall wet setting covers all bands. The hybrid pipeline tracks dry and wet components separately; the final fraction is measured after the exported kernels pass through the fixed playback model, using independent equal-power L/R input and 20 Hz–20 kHz integration, excluding dry/wet cross terms. Disabling direct sound gives fully wet output; 0% wet preserves direct playback across all bands.
+
+After merging, common minimum-phase EQ shapes the broad tonal response, using the existing first-stage smoothing and strength settings. Overall level keeps the established output reference. Editable curves are synthesis parameters rather than final measurements: EQ changes absolute wet spectra, and crossovers can produce composite decay. Comparison plots include final predicted direct and wet paths; Listener-head inverse & output includes Hybrid common EQ. These plots use actual processed components.
+
+Low, high and middle reverbs use independent random realizations. With forced mirroring, each outside band shares its realization between the two speakers. Independent wet branches use power-complementary crossover weights, while direct sound retains amplitude-complementary crossovers. Equal-power independent reverbs retain their expected power at the crossover instead of an amplitude-crossfade dip of about 3 dB; unequal band energies blend continuously. Individual random realizations may retain fine spectral structure. Downstream EQ accounts for the actual combined response, and total wet energy is calibrated afterward. No outside-band control points are stored in the grey region, and interpolation never crosses it. Editing energy or decay no longer restarts the unrelated geometry precheck or changes the height of its status text. Common causal delay is determined from discarded dry and wet component energy.
+
 ## Model references
 
 - [FABIAN database paper](https://doi.org/10.17743/jaes.2017.0033)

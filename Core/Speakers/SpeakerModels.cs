@@ -12,6 +12,12 @@ public sealed class SpeakerPosition
 public sealed class SpeakerProject
 {
     public int Version {get;set;}=1;
+    double inverseLowHz=200,inverseHighHz=10000;
+    public double InverseLowHz {get=>inverseLowHz;set{if(double.IsFinite(value)&&value>=20&&value<=20000)OutsideBand?.ResizeLow(value);inverseLowHz=value;}}
+    public double InverseHighHz {get=>inverseHighHz;set{if(double.IsFinite(value)&&value>=20&&value<=20000)OutsideBand?.ResizeHigh(value);inverseHighHz=value;}}
+    public OutsideReverb? OutsideBand {get;set;}
+    [JsonIgnore] public bool BandLimited=>Mode==SpeakerMode.SpatialField&&(InverseLowHz>20||InverseHighHz<20000);
+    public OutsideReverb OutsideParameters()=>OutsideBand??OutsideReverb.Create(Field,InverseLowHz,InverseHighHz);
     [JsonConverter(typeof(JsonStringEnumConverter))] public SpeakerMode Mode {get;set;}
     public Project Field {get;set;}=Presets.BuiltIn.Single(p=>p.Name=="宽阔监听").Create();
     public Excitation Left {get;set;}=new();
@@ -26,13 +32,17 @@ public sealed class SpeakerProject
     {
         if(Version!=1||!Enum.IsDefined(Mode))throw new ArgumentException("Unsupported speaker project / 音箱配置版本不受支持");
         var check=ProjectIO.Clone(Field);if(Mode==SpeakerMode.SimpleReverb){check.Sources=[];check.TemplateSources=[];check.Direct.Enabled=true;}check.Validate();Left.Validate();if(!LinkParameters)Right.Validate();LeftSpeaker.Validate();RightSpeaker.Validate();
+        Excitation.Range(InverseLowHz,20,20000,"Inverse lower crossover / 求逆下分频点");
+        Excitation.Range(InverseHighHz,20,20000,"Inverse upper crossover / 求逆上分频点");
+        if(InverseLowHz>=InverseHighHz)throw new ArgumentException("求逆下分频点必须小于上分频点。 / Lower crossover must be below upper crossover.");
+        OutsideBand?.Validate(InverseLowHz,InverseHighHz);
         Excitation.Range(MaximumInverseGainDb,0,36,"Inverse gain / 求逆增益 (dB)");
     }
     public static SpeakerProject FromPreset(Preset preset,SpeakerMode mode,Project? field=null)
     {
         var p=field??preset.Create();var e=p.Sources.FirstOrDefault()?.Left.Clone()??new Excitation();
         if(mode==SpeakerMode.SimpleReverb&&preset==Presets.Blank)p.ReflectionEnergyPercent=0;
-        e.GainDb=0;return new(){Mode=mode,Field=p,Left=e,Right=e.Clone()};
+        e.GainDb=0;return new(){Mode=mode,InverseLowHz=200,InverseHighHz=10000,Field=p,OutsideBand=OutsideReverb.Create(p,200,10000),Left=e,Right=e.Clone()};
     }
     public static SpeakerProject Load(string path)
     {
@@ -45,6 +55,7 @@ public sealed record SpeakerResult(SpeakerProject Project,double[][] Drive,doubl
     double MaximumDriveGainDb,double WetPercent,double ZeroSample,List<string> Warnings)
 {
     public InverseResponse? InverseResponse {get;init;}
+    public BandSynthesis? BandResult {get;init;}
     public GenerationResult? TargetAnalysis {get;init;}
     public GenerationResult? PlaybackAnalysis {get;init;}
     public SpeakerRiskReport? Checks {get;init;}
