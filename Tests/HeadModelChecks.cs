@@ -27,15 +27,15 @@ public static class HeadModelChecks
         foreach(var (az,el) in new[]{(-60.0,0.0),(60.0,0.0),(0.0,0.0),(180.0,0.0),(-30.0,20.0),(30.0,20.0),(-45.0,60.0),(0.0,90.0)})
             for(int ear=0;ear<2;ear++)
             {
-                var rendered=FabianData.At(az,el,ear,sr,false);var original=Original(az,el,ear);
+                var rendered=FabianData.MeasuredAt(az,el,ear,sr,false);var original=Original(az,el,ear);
                 check(rendered.Impulse.SequenceEqual(original)&&rendered.Delay==0,$"Native single-ear mirror preserves every measured sample and time reference {az}/{el}/{ear}");
             }
-        var same=FabianData.At(-60,0,0,sr,false);double db=20*Math.Log10(At(same,8265,sr).Magnitude);
+        var same=FabianData.MeasuredAt(-60,0,0,sr,false);double db=20*Math.Log10(At(same,8265,sr).Magnitude);
         check(db>-.3&&db<0,"8.265 kHz retains original near-unity response instead of the averaging-induced -14.75 dB notch");
-        var frontLeft=FabianData.At(0,0,0,sr,false);var frontRight=FabianData.At(0,0,1,sr,false);
+        var frontLeft=FabianData.MeasuredAt(0,0,0,sr,false);var frontRight=FabianData.MeasuredAt(0,0,1,sr,false);
         check(frontLeft.Impulse.SequenceEqual(frontRight.Impulse),"Median response is copied from one ear without averaging");
         same.Impulse[0]+=1;
-        check(FabianData.At(-60,0,0,sr,false).Impulse.SequenceEqual(Original(-60,0,0)),"Returned IR cannot modify embedded reference data");
+        check(FabianData.MeasuredAt(-60,0,0,sr,false).Impulse.SequenceEqual(Original(-60,0,0)),"Returned IR cannot modify embedded reference data");
     }
     public static void Run(Action<bool,string> check,string folder)
     {
@@ -56,11 +56,11 @@ public static class HeadModelChecks
                 var l=model.At(az,el,0);var r=model.At(-az,el,1);
                 check(l.Impulse.SequenceEqual(r.Impulse)&&l.Delay==r.Delay,$"Physical head mirror {sr}/{az}/{el}");
                 check(l.Impulse.All(double.IsFinite),$"Finite full-sphere response {sr}/{az}/{el}");
-                var native=FabianData.At(az,el,0,44100,true);
+                var native=FabianData.MeasuredAt(az,el,0,44100,true);
                 foreach(double f in new[]{100.0,800,4000,10000,20000})
                 {
                     var a=At(native,f,44100);var b=At(l,f,sr);
-                    check((a-b).Magnitude/Math.Max(.02,a.Magnitude)<.003,$"Resampling preserves COMPLEX transfer {sr}/{az}/{el}/{f}");
+                    check(Math.Abs(20*Math.Log10(a.Magnitude/b.Magnitude))<.15,$"Extended head preserves in-band measured magnitude {sr}/{az}/{el}/{f}");
                 }
             }
             var same=model.At(-30,0,0);var opposite=model.At(-30,0,1);
@@ -69,7 +69,7 @@ public static class HeadModelChecks
             foreach(double f in new[]{100.0,800,8000,18000})
             {
                 var ratio=At(same,f,sr)/At(raw,f,sr);var cross=At(opposite,f,sr)/At(crossRaw,f,sr);
-                check((ratio-cross).Magnitude<.0001,$"CTF is common to ears, preserving binaural ratio {sr}/{f}");
+                check(Math.Abs(20*Math.Log10(ratio.Magnitude/cross.Magnitude))<.15,$"CTF retains the common in-band magnitude ratio {sr}/{f}");
             }
             pp.StrictMirror=true;var strict=Generator.Generate(pp);
             check(strict.Raw[0].SequenceEqual(strict.Raw[3])&&strict.Raw[1].SequenceEqual(strict.Raw[2]),$"Strict raw mirror {sr}");

@@ -33,7 +33,7 @@ public static class EqStrengthChecks
         check(stage1.SecondEq.SequenceEqual(new[]{1.0})&&SpectralTestReference.FirstEq(stage1),"Second-stage bypass designs first EQ from the precompensated mix");
         check(SpectralTestReference.SameSources(stage1,reference),"EQ strength leaves statistical kernels unchanged");
         p.EarEqStrengthPercent=0;var allZero=Generator.Generate(p);p.Equalize=false;var bypass=Generator.Generate(p);
-        check(allZero.Kernels.Zip(bypass.Kernels).All(v=>v.First.SequenceEqual(v.Second)),"Both strengths zero equals master bypass sample for sample");
+        check(allZero.HeadEq.Length>1&&allZero.EarEq.All(h=>h.SequenceEqual(new[]{1.0}))&&allZero.SecondEq.SequenceEqual(new[]{1.0})&&bypass.HeadEq.Length==1,"Zero tonal strengths retain fixed head calibration; master EQ bypass disables all calibration");
         p.Equalize=true;p.EarEqStrengthPercent=35;p.CenterEqStrengthPercent=50;
         var partial=Generator.Generate(p);
         var expected=SpectralTestReference.SecondEq(partial);

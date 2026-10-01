@@ -88,7 +88,8 @@ jobs:
           gh release edit $tag --draft=false --latest
           if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }
           $url = "https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag"
-          $body = "已发布 $version：FABIAN 单耳镜像修正、四路径 EQ/带通合成、EQ 后混响占比预修正及图表范围开关。`n`nWindows Release 构建及 $env:CHECK_COUNT 项核心检查通过；从干净源码生成 Windows x64 程序包、源码包和 SHA-256 校验文件。`n`nPublished $version with FABIAN single-ear mirroring, joint EQ/bandpass synthesis and post-EQ wet-balance compensation. Windows build and $env:CHECK_COUNT core assertions passed.`n`nRelease: $url"
+          $notes = Get-Content "docs/releases/$version.md" -Raw
+          $body = "已发布 / Published $version. Windows Release build and $env:CHECK_COUNT core assertions passed.`n`nRelease: $url`n`n$notes"
           @{body=$body} | ConvertTo-Json | Set-Content artifacts/release-comment.json -Encoding utf8
           gh api --method POST "repos/$env:GITHUB_REPOSITORY/commits/$env:GITHUB_SHA/comments" --input artifacts/release-comment.json
           if ($LASTEXITCODE -ne 0) { throw 'Release published, but commit comment failed' }

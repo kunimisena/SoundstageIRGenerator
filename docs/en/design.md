@@ -47,18 +47,20 @@ The seed, stable source ID, input stream and fixed band order determine each rea
 
 ## Head models and the common response
 
-The sphere offers a compact head-shadow and arrival-time model. FABIAN supplies head, pinna and torso responses; the renderer samples the nearest direction from the fixed HATO 0 dataset. The measured left-ear responses over the full sphere form the anatomical reference. The right ear uses the left-ear response at the mirrored source direction, retaining the selected IR's original complex response and time reference.
+The sphere offers a compact head-shadow and arrival-time model. FABIAN supplies head, pinna and torso responses; the renderer samples the nearest direction from the fixed HATO 0 dataset. The measured left-ear responses over the full sphere form the anatomical reference. The right ear uses the left-ear response at the mirrored source direction, forming a symmetric head. Magnitudes and notches within 20 Hz–20 kHz are retained; each direction and ear extends its own boundary magnitude outside that band. Responses are reconstructed directly at the selected sample rate with the measured in-band excess-phase structure and a common timing reference. The minimum-phase component follows the new magnitude target.
 
 FABIAN defaults to the dataset author's smooth minimum-phase inverse common transfer function. Removing that shared spectrum lets directional differences combine with the listener's existing headphone calibration. Disabling it provides the complete dataset spectrum for comparison. Headphone calibration remains in the listener's playback chain.
 
 The data represents blocked ear-canal entrances, with author-provided numerical completion at some low frequencies and lower directions. Sources, transformations and attribution are documented in the [FABIAN notices](../../THIRD_PARTY_NOTICES.md).
 
+The FABIAN EQ chain first tests all enabled directions with equal-energy unit impulses, averages binaural power noncoherently, and applies one common minimum-phase inverse to a flat target. This reference uses neither random reverberant kernels, inter-direction coherent cross terms, nor frequency smoothing. Bandwidth extension and head calibration are fixed processing steps with no individual configuration switches. Master EQ bypass includes head calibration; bandwidth extension still applies. The existing common-transfer compensation option remains available. [Head-response details](../HEAD_RESPONSE.md).
+
 ## EQ is an adjustable tonal choice
 
-For identical input signals, each ear receives:
+After the common head calibration Q_h, identical input signals give:
 
 \[
-M_l=H_{l\leftarrow L}+H_{l\leftarrow R},\quad M_r=H_{r\leftarrow L}+H_{r\leftarrow R}.
+M_l=Q_h(H_{l\leftarrow L}+H_{l\leftarrow R}),\quad M_r=Q_h(H_{r\leftarrow L}+H_{r\leftarrow R}).
 \]
 
 With independent mirrored random detail, stage one equalizes the smoothed magnitude of each ear response. Stage two designs a common EQ from `(Q_l M_l + Q_r M_r)/2`. Strict random mirroring uses one common first-stage EQ. Filters are minimum phase; strength scales the correction in dB before filter construction.

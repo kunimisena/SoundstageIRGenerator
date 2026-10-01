@@ -16,7 +16,7 @@ public sealed class HeadRenderer(Project project)
 {
     readonly Dictionary<(double Az, double El, int Ear), EarTransfer> cache = new();
     public double MinimumDelay => project.HeadModel == HeadModelKind.Sphere
-        ? -project.HeadRadius / HeadModel.C : FabianData.ResampleDelay(project.SampleRate);
+        ? -project.HeadRadius / HeadModel.C : HeadBandwidthExtension.Delay(project.SampleRate);
     public EarTransfer At(double az, double el, int ear)
     {
         var key = (az, el, ear);
@@ -26,13 +26,16 @@ public sealed class HeadRenderer(Project project)
             var q = HeadModel.At(az, el, ear, project);
             result = new(HeadModel.Impulse(q, project.SampleRate), q.Delay, q);
         }
-        else result = FabianData.At(az, el, ear, project.SampleRate, project.FabianCtfCompensation);
+        else
+        {
+            result = FabianData.At(az, el, ear, project.SampleRate, project.FabianCtfCompensation);
+        }
         cache.Add(key, result);
         return result;
     }
     public static string Description(Project p) => p.HeadModel == HeadModelKind.Sphere
         ? "球形头 · Brown–Duda 遮挡与时差"
-        : "FABIAN · 耳廓与肩胸部" + (p.FabianCtfCompensation ? " · 共同频响补偿" : " · 原始 HRTF");
+        : "FABIAN · 耳廓与肩胸部" + (p.FabianCtfCompensation ? " · 共同频响补偿" : " · 原始 HRTF") + " · 带外边缘延伸";
 }
 
 public static class FabianData
@@ -81,6 +84,11 @@ public static class FabianData
         return Math.Acos(Math.Clamp(v.X*d.X+v.Y*d.Y+v.Z*d.Z,-1,1))*180/Math.PI;
     }
     public static EarTransfer At(double appAz,double el,int ear,int sr,bool compensate)
+        =>HeadBandwidthExtension.Apply(MeasuredAt(appAz,el,ear,NativeRate,compensate).Impulse,sr);
+
+    // Unmodified measurement access for dataset inspection and validation.
+    // The application always renders through At, including bandwidth extension.
+    public static EarTransfer MeasuredAt(double appAz,double el,int ear,int sr,bool compensate)
     {
         if(sr is not (44100 or 48000 or 96000))throw new ArgumentException("FABIAN 采样率不受支持。");
         if(ear is <0 or >1)throw new ArgumentOutOfRangeException(nameof(ear));

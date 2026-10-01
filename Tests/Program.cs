@@ -3,6 +3,8 @@ using System.Numerics;
 using System.Diagnostics;
 int passed=0;void Check(bool c,string text){if(!c)throw new Exception("FAIL "+text);passed++;Console.WriteLine("PASS "+text);}
 var target=args.FirstOrDefault()??Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,"../../../../../artifacts/tests"));Directory.CreateDirectory(target);
+if(args.Contains("--head-bandwidth")){HeadReferenceChecks.BandwidthAudit(Check);File.WriteAllText(Path.Combine(target,"head-bandwidth-results.txt"),$"PASS {passed} assertions\n");return;}
+if(args.Contains("--head-reference")){HeadReferenceChecks.Run(Check,target,args.FirstOrDefault(a=>a.EndsWith(".dll",StringComparison.OrdinalIgnoreCase))??Environment.GetEnvironmentVariable("SIR_AUDITION_ORACLE"));File.WriteAllText(Path.Combine(target,"head-reference-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--audio-tools")){await AudioToolChecks.Run(Check,target,args.Skip(2).FirstOrDefault());File.WriteAllText(Path.Combine(target,"audio-tool-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--final-presets")){FinalPresetChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"final-preset-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--wet-balance")){WetBalanceChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"wet-balance-results.txt"),$"PASS {passed} assertions\n");return;}

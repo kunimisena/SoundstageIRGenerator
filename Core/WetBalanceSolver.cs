@@ -4,7 +4,7 @@ public sealed record WetBalanceReport(double GainDb,double PredictedPercent,int 
 // Solve one broadband amplitude multiplier. No per-band or per-source wet correction.
 public static class WetBalanceSolver
 {
-    public static WetBalanceReport Solve(Project p,double[][] direct,double[][] wet,CancellationToken ct=default,Action<string>? progress=null)
+    public static WetBalanceReport Solve(Project p,double[][] direct,double[][] wet,CancellationToken ct=default,Action<string>? progress=null,HeadReferenceEq? headReference=null)
     {
         ct.ThrowIfCancellationRequested();
         double dryEnergy=EnergyBalance.Energy(direct,p.SampleRate),wetEnergy=EnergyBalance.Energy(wet,p.SampleRate);
@@ -14,6 +14,8 @@ public static class WetBalanceSolver
         int sr=p.SampleRate,length=Math.Max(direct.Max(h=>h.Length),wet.Max(h=>h.Length)),n=EqDesigner.FftLength(length,sr),half=n/2;
         var dRef=new Complex[2][];var rRef=new Complex[2][];
         var dryPower=new double[2][];var wetPower=new double[2][];
+        var headDb=headReference?.GainDb();
+        var headPower=headDb?.Select(v=>Math.Pow(10,v/10)).ToArray();
         var smoothDry=new double[2][];var smoothWet=new double[2][];var smoothCross=new double[2][];
         double[] frequencies=EqDesigner.DesignFrequencies(sr);double high=Dsp.BandpassStopHigh(sr);
         for(int ear=0;ear<2;ear++)
@@ -27,6 +29,7 @@ public static class WetBalanceSolver
             }
             var a=new double[half+1];var b=new double[half+1];var cross=new double[half+1];
             for(int k=0;k<=half;k++){a[k]=Dsp.Power(dRef[ear][k]);b[k]=Dsp.Power(rRef[ear][k]);cross[k]=(dRef[ear][k]*Complex.Conjugate(rRef[ear][k])).Real;}
+            if(headPower!=null)for(int k=0;k<=half;k++){a[k]*=headPower[k];b[k]*=headPower[k];cross[k]*=headPower[k];}
             smoothDry[ear]=Smooth(a,p.Smooth1);smoothWet[ear]=Smooth(b,p.Smooth1);smoothCross[ear]=Smooth(cross,p.Smooth1);
         }
         void Add(double[] h,Complex[] reference,double[] energy)
@@ -64,17 +67,17 @@ public static class WetBalanceSolver
                 // The second reference is a complex ear sum: retain first-stage phase here.
                 var left=EqDesigner.MinimumPhaseSpectrum(first[0],ct);var right=EqDesigner.MinimumPhaseSpectrum(first[1],ct);
                 var centerPower=new double[half+1];
-                for(int k=0;k<=half;k++)centerPower[k]=Dsp.Power(((dRef[0][k]+g*rRef[0][k])*left[k]+(dRef[1][k]+g*rRef[1][k])*right[k])*.5);
+                for(int k=0;k<=half;k++)centerPower[k]=Dsp.Power(((dRef[0][k]+g*rRef[0][k])*left[k]+(dRef[1][k]+g*rRef[1][k])*right[k])*.5)*(headPower?[k]??1);
                 var centerDb=Smooth(centerPower,p.Smooth2).Select(v=>-secondStrength*10*Math.Log10(Math.Max(1e-300,v))).ToArray();
                 second=EqDesigner.InterpolateGain(centerDb,frequencies,n,sr);
             }
             double df=(double)sr/n,d=0,r=0,offset=double.NegativeInfinity;
             int lo=Math.Max(1,(int)Math.Floor(20/df-.5)),hi=Math.Min(half,(int)Math.Ceiling(20000/df+.5));
-            for(int ear=0;ear<2;ear++)for(int k=lo;k<=hi;k++)offset=Math.Max(offset,first[ear][k]+second[k]+bandDb[k]);
+            for(int ear=0;ear<2;ear++)for(int k=lo;k<=hi;k++)offset=Math.Max(offset,first[ear][k]+second[k]+bandDb[k]+(headDb?[k]??0));
             for(int ear=0;ear<2;ear++)for(int k=lo;k<=hi;k++)
             {
                 double weight=Math.Max(0,Math.Min((k+.5)*df,20000)-Math.Max((k-.5)*df,20))/df;
-                double q=weight*Math.Pow(10,(first[ear][k]+second[k]+bandDb[k]-offset)/10);
+                double q=weight*Math.Pow(10,(first[ear][k]+second[k]+bandDb[k]+(headDb?[k]??0)-offset)/10);
                 d+=q*dryPower[ear][k];r+=q*wetPower[ear][k];
             }
             double ratioLog=Math.Log(r/d)+2*Math.Log(g),error=ratioLog-targetLog;

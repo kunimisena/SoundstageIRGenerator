@@ -12,7 +12,7 @@ License: [Creative Commons Attribution 4.0 International](https://creativecommon
 - Full attribution and changes: `Core/Data/FABIAN-NOTICE.txt` (also copied beside the EXE).
 - Source and converted checksums: `Core/Data/FABIAN-manifest.json`.
 
-The table conversion preserves original timing and gains in float32. Rendering constructs both ears from measured left-ear data using mirrored source directions, with nearest-direction selection, optional inverse CTF and sample-rate conversion as detailed in the notice. These modifications are not endorsed by the dataset authors.
+The table conversion preserves original timing and gains in float32. Rendering constructs both ears from measured left-ear data using mirrored source directions, with nearest-direction selection, optional inverse CTF, in-band magnitude preservation, out-of-band edge extension and finite causal reconstruction as detailed in the notice. The generator also applies a common noncoherent head-power calibration before its tonal EQ. These modifications are not endorsed by the dataset authors.
 
 内嵌表来自上述原始文件，使用 CC BY 4.0，作者、数据来源、转换校验值与具体渲染修改均保留。人头数据是第三方成果；项目的统计声场、EQ 和预设不代表原作者的认可。
 

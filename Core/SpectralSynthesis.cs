@@ -1,18 +1,21 @@
 using System.Numerics;
 namespace SoundstageIR.Core;
-public sealed record SynthesisResult(double[][] Kernels,double[][] Direct,double[][] EarEq,double[] SecondEq,double[] Bandpass,List<EqReport> Reports,int FftLength,int Support,double ProjectionErrorDb,double DiscardedEnergyDb);
+public sealed record SynthesisResult(double[][] Kernels,double[][] Direct,double[][] EarEq,double[] SecondEq,double[] Bandpass,List<EqReport> Reports,int FftLength,int Support,double ProjectionErrorDb,double DiscardedEnergyDb)
+{public double[] HeadEq {get;init;}=[1.0];}
 public static class SpectralSynthesis
 {
-    public static SynthesisResult Apply(Project p,double[][] raw,double[][] direct,CancellationToken ct=default)
+    public static SynthesisResult Apply(Project p,double[][] raw,double[][] direct,CancellationToken ct=default,HeadReferenceEq? headReference=null)
     {
         int sr=p.SampleRate,length=raw.Max(h=>h.Length),support=EqDesigner.Support(length,sr);
         int outputLength=checked(length+support-1),n=EqDesigner.FftLength(length,sr);
         var refs=new[]{Dsp.Spectrum(Dsp.Sum(raw[0],raw[1]),n),Dsp.Spectrum(Dsp.Sum(raw[2],raw[3]),n)};
+        var headPlan=headReference?.Plan(support,ct);
+        var calibrated=headPlan==null?refs:refs.Select(h=>h.Select((v,k)=>v*headPlan.Spectrum[k]).ToArray()).ToArray();
         double strength=p.Equalize?p.EarEqStrengthPercent/100:0;
-        var left=EqDesigner.Plan(refs[0],sr,p.Smooth1,strength,"一级左耳 EQ",support,ct);
-        var right=p.StrictMirror?left:EqDesigner.Plan(refs[1],sr,p.Smooth1,strength,"一级右耳 EQ",support,ct);
+        var left=EqDesigner.Plan(calibrated[0],sr,p.Smooth1,strength,"一级左耳 EQ",support,ct);
+        var right=p.StrictMirror?left:EqDesigner.Plan(calibrated[1],sr,p.Smooth1,strength,"一级右耳 EQ",support,ct);
         var first=new[]{left,right};var center=new Complex[n];
-        for(int k=0;k<n;k++)center[k]=(refs[0][k]*left.Spectrum[k]+refs[1][k]*right.Spectrum[k])*.5;
+        for(int k=0;k<n;k++)center[k]=(calibrated[0][k]*left.Spectrum[k]+calibrated[1][k]*right.Spectrum[k])*.5;
         var second=EqDesigner.Plan(center,sr,p.Smooth2,p.Equalize&&!p.StrictMirror?p.CenterEqStrengthPercent/100:0,"二级共同 EQ",support,ct);
         var bandDb=Enumerable.Range(0,n/2+1).Select(k=>Dsp.BandpassDb(k*(double)sr/n,sr)).ToArray();
         var kernels=new double[4][];var finalDirect=new double[4][];double projectionError=0,discardedRatio=0;
@@ -20,7 +23,7 @@ public static class SpectralSynthesis
         {
             ct.ThrowIfCancellationRequested();
             // Design one complex correction from the complete target, without truncating stages.
-            var totalDb=new double[n/2+1];for(int k=0;k<totalDb.Length;k++)totalDb[k]=first[ear].GainDb[k]+second.GainDb[k]+bandDb[k];
+            var totalDb=new double[n/2+1];for(int k=0;k<totalDb.Length;k++)totalDb[k]=first[ear].GainDb[k]+second.GainDb[k]+bandDb[k]+(headPlan?.GainDb[k]??0);
             var correction=EqDesigner.MinimumPhaseSpectrum(totalDb,ct);
             var desiredRef=new Complex[n];for(int k=0;k<n;k++)desiredRef[k]=refs[ear][k]*correction[k];
             for(int input=0;input<2;input++)
@@ -50,10 +53,10 @@ public static class SpectralSynthesis
             if(measure&&total>0)discardedRatio=Math.Max(discardedRatio,error/total);
             return output;
         }
-        var reports=new List<EqReport>();if(p.Equalize){reports.Add(left.Report);if(!p.StrictMirror){reports.Add(right.Report);reports.Add(second.Report);}}
+        var reports=new List<EqReport>();if(headPlan!=null)reports.Add(headPlan.Report);if(p.Equalize){reports.Add(left.Report);if(!p.StrictMirror){reports.Add(right.Report);reports.Add(second.Report);}}
         // Full inverse transforms are diagnostic transfer responses, not serial output FIRs.
         double[] Diagnostic(EqSpectrum eq)=>eq.Report.Taps==1?[1.0]:EqDesigner.ToImpulse(eq.Spectrum,n,false);
         return new(kernels,finalDirect,[Diagnostic(left),Diagnostic(right)],Diagnostic(second),
-            EqDesigner.ToImpulse(EqDesigner.MinimumPhaseSpectrum(bandDb,ct),n,false),reports,n,support,projectionError,10*Math.Log10(Math.Max(1e-300,discardedRatio)));
+            EqDesigner.ToImpulse(EqDesigner.MinimumPhaseSpectrum(bandDb,ct),n,false),reports,n,support,projectionError,10*Math.Log10(Math.Max(1e-300,discardedRatio))){HeadEq=headPlan==null?[1.0]:Diagnostic(headPlan)};
     }
 }

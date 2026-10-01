@@ -22,8 +22,12 @@ Modifications by Soundstage IR Generator:
   The same symmetric head is used in both random-mirror modes.
 - optional official 1/3-octave smoothed minimum-phase inverse CTF convolution.
 - 44.1/48/96 kHz windowed-sinc sample-rate conversion with explicit common lead-in.
-- no individual path normalization, independent peak alignment, or minimum-phase
-  reconstruction of the measured HRIR; room synthesis and final EQ are separate.
+- bandwidth extension directly from native data: preserve 20 Hz-20 kHz
+  magnitudes, extend the corresponding boundary magnitude outside that band,
+  and reconstruct a minimum-phase magnitude component with measured in-band
+  excess phase and finite causal projection. No magnitude floor is applied.
+- no individual path normalization or independent peak alignment; room synthesis
+  and final EQ are separate.
 Dataset limitations: blocked-ear-canal entrance measurements. Frequencies below
 200 Hz and elevations below -64 degrees include numerical substitutes; the
 200-500 Hz transition combines measured and numerical magnitude and phase.

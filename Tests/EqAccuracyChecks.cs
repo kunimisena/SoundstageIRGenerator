@@ -38,7 +38,7 @@ public static class EqAccuracyChecks
         {
             var p=Presets.BuiltIn.Single(p=>p.Name=="宽阔监听").Create();p.ReflectionEnergyPercent=ratio;
             var result=Generator.Generate(p);check(result.Kernels.All(h=>h.All(double.IsFinite)),"Finite calibrated kernels at wet "+ratio);
-            check(result.OutputReferenceDb==p.OutputDb&&result.EqReports.Count(e=>e.Taps>1)==2,"EQ preserves the requested output reference at wet "+ratio);
+            check(result.OutputReferenceDb==p.OutputDb&&result.EqReports.Count(e=>e.Taps>1)==3&&result.HeadEq.Length>1,"EQ preserves the requested output reference at wet "+ratio);
             string path=Exporter.Export(result,folder);var wave=Exporter.ReadWave(TestFiles.Get(path,"Matrix_PATHS_LL_RL_LR_RR.wav"));
             check(wave.Channels.Zip(result.Kernels).All(c=>c.First.SequenceEqual(c.Second)),"Calibrated WAV matches preview at wet "+ratio);
             double reference=Dsp.SmoothedDbAt(Dsp.Sum(wave.Channels[0],wave.Channels[1]),p.SampleRate,p.Smooth1).Concat(Dsp.SmoothedDbAt(Dsp.Sum(wave.Channels[2],wave.Channels[3]),p.SampleRate,p.Smooth1)).Average();

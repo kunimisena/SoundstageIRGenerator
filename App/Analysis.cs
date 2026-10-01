@@ -3,7 +3,7 @@ using SoundstageIR.Core;
 namespace SoundstageIRGenerator;
 public static class Analysis
 {
-    static readonly string[] Colors=["#52DBBF","#EAB66E","#7BAAFF","#D9A4ED","#FFFFFF","#EF8596"];
+    static readonly string[] Colors=["#52DBBF","#EAB66E","#7BAAFF","#D9A4ED","#A35A37","#EF8596"];
     public static PlotData Build(GenerationResult r,Guid? source,int subject,int kind,bool smooth,bool bandpass=false)
     {
         double[][] paths;string[] names;double zero=r.ZeroSample;int sr=r.Project.SampleRate;
@@ -16,7 +16,7 @@ public static class Analysis
             case 5:
                 var c=r.Contributions.FirstOrDefault(c=>c.Id==source);if(c==null)return new("卷积结果中没有所选反射源，请生成卷积核","Hz","dB",true,[]);
                 paths=subject==4?[c.LeftInputKernel,c.RightInputKernel]:c.EarPaths;names=subject==4?["L 激励","R 激励"]:["L→左耳","R→左耳","L→右耳","R→右耳"];if(subject==4)zero=0;break;
-            case 6:paths=[r.EarEq[0],r.EarEq[1],r.SecondEq,r.Bandpass];names=["一级左耳修正","一级右耳修正","共同第二级修正","带通目标"];zero=0;break;
+            case 6:paths=[r.EarEq[0],r.EarEq[1],r.SecondEq,r.Bandpass,r.HeadEq];names=["一级左耳修正","一级右耳修正","共同第二级修正","带通目标","人头参考修正"];zero=0;break;
             default:paths=r.Kernels;names=["L→左耳","R→左耳","L→右耳","R→右耳"];break;
         }
         var lines=new List<PlotLine>();for(int c=0;c<paths.Length;c++)

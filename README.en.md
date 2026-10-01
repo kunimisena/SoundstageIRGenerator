@@ -68,6 +68,7 @@ I asked the AI to check the project's open-source licensing. If there is any inf
 - Start with ten authored fields or a blank template. Wide monitor is selected on startup. Save and load configurations as JSON files.
 - Adjust a whole field or individual directions: spectral energy, frequency-dependent decay, onset, density buildup and the full energy envelope.
 - Compare FABIAN head/pinna/torso responses with a simple spherical head. Parameter symmetry and random-realization symmetry are separate choices.
+- FABIAN extends its boundary magnitudes outside the audible band while retaining in-band notches. The EQ chain first calibrates noncoherent head power across enabled directions, then applies the two adjustable tonal stages.
 - Inspect actual kernels: magnitude, impulse response, energy decay, phase and group delay. Toggle individual plotted curves.
 - Set per-ear and common second-stage minimum-phase EQ strengths independently. The second stage defaults to **0%**.
 - Export four float32 WAV kernels, a path bundle, or a ready-to-include Equalizer APO configuration at 44.1, 48 or 96 kHz.
@@ -118,7 +119,7 @@ FABIAN supplies the measured head responses (CC BY 4.0). Brown–Duda supplies t
 
 ## Status and attribution
 
-Application version: **4.11.0**. [Build and validation record](docs/VALIDATION.md).
+Application version: **4.12.0**. [Build and validation record](docs/VALIDATION.md).
 
 Original code and documentation use the [MIT License](LICENSE): use, modify and redistribute them while retaining the copyright and license notice.
 

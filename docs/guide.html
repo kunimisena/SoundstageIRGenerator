@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soundstage IR Generator · Guide</title><style>
 :root{color-scheme:light}body{margin:0;background:#f6f0e1;color:#39352d;font:16px/1.75 system-ui,"Microsoft YaHei",sans-serif}header{background:#eee7d8;padding:16px max(20px,calc((100vw - 1020px)/2));border-bottom:1px solid #324656}header b{letter-spacing:.12em;color:#426b71}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{padding:9px 16px;border:1px solid #405768;background:#e6decc;border-radius:5px;color:#39352d;cursor:pointer}button:hover{background:#dbe1d8}main{max-width:1020px;margin:auto;padding:24px}h1{font-size:30px}h2{margin-top:2em;color:#39352d}h3{color:#404040}a{color:#426b71}p{max-width:90ch}code,pre{font-family:Consolas,monospace;background:#eee7d8;border-radius:4px}code{padding:1px 4px}pre{padding:15px;overflow:auto;white-space:pre-wrap;font-size:14px}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td{padding:9px;border:1px solid #ddd}tr:first-child{background:#e6decc;font-weight:600}.bullet{margin:.4em 0}footer{padding:25px;color:#606060;border-top:1px solid #324656}article[hidden]{display:none}
-</style><header><b>SOUNDSTAGE IR GENERATOR</b><div>4.11.0 · 离线双语指南 / Offline bilingual guide</div><nav><button onclick="show('zh-guide')">使用指南</button><button onclick="show('zh-design')">设计哲学</button><button onclick="show('en-guide')">User guide</button><button onclick="show('en-design')">Design philosophy</button></nav></header><main><article id="zh-guide"><h1>耳机空间音效与 HRTF 卷积核使用指南</h1>
+</style><header><b>SOUNDSTAGE IR GENERATOR</b><div>4.12.0 · 离线双语指南 / Offline bilingual guide</div><nav><button onclick="show('zh-guide')">使用指南</button><button onclick="show('zh-design')">设计哲学</button><button onclick="show('en-guide')">User guide</button><button onclick="show('en-design')">Design philosophy</button></nav></header><main><article id="zh-guide"><h1>耳机空间音效与 HRTF 卷积核使用指南</h1>
 <p>English · 回到首页</p>
 <p>Soundstage IR Generator 生成双耳空间音效的四路径脉冲响应（IR），供 Equalizer APO 或矩阵卷积器播放。HRTF（头相关传递函数）描述不同方向到两耳的响应，混响参数决定空间的湿度、频谱与拖尾。</p>
 <h2>三个页面</h2>
@@ -112,12 +112,13 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 <p>这表达了时间能量分布与跨频率相关性的联系。较长尾部对应较细的频率变化尺度。独立、同统计的方向核相加时，协方差也相加；能量归一化后保留相同的相关结构。采用不同频谱或包络的方向，则按各自权重共同形成输出。</p>
 <p>种子、稳定源 ID、输入激励流和固定频带次序共同决定随机实现。修改单个源可保持其他源的随机细节，便于听辨参数影响。</p>
 <h2>人头与共同频响</h2>
-<p>球形头提供简洁的遮挡和到耳延时模型。FABIAN 提供头部、耳廓和肩胸部的方向响应，当前使用固定 HATO 0 数据的最近方向采样。渲染器以实测左耳的全方向响应作为统一参考，右耳使用镜像入射方向对应的左耳响应。各条响应保留原始幅相和时间参考，形成左右对称的人头模型。</p>
+<p>球形头提供简洁的遮挡和到耳延时模型。FABIAN 提供头部、耳廓和肩胸部的方向响应，当前使用固定 HATO 0 数据的最近方向采样。渲染器以实测左耳的全方向响应作为统一参考，右耳使用镜像入射方向对应的左耳响应。各方向形成左右对称的人头模型。20 Hz–20 kHz 的幅度及深谷保留；带外沿用各方向、各耳对应的边缘幅度。按所选采样率直接重建响应，保留带内超额相位结构和共同时间基准，最小相位部分随幅度目标变化。</p>
 <p>FABIAN 默认启用作者提供的平滑最小相位逆共同传递函数。去掉共同频谱后，方向差异与已有耳机校准叠加；这个开关提供保留完整数据频谱的对照。耳机校准由用户现有播放链负责。</p>
 <p>数据在堵塞耳道入口测得，部分低频与下方方向采用原作者的数值补全。来源、变换和许可见 FABIAN 说明。</p>
+<p>FABIAN 的 EQ 链路首先使用等能量单位冲激测试全部启用方向，计算双耳平均的非相干功率，再用一个共同最小相位滤波器校正到平直目标。这一步不使用随机混响核、不叠加方向间的相干交叉项，也不作频率平滑。带外延伸与这项人头校正是固定处理，配置文件不提供单独开关；整体 EQ 关闭时旁路包括人头校正在内的 EQ，带外延伸仍生效。原有共同频响补偿选项保留。人头处理细节。</p>
 <h2>EQ 是可调的音色选择</h2>
-<p>同相测试输入下，两耳响应为：</p>
-<pre class="formula">M_l=H_{l\leftarrow L}+H_{l\leftarrow R},\quad M_r=H_{r\leftarrow L}+H_{r\leftarrow R}.</pre>
+<p>经过共同人头校正 Q_h 后，同相测试输入下两耳响应为：</p>
+<pre class="formula">M_l=Q_h(H_{l\leftarrow L}+H_{l\leftarrow R}),\quad M_r=Q_h(H_{r\leftarrow L}+H_{r\leftarrow R}).</pre>
 <p>随机非严格镜像时，一级分别校正每耳响应的平滑幅度；二级以 <code>(Q_l M_l + Q_r M_r)/2</code> 设计共同 EQ。严格镜像采用一级共同 EQ。校正均为最小相位，强度按 dB 缩放后构造滤波器。</p>
 <p>EQ 增益由平滑目标确定，校正使用由原始四路径长度决定的固定时间预算，有限长度引入的频响误差单独报告。频段功率采用局部正值积分，避免强弱频段间的大数相减损失精度；对零响应或非有限数值明确报错。最终共同标量按设定参考电平校准，频点峰值作为播放余量提示。</p>
 <p>默认一级 100%、二级 0%，平滑宽度分别为 1/12 与 1/3 倍频程。二级根据同相参考校正，也会改变两侧内容的音色；保留强度控制便于按音乐和听感选择。</p>
@@ -262,12 +263,13 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 <p>The relation connects temporal energy distribution with cross-frequency correlation. Longer tails create finer spectral variation. Independent kernels with the same statistics add their covariances; energy normalization preserves their normalized correlation structure. Directions with different spectra or envelopes contribute according to their own profiles and weights.</p>
 <p>The seed, stable source ID, input stream and fixed band order determine each realization. Editing one source retains other sources&#x27; random detail, supporting controlled comparisons.</p>
 <h2>Head models and the common response</h2>
-<p>The sphere offers a compact head-shadow and arrival-time model. FABIAN supplies head, pinna and torso responses; the renderer samples the nearest direction from the fixed HATO 0 dataset. The measured left-ear responses over the full sphere form the anatomical reference. The right ear uses the left-ear response at the mirrored source direction, retaining the selected IR&#x27;s original complex response and time reference.</p>
+<p>The sphere offers a compact head-shadow and arrival-time model. FABIAN supplies head, pinna and torso responses; the renderer samples the nearest direction from the fixed HATO 0 dataset. The measured left-ear responses over the full sphere form the anatomical reference. The right ear uses the left-ear response at the mirrored source direction, forming a symmetric head. Magnitudes and notches within 20 Hz–20 kHz are retained; each direction and ear extends its own boundary magnitude outside that band. Responses are reconstructed directly at the selected sample rate with the measured in-band excess-phase structure and a common timing reference. The minimum-phase component follows the new magnitude target.</p>
 <p>FABIAN defaults to the dataset author&#x27;s smooth minimum-phase inverse common transfer function. Removing that shared spectrum lets directional differences combine with the listener&#x27;s existing headphone calibration. Disabling it provides the complete dataset spectrum for comparison. Headphone calibration remains in the listener&#x27;s playback chain.</p>
 <p>The data represents blocked ear-canal entrances, with author-provided numerical completion at some low frequencies and lower directions. Sources, transformations and attribution are documented in the FABIAN notices.</p>
+<p>The FABIAN EQ chain first tests all enabled directions with equal-energy unit impulses, averages binaural power noncoherently, and applies one common minimum-phase inverse to a flat target. This reference uses neither random reverberant kernels, inter-direction coherent cross terms, nor frequency smoothing. Bandwidth extension and head calibration are fixed processing steps with no individual configuration switches. Master EQ bypass includes head calibration; bandwidth extension still applies. The existing common-transfer compensation option remains available. Head-response details.</p>
 <h2>EQ is an adjustable tonal choice</h2>
-<p>For identical input signals, each ear receives:</p>
-<pre class="formula">M_l=H_{l\leftarrow L}+H_{l\leftarrow R},\quad M_r=H_{r\leftarrow L}+H_{r\leftarrow R}.</pre>
+<p>After the common head calibration Q_h, identical input signals give:</p>
+<pre class="formula">M_l=Q_h(H_{l\leftarrow L}+H_{l\leftarrow R}),\quad M_r=Q_h(H_{r\leftarrow L}+H_{r\leftarrow R}).</pre>
 <p>With independent mirrored random detail, stage one equalizes the smoothed magnitude of each ear response. Stage two designs a common EQ from <code>(Q_l M_l + Q_r M_r)/2</code>. Strict random mirroring uses one common first-stage EQ. Filters are minimum phase; strength scales the correction in dB before filter construction.</p>
 <p>EQ gain follows the smoothed target. Correction uses a fixed time budget derived from raw path length; finite-support response error is reported separately. Local positive-power integration avoids cancellation between loud and quiet spectral regions; zero or nonfinite references produce an explicit error. A common scalar calibrates the selected output reference level. Frequency peaks are reported as playback-headroom information.</p>
 <p>Defaults are 100% for stage one, 0% for stage two, and smoothing of 1/12 and 1/3 octave respectively. Common correction designed from identical inputs also changes lateral content. Adjustable strength lets the listener choose the balance for their music.</p>
