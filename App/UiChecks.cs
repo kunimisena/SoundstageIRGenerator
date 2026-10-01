@@ -48,7 +48,7 @@ public partial class MainWindow
             Check(FfmpegPathBox.IsReadOnly&&FfmpegPathBox.GetBindingExpression(TextBox.TextProperty)!=null,"Selected tool path remains selectable and bound");
 
             Check(!IsVisible,"Main window stays invisible");
-            Check(Pages.Items.Count==3&&Content is ResizePreviewHost host&&ReferenceEquals(host.Page,Pages),"Three pages with no external action bar");
+            Check(Pages.Items.Count==3&&Content is ResizePreviewHost host&&host.Page is Grid,"Three workflow pages and a language selector");
             Check(VM.P.Name=="宽阔监听"&&VM.P.CenterEqStrengthPercent==0&&VM.P.Smooth1==12&&VM.P.Smooth2==3,"Recommended wide monitor preserves 1/12 per-ear smoothing and zero center EQ");
             Check(VM.PresetCards.Count==11,"Ten presets plus blank");Capture(client,"templates.png");
             foreach(var preset in Presets.All)

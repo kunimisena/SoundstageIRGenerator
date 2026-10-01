@@ -6,7 +6,7 @@ Design a headphone soundstage for stereo music and generate impulse responses (I
 
 [Download Windows x64](https://github.com/kunimisena/SoundstageIRGenerator/releases/latest) · [简体中文](README.md) · [User guide](docs/en/guide.md) · [Design philosophy](docs/en/design.md) · [Build instructions](docs/en/development.md)
 
-An offline Windows tool for customizable binaural audio and virtual speaker playback over headphones. Start with Wide monitor, then shape reverb energy, spectrum, decay and direction. The application UI is Chinese; the guides are available in Chinese and English.
+An offline Windows tool for customizable binaural audio and virtual speaker playback over headphones. Start with Wide monitor, then shape reverb energy, spectrum, decay and direction. The application interface and documentation are available in English and Simplified Chinese. Switch languages at the top right of the window; the choice is saved automatically.
 
 ![Headphone soundstage, HRTF and convolution response editing](docs/images/editor.png)
 
@@ -119,7 +119,7 @@ FABIAN supplies the measured head responses (CC BY 4.0). Brown–Duda supplies t
 
 ## Status and attribution
 
-Application version: **4.12.0**. [Build and validation record](docs/VALIDATION.md).
+Application version: **4.13.0**. [Build and validation record](docs/VALIDATION.md).
 
 Original code and documentation use the [MIT License](LICENSE): use, modify and redistribute them while retaining the copyright and license notice.
 

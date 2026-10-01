@@ -7,7 +7,11 @@ param(
 )
 $ErrorActionPreference='Stop'
 $studioRoot=$PSScriptRoot
-if(-not $OutputDirectory){$OutputDirectory=Join-Path $studioRoot 'publish\SoundstageIRGenerator'}
+if(-not $OutputDirectory){
+    [xml]$buildVersion=Get-Content -LiteralPath (Join-Path $studioRoot 'Directory.Build.props')
+    $folder=if([string]$buildVersion.Project.PropertyGroup.Version -match '-preview'){'publish\SoundstageIRGenerator-preview'}else{'publish\SoundstageIRGenerator'}
+    $OutputDirectory=Join-Path $studioRoot $folder
+}
 $OutputDirectory=[IO.Path]::GetFullPath($OutputDirectory)
 Push-Location -LiteralPath $studioRoot
 try {

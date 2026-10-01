@@ -10,7 +10,8 @@ public sealed partial class MainViewModel
     sealed record AudioToolPreferences(string FfmpegPath);
     public string SelectedFfmpegPath {get;private set;}="";
     public string FfmpegPathDisplay {get;private set;}="";
-    public string AudioToolStatus {get;private set;}="";
+    string rawAudioToolStatus="";
+    public string AudioToolStatus {get=>TextCatalog.Diagnostic(rawAudioToolStatus);private set=>rawAudioToolStatus=value;}
     public bool AudioToolsAvailable {get;private set;}
     public bool CheckingAudioTools {get;private set;}
     public bool CanConfigureAudioTools=>Ready&&!CheckingAudioTools;
@@ -26,12 +27,12 @@ public sealed partial class MainViewModel
             if(File.Exists(AudioToolsSettingsFile))SelectedFfmpegPath=JsonSerializer.Deserialize<AudioToolPreferences>(File.ReadAllText(AudioToolsSettingsFile))?.FfmpegPath??"";
         }
         catch(Exception ex) when(ex is IOException or UnauthorizedAccessException or JsonException)
-        {loadError="路径设置读取失败："+ex.Message;}
+        {loadError=SoundstageIR.Core.TextCatalog.T("T6A716F6B71")+ex.Message;}
         RefreshAudioTools();
         if(loadError!=null)AudioToolStatus=loadError;
         ChooseFfmpegCommand=new ActionCommand(async _=>
         {
-            var dialog=new OpenFileDialog{Title="选择 FFmpeg（同目录需有 ffprobe.exe）",Filter="FFmpeg|ffmpeg.exe",CheckFileExists=true};
+            var dialog=new OpenFileDialog{Title=SoundstageIR.Core.TextCatalog.T("T1D0050B1F3"),Filter="FFmpeg|ffmpeg.exe",CheckFileExists=true};
             if(File.Exists(SelectedFfmpegPath))dialog.FileName=SelectedFfmpegPath;
             if(dialog.ShowDialog()==true){SetAudioToolsPath(dialog.FileName);await CheckAudioToolsAsync();}
         },()=>CanConfigureAudioTools);
@@ -44,7 +45,7 @@ public sealed partial class MainViewModel
         try
         {
             var tools=AudioRenderer.ResolveTools(SelectedFfmpegPath);FfmpegPathDisplay=tools.Ffmpeg;
-            AudioToolsAvailable=true;AudioToolStatus="已找到 FFmpeg 和 ffprobe；处理前会自动检查可用性。";
+            AudioToolsAvailable=true;AudioToolStatus=SoundstageIR.Core.TextCatalog.T("TC97E37250F");
         }
         catch(Exception ex) when(ex is IOException or ArgumentException or UnauthorizedAccessException)
         {AudioToolsAvailable=false;AudioToolStatus=ex.Message;}
@@ -60,20 +61,20 @@ public sealed partial class MainViewModel
             File.WriteAllText(AudioToolsSettingsFile,JsonSerializer.Serialize(new AudioToolPreferences(path),new JsonSerializerOptions{WriteIndented=true}));
         }
         catch(Exception ex) when(ex is IOException or UnauthorizedAccessException)
-        {AudioToolStatus+="\n路径仅用于本次会话，保存失败："+ex.Message;Notify(nameof(AudioToolStatus));}
+        {AudioToolStatus+=SoundstageIR.Core.TextCatalog.T("T7A9E8E6A07")+ex.Message;Notify(nameof(AudioToolStatus));}
     }
     public async Task<bool> CheckAudioToolsAsync()
     {
         if(!CanConfigureAudioTools)return false;
-        CheckingAudioTools=true;AudioToolStatus="正在检查 FFmpeg…";Notify("");CommandManager.InvalidateRequerySuggested();
+        CheckingAudioTools=true;AudioToolStatus=SoundstageIR.Core.TextCatalog.T("T2DFB51E4D3");Notify("");CommandManager.InvalidateRequerySuggested();
         try
         {
             var tools=AudioRenderer.ResolveTools(SelectedFfmpegPath);
             string version=await Task.Run(()=>AudioRenderer.CheckToolsAsync(tools));
             FfmpegPathDisplay=tools.Ffmpeg;AudioToolsAvailable=true;
-            AudioToolStatus="可用 · "+version+"\n卷积、重采样、响度测量与限幅检查通过。";return true;
+            AudioToolStatus=SoundstageIR.Core.TextCatalog.T("TCDE10AB9D2")+version+SoundstageIR.Core.TextCatalog.T("T4A6E30DE21");return true;
         }
-        catch(Exception ex){AudioToolsAvailable=false;AudioToolStatus="FFmpeg 不可用："+ex.Message;return false;}
+        catch(Exception ex){AudioToolsAvailable=false;AudioToolStatus=SoundstageIR.Core.TextCatalog.T("T73747D1C2E")+ex.Message;return false;}
         finally{CheckingAudioTools=false;Notify("");CommandManager.InvalidateRequerySuggested();}
     }
 }

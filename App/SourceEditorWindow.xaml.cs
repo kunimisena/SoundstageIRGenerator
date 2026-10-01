@@ -29,7 +29,7 @@ public partial class SourceEditorWindow:Window
     public bool CommitEdits()
     {
         EditorInput.Commit(SourceLayout);KnotGrid.CommitEdit(DataGridEditingUnit.Cell,true);KnotGrid.CommitEdit(DataGridEditingUnit.Row,true);
-        if(EditorInput.HasErrors(SourceLayout)){VM.SetStatus("请检查红框内的数值。");return false;}
+        if(EditorInput.HasErrors(SourceLayout)){VM.SetStatus(SoundstageIR.Core.TextCatalog.T("TB469D01528"));return false;}
         if(!AnalysisPanel.CommitEdits())return false;
         VM.Commit();VM.PendingChanged();return true;
     }
@@ -45,7 +45,7 @@ public partial class SourceEditorWindow:Window
         var e=VM.Editing;
         EnergyCurve.Points=e?.Energy;EnergyCurve.MinY=Math.Min(-30,Math.Floor((e?.Energy.Where(k=>double.IsFinite(k.Y)).Select(k=>k.Y).DefaultIfEmpty(-30).Min()??-30)/10)*10);EnergyCurve.MaxY=Math.Max(10,Math.Ceiling((e?.Energy.Where(k=>double.IsFinite(k.Y)).Select(k=>k.Y).DefaultIfEmpty(10).Max()??10)/10)*10);
         DecayCurve.Points=e?.Decay;DecayCurve.MinY=EditingLimits.MinRt;DecayCurve.MaxY=EditingLimits.MaxRt;DecayCurve.LogY=true;DecayCurve.Unit="s";
-        ShapeCurve.Points=e?.Envelope;ShapeCurve.LogX=false;ShapeCurve.MinY=Math.Min(-80,ShapeCurve.Points?.Min(k=>k.Y)-3??-80);ShapeCurve.MaxY=Math.Max(12,ShapeCurve.Points?.Max(k=>k.Y)+3??12);ShapeCurve.XUnit="额外路程 m";ShapeCurve.FullEnvelope=true;
+        ShapeCurve.Points=e?.Envelope;ShapeCurve.LogX=false;ShapeCurve.MinY=Math.Min(-80,ShapeCurve.Points?.Min(k=>k.Y)-3??-80);ShapeCurve.MaxY=Math.Max(12,ShapeCurve.Points?.Max(k=>k.Y)+3??12);ShapeCurve.XUnit=SoundstageIR.Core.TextCatalog.T("T4CBF266ED0");ShapeCurve.FullEnvelope=true;
         if(e!=null)
         {
             ShapeCurve.DisplayX=e.EnvelopeDistance;
@@ -54,7 +54,7 @@ public partial class SourceEditorWindow:Window
             ShapeCurve.MaxX=envelopeZoom?ShapeCurve.MinX+Math.Max(1,e.MixingPath*1.4):e.EnvelopeDistance(1);
             ShapeCurve.Marker=e.FirstReflectionExtraPath+e.MixingPath;
         }
-        EnvelopeHint.Text="1 kHz 能量包络 · 虚线为反射变密尺度。";
+        EnvelopeHint.Text=SoundstageIR.Core.TextCatalog.T("T5CC7096F35");
         foreach(var curve in new[]{EnergyCurve,DecayCurve,ShapeCurve}){curve.Editable=VM.CanEditExcitation&&VM.Ready;curve.InvalidateVisual();}
         UpdateTable();
         if(!syncing&&SourceList.SelectedItem!=VM.Selected){syncing=true;SourceList.SelectedItem=VM.Selected;syncing=false;}

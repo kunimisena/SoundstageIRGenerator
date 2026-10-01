@@ -12,11 +12,12 @@ public sealed partial class MainViewModel
     public int AudioFormatIndex {get;set;}=2;
     public string[] AudioFormats {get;}=["WAV · float32","FLAC · 24 bit","M4A / AAC · 320 kbps"];
     int audioLevelModeIndex;
-    public int AudioLevelModeIndex {get=>audioLevelModeIndex;set{audioLevelModeIndex=value;Notify();Notify(nameof(AudioNormalizesLoudness));}}
+    public int AudioLevelModeIndex {get=>audioLevelModeIndex;set{if(Localizing||value<0)return;audioLevelModeIndex=value;Notify();Notify(nameof(AudioNormalizesLoudness));}}
     public bool AudioNormalizesLoudness=>AudioLevelModeIndex==0;
-    public string[] AudioLevelModes {get;}=["补偿到目标 LUFS，再限幅","保持卷积后电平，仅限幅","旁路：原始卷积结果"];
+    public LocalizedOption[] AudioLevelModes {get;}=[new("TAE94FDE125"), new("TF40DCB29DB"), new("T8335BA2AB4")];
     public double AudioTargetLufs {get;set;}=-18;
-    public string AudioSummary {get;private set;}="使用当前生成的最终四条核，输出普通双声道文件。";
+    string rawAudioSummary=SoundstageIR.Core.TextCatalog.T("T7A0CF8AD05");
+    public string AudioSummary {get=>TextCatalog.Diagnostic(rawAudioSummary);private set=>rawAudioSummary=value;}
     public ICommand ChooseAudioCommand {get;private set;}=null!;
     public ICommand RenderAudioCommand {get;private set;}=null!;
     public string AudioLastFile {get;private set;}="";
@@ -27,25 +28,25 @@ public sealed partial class MainViewModel
         AudioOutputParent=Path.Combine(Root,"processed-audio");
         InitializeAudioTools();
         OpenAudioOutputCommand=new ActionCommand(_=>Safe(()=>Process.Start(new ProcessStartInfo(Path.GetDirectoryName(AudioLastFile)!){UseShellExecute=true})),()=>File.Exists(AudioLastFile));
-        ChooseAudioCommand=new ActionCommand(_=>{var dialog=new OpenFileDialog{Filter="音频文件|*.wav;*.flac;*.mp3;*.m4a;*.aac;*.ogg;*.opus;*.aiff;*.wma|所有文件|*.*"};if(dialog.ShowDialog()==true)AudioInput=dialog.FileName;},()=>Ready);
+        ChooseAudioCommand=new ActionCommand(_=>{var dialog=new OpenFileDialog{Filter=SoundstageIR.Core.TextCatalog.T("T1547FA829D")};if(dialog.ShowDialog()==true)AudioInput=dialog.FileName;},()=>Ready);
         RenderAudioCommand=new ActionCommand(async _=>await RenderAudioAsync(),()=>CanExport&&!CheckingAudioTools&&File.Exists(AudioInput)&&AudioToolsAvailable);
         ApoExportCommand=new ActionCommand(async _=>await ExportApoAsync(),()=>CanExport);
     }
     public async Task<string?> ExportApoAsync(string? executableDirectory=null)
     {
-        if(Busy||CommitTemplateEdits?.Invoke()==false)return null;Commit();if(Result==null||Stale){SetStatus("参数已修改，请先重新生成。");return null;}
+        if(Busy||CommitTemplateEdits?.Invoke()==false)return null;Commit();if(Result==null||Stale){SetStatus(SoundstageIR.Core.TextCatalog.T("T4B082BE8D7"));return null;}
         try
         {
             Busy=true;Notify("");CommandManager.InvalidateRequerySuggested();var result=Result;
             LastExport=await Task.Run(()=>ApoExporter.Export(result,executableDirectory??AppContext.BaseDirectory));
-            Status="APO 配置已导出："+LastExport;return LastExport;
+            Status=SoundstageIR.Core.TextCatalog.T("TFFFA023EB0")+LastExport;return LastExport;
         }
-        catch(Exception ex){Status="APO 导出失败："+ex.Message;return null;}
+        catch(Exception ex){Status=SoundstageIR.Core.TextCatalog.T("TE1A22EA03E")+ex.Message;return null;}
         finally{Busy=false;Notify("");CommandManager.InvalidateRequerySuggested();}
     }
     public async Task<AudioRenderResult?> RenderAudioAsync()
     {
-        if(Busy||CommitTemplateEdits?.Invoke()==false)return null;Commit();if(Result==null||Stale){SetStatus("参数已修改，请先重新生成。");return null;}
+        if(Busy||CommitTemplateEdits?.Invoke()==false)return null;Commit();if(Result==null||Stale){SetStatus(SoundstageIR.Core.TextCatalog.T("T4B082BE8D7"));return null;}
         try
         {
             Busy=true;Progress=0;cancellation=new();Notify("");CommandManager.InvalidateRequerySuggested();
@@ -53,12 +54,12 @@ public sealed partial class MainViewModel
             var progress=new Progress<(double Fraction,string Message)>(v=>{Progress=v.Fraction*100;Status=v.Message;Notify(nameof(Progress));Notify(nameof(Status));});
             var rendered=await Task.Run(()=>AudioRenderer.RenderAsync(result,options,progress,cancellation.Token));
             AudioLastFile=rendered.File;
-            string Loudness(double? value)=>value is double n?$"{n:F2}":"不可测";
-            AudioSummary=$"{AudioLevelModes[(int)rendered.Mode]}\n已导出：{rendered.File}\n{rendered.SampleRate} Hz · {(rendered.OutputSamples/(double)rendered.SampleRate):F2} 秒（含尾部）\n响度 {Loudness(rendered.Before?.IntegratedLufs)} → {Loudness(rendered.After?.IntegratedLufs)} LUFS · 成品真峰值 {Loudness(rendered.After?.TruePeakDbTp)} dBTP\n响度增益 {rendered.GainDb:+0.00;-0.00;0} dB · 峰值/编码额外修正 {rendered.SafetyGainDb:0.00} dB\n{(rendered.LimiterCeilingDb is double ceiling?$"限幅阈值 {ceiling:F2} dBFS · 成品峰值上限 0 dB":"")}\n{rendered.Note}";
-            Status="歌曲处理完成。";return rendered;
+            string Loudness(double? value)=>value is double n?$"{n:F2}":SoundstageIR.Core.TextCatalog.T("T2884D29F4C");
+            AudioSummary=SoundstageIR.Core.TextCatalog.F("T1C2AE2EB77", AudioLevelModes[(int)rendered.Mode], rendered.File, rendered.SampleRate, (rendered.OutputSamples/(double)rendered.SampleRate), Loudness(rendered.Before?.IntegratedLufs), Loudness(rendered.After?.IntegratedLufs), Loudness(rendered.After?.TruePeakDbTp), rendered.GainDb, rendered.SafetyGainDb, (rendered.LimiterCeilingDb is double ceiling?SoundstageIR.Core.TextCatalog.F("T70288B8F03", ceiling):""), TextCatalog.Diagnostic(rendered.Note));
+            Status=SoundstageIR.Core.TextCatalog.T("TF199967A1B");return rendered;
         }
-        catch(OperationCanceledException){Status="歌曲处理已取消，原文件保持不变。";return null;}
-        catch(Exception ex){Status="歌曲处理失败："+ex.Message;return null;}
+        catch(OperationCanceledException){Status=SoundstageIR.Core.TextCatalog.T("TF45492104A");return null;}
+        catch(Exception ex){Status=SoundstageIR.Core.TextCatalog.T("T88DE5B9C3F")+ex.Message;return null;}
         finally{Busy=false;cancellation?.Dispose();cancellation=null;Notify("");CommandManager.InvalidateRequerySuggested();}
     }
 }

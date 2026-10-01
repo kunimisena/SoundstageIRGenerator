@@ -1,0 +1,2010 @@
+{
+  "T1C05DBFE85": {
+    "zh": "左耳 · L+R",
+    "en": "Left ear · L+R"
+  },
+  "TFA2517C585": {
+    "zh": "右耳 · L+R",
+    "en": "Right ear · L+R"
+  },
+  "T1DB9A9A808": {
+    "zh": "EQ 前左耳",
+    "en": "Left ear before EQ"
+  },
+  "T9795DDB316": {
+    "zh": "EQ 前右耳",
+    "en": "Right ear before EQ"
+  },
+  "T9D3F49D4CD": {
+    "zh": "L→左耳",
+    "en": "L→Left ear"
+  },
+  "TA2E15EF348": {
+    "zh": "R→左耳",
+    "en": "R→Left ear"
+  },
+  "TB1B8C7B14B": {
+    "zh": "L→右耳",
+    "en": "L→Right ear"
+  },
+  "T39DA9A8DC4": {
+    "zh": "R→右耳",
+    "en": "R→Right ear"
+  },
+  "T2AB43207A3": {
+    "zh": "卷积结果中没有所选反射源，请生成卷积核",
+    "en": "The selected source is not in this result. Generate the kernels first."
+  },
+  "T75C357A38C": {
+    "zh": "L 激励",
+    "en": "L excitation"
+  },
+  "TF225AC3B52": {
+    "zh": "R 激励",
+    "en": "R excitation"
+  },
+  "TE62C5A198F": {
+    "zh": "一级左耳修正",
+    "en": "Stage 1 · Left ear"
+  },
+  "T7536CB0E03": {
+    "zh": "一级右耳修正",
+    "en": "Stage 1 · Right ear"
+  },
+  "T5E58F45E99": {
+    "zh": "共同第二级修正",
+    "en": "Stage 2 · Common EQ"
+  },
+  "T324E6B243C": {
+    "zh": "带通目标",
+    "en": "Bandpass target"
+  },
+  "T706ABCC589": {
+    "zh": "人头参考修正",
+    "en": "Head-reference EQ"
+  },
+  "T7456508A53": {
+    "zh": "功率平滑幅频（仅显示平滑）",
+    "en": "Power-smoothed magnitude (display only)"
+  },
+  "T929A0643CE": {
+    "zh": "实际幅频 · 不平滑",
+    "en": "Actual magnitude · Unsmoothed"
+  },
+  "T8209C02C79": {
+    "zh": "脉冲响应 · 共同直达零点",
+    "en": "Impulse response · Common direct-sound zero"
+  },
+  "TFCEABFBB1F": {
+    "zh": "实际核的反向积分能量衰减",
+    "en": "Backward-integrated energy decay of the actual kernels"
+  },
+  "T462C35B346": {
+    "zh": "展开相位 · 已扣除共同前导",
+    "en": "Unwrapped phase · Common lead-in removed"
+  },
+  "T4FBE1CDC36": {
+    "zh": "群延迟 · 已扣除共同前导",
+    "en": "Group delay · Common lead-in removed"
+  },
+  "TEC01A9A0DC": {
+    "zh": "幅度",
+    "en": "Amplitude"
+  },
+  "TE24A9725DF": {
+    "zh": "度",
+    "en": "Degrees"
+  },
+  "TAE94FDE125": {
+    "zh": "补偿到目标 LUFS，再限幅",
+    "en": "Normalize to target LUFS, then limit"
+  },
+  "TF40DCB29DB": {
+    "zh": "保持卷积后电平，仅限幅",
+    "en": "Keep convolved level; limit peaks only"
+  },
+  "T8335BA2AB4": {
+    "zh": "旁路：原始卷积结果",
+    "en": "Bypass: raw convolution output"
+  },
+  "T7A0CF8AD05": {
+    "zh": "使用当前生成的最终四条核，输出普通双声道文件。",
+    "en": "Process audio with the current four kernels and export a stereo file."
+  },
+  "T1547FA829D": {
+    "zh": "音频文件|*.wav;*.flac;*.mp3;*.m4a;*.aac;*.ogg;*.opus;*.aiff;*.wma|所有文件|*.*",
+    "en": "Audio files|*.wav;*.flac;*.mp3;*.m4a;*.aac;*.ogg;*.opus;*.aiff;*.wma|All files|*.*"
+  },
+  "T4B082BE8D7": {
+    "zh": "参数已修改，请先重新生成。",
+    "en": "Parameters have changed. Generate the kernels again."
+  },
+  "TFFFA023EB0": {
+    "zh": "APO 配置已导出：",
+    "en": "APO configuration exported: "
+  },
+  "TE1A22EA03E": {
+    "zh": "APO 导出失败：",
+    "en": "APO export failed: "
+  },
+  "T2884D29F4C": {
+    "zh": "不可测",
+    "en": "Not measurable"
+  },
+  "T1C2AE2EB77": {
+    "zh": "{0}\n已导出：{1}\n{2} Hz · {3:F2} 秒（含尾部）\n响度 {4} → {5} LUFS · 成品真峰值 {6} dBTP\n响度增益 {7:+0.00;-0.00;0} dB · 峰值/编码额外修正 {8:0.00} dB\n{9}\n{10}",
+    "en": "{0}\nExported: {1}\n{2} Hz · {3:F2} s (including tail)\nLoudness {4} → {5} LUFS · Final true peak {6} dBTP\nLoudness gain {7:+0.00;-0.00;0} dB · Additional peak/encoding adjustment {8:0.00} dB\n{9}\n{10}"
+  },
+  "T70288B8F03": {
+    "zh": "限幅阈值 {0:F2} dBFS · 成品峰值上限 0 dB",
+    "en": "Limiter threshold {0:F2} dBFS · Final peak ceiling 0 dB"
+  },
+  "TF199967A1B": {
+    "zh": "歌曲处理完成。",
+    "en": "Audio processing complete."
+  },
+  "TF45492104A": {
+    "zh": "歌曲处理已取消，原文件保持不变。",
+    "en": "Audio processing cancelled. The original file is unchanged."
+  },
+  "T88DE5B9C3F": {
+    "zh": "歌曲处理失败：",
+    "en": "Audio processing failed: "
+  },
+  "T6A716F6B71": {
+    "zh": "路径设置读取失败：",
+    "en": "Could not read path settings: "
+  },
+  "T1D0050B1F3": {
+    "zh": "选择 FFmpeg（同目录需有 ffprobe.exe）",
+    "en": "Select FFmpeg (ffprobe.exe must be in the same folder)"
+  },
+  "TC97E37250F": {
+    "zh": "已找到 FFmpeg 和 ffprobe；处理前会自动检查可用性。",
+    "en": "FFmpeg and ffprobe found. Capabilities are checked before processing."
+  },
+  "T7A9E8E6A07": {
+    "zh": "\n路径仅用于本次会话，保存失败：",
+    "en": "\nPath applies to this session only; could not save: "
+  },
+  "T2DFB51E4D3": {
+    "zh": "正在检查 FFmpeg…",
+    "en": "Checking FFmpeg…"
+  },
+  "TCDE10AB9D2": {
+    "zh": "可用 · ",
+    "en": "Available · "
+  },
+  "T4A6E30DE21": {
+    "zh": "\n卷积、重采样、响度测量与限幅检查通过。",
+    "en": "\nConvolution, resampling, loudness measurement and limiting checks passed."
+  },
+  "T73747D1C2E": {
+    "zh": "FFmpeg 不可用：",
+    "en": "FFmpeg unavailable: "
+  },
+  "TCA9D17AE42": {
+    "zh": "首反相对直达 +{0:0.##} ms；约 {1:0.##} ms 内由疏变密。",
+    "en": "First reflection +{0:0.##} ms after direct sound; density builds over approximately {1:0.##} ms."
+  },
+  "T3D06159799": {
+    "zh": "宽阔监听",
+    "en": "Wide Monitor"
+  },
+  "T0379C8AF73": {
+    "zh": "L 输入 · 当前方向的统计核",
+    "en": "L input · Statistical kernel for this direction"
+  },
+  "T4135DA672E": {
+    "zh": "对称面：两输入共享参数",
+    "en": "Symmetry plane: both inputs share parameters"
+  },
+  "T57AFA93579": {
+    "zh": "R 输入 · 从 L 参数自动衍生（预览）",
+    "en": "R input · Derived from L parameters (preview)"
+  },
+  "TA7D48C3CB0": {
+    "zh": "R 输入 · 独立编辑",
+    "en": "R input · Independent editing"
+  },
+  "T70C5A189ED": {
+    "zh": "参数镜像 · 随机细节镜像 · 一个共同 EQ",
+    "en": "Mirrored parameters · Mirrored random detail · One common EQ"
+  },
+  "T4927B3F9BD": {
+    "zh": "参数镜像 · 随机细节独立 · 两级 EQ",
+    "en": "Mirrored parameters · Independent random detail · Two-stage EQ"
+  },
+  "T57400350D5": {
+    "zh": "源相对权重 dB",
+    "en": "Relative source weight / dB"
+  },
+  "TA1E21B6668": {
+    "zh": "混响能量：目标 {0:0.0}% · 最终 {1:0.0}%",
+    "en": "Reverberant energy: target {0:0.0}% · Final {1:0.0}%"
+  },
+  "T4E7A1F9406": {
+    "zh": " · {0} 条生成提示（悬停查看）",
+    "en": " · {0} generation notes (hover to read)"
+  },
+  "TA8B8730C96": {
+    "zh": "正在生成…",
+    "en": "Generating…"
+  },
+  "TD5638D161F": {
+    "zh": "尚未生成",
+    "en": "Not generated"
+  },
+  "TE1BA3603B5": {
+    "zh": "参数已修改 · 图表待更新",
+    "en": "Parameters changed · Charts need updating"
+  },
+  "T298BC14648": {
+    "zh": "已生成 · 当前参数",
+    "en": "Generated · Current parameters"
+  },
+  "T6CFC7BCBFE": {
+    "zh": "正在生成卷积核，完成后即可导出。",
+    "en": "Generating kernels. Export will be available when complete."
+  },
+  "T6E15B35025": {
+    "zh": "正在处理，请稍候。",
+    "en": "Processing. Please wait."
+  },
+  "T4145E1FB25": {
+    "zh": "尚未生成卷积核。点击“生成卷积核”，完成后即可导出。",
+    "en": "No kernels generated. Select “Generate kernels” to prepare an export."
+  },
+  "T9964066893": {
+    "zh": "卷积核与编辑参数不一致。请生成卷积核后导出。",
+    "en": "The kernels do not match the edited parameters. Generate them again before exporting."
+  },
+  "T12AB49F98A": {
+    "zh": "{0} · 卷积核与当前参数一致，可以导出。",
+    "en": "{0} · Kernels match the current parameters and are ready to export."
+  },
+  "TDE2675EE93": {
+    "zh": "{0} 个方向 / {1} 个可编辑源",
+    "en": "{0} directions / {1} editable sources"
+  },
+  "T3573E79B8C": {
+    "zh": "选择模板开始，或打开已有配置。",
+    "en": "Choose a template or import an existing configuration."
+  },
+  "T136BC05279": {
+    "zh": "{0:F3} s  ·  {1:G} kHz  ·  计算 {2:F2} s\n{3}\n混响分量能量：目标 {4:F2}% / EQ 前 {5:F2}% / 最终 {6:F2}%\n混响整体预修正 {7:+0.00;-0.00;0} dB · {8} 次频谱计算\n共同标定 {9:+0.00;-0.00;0} dB  ·  前导 {10:F0} 样本\n参考电平 {11:F2} dB\n{12}：平滑残差 RMS {13:F2} dB  ·  频点峰值上界 {14:F1} dB\n峰值增益保守上界 {15:F1} dB\n有限长度合成偏差 {16:F3} dB · 尾部移除能量 {17:F1} dB\n",
+    "en": "{0:F3} s  ·  {1:G} kHz  ·  Computed in {2:F2} s\n{3}\nReverberant component energy: target {4:F2}% / Before EQ {5:F2}% / Final {6:F2}%\nBroadband wet precompensation {7:+0.00;-0.00;0} dB · {8} spectral evaluations\nCommon calibration {9:+0.00;-0.00;0} dB  ·  Lead-in {10:F0} samples\nReference level {11:F2} dB\n{12}: smoothed residual RMS {13:F2} dB  ·  Frequency-bin peak bound {14:F1} dB\nConservative peak-gain bound {15:F1} dB\nFinite-length synthesis error {16:F3} dB · Removed tail energy {17:F1} dB\n"
+  },
+  "T076E536AA3": {
+    "zh": "{0}：增益范围 {1:F1}～{2:F1} dB · {3} 点时间预算 · 参考平滑残差 {4:F3} dB",
+    "en": "{0}: gain range {1:F1} to {2:F1} dB · {3}-sample time budget · Smoothed reference residual {4:F3} dB"
+  },
+  "TB5C9ED8404": {
+    "zh": "球形头 · 遮挡与时差",
+    "en": "Spherical head · Shadowing and delay"
+  },
+  "T4E25C361CA": {
+    "zh": "FABIAN · 耳廓、头与肩胸部",
+    "en": "FABIAN · Pinnae, head and torso"
+  },
+  "T9C32D627E1": {
+    "zh": "直达与反射均使用 FABIAN。约 2° 方向网格；保留幅相和耳间时差。解剖响应始终镜像，随机镜像开关只控制反射细节。",
+    "en": "FABIAN processes direct sound and reflections on an approximately 2° direction grid, retaining magnitude, phase and interaural delay. Anatomy is always mirrored; random mirroring controls reflection detail only."
+  },
+  "TCC55B89955": {
+    "zh": "球形头的遮挡与时差，可调半径和遮挡强度。",
+    "en": "Spherical-head shadowing and delay with adjustable radius and shadow strength."
+  },
+  "T787C02ABE0": {
+    "zh": "水平环绕",
+    "en": "Horizontal ring"
+  },
+  "TF04CB441BB": {
+    "zh": "球形环绕",
+    "en": "Sphere"
+  },
+  "T3D6D92FF9B": {
+    "zh": "上半球",
+    "en": "Upper hemisphere"
+  },
+  "TDBB3C16A87": {
+    "zh": "前向扇区",
+    "en": "Front sector"
+  },
+  "T08D4421B83": {
+    "zh": "镜像成对",
+    "en": "Mirrored pairs"
+  },
+  "T20B85E0505": {
+    "zh": "新反射组",
+    "en": "New reflection group"
+  },
+  "T3E314792C4": {
+    "zh": "最多 32 个方向。",
+    "en": "A maximum of 32 directions is supported."
+  },
+  "T918B2B558A": {
+    "zh": "新反射源",
+    "en": "New reflection source"
+  },
+  "T4EAFA9E925": {
+    "zh": "自定义",
+    "en": "Custom"
+  },
+  "T3F6661C298": {
+    "zh": "参数已复制；粘贴时保留目标方向并分配新随机实现。",
+    "en": "Parameters copied. Pasting retains the target direction and assigns a new random realization."
+  },
+  "T73D20904DB": {
+    "zh": "已载入 ",
+    "en": "Loaded "
+  },
+  "TD2033E3B6C": {
+    "zh": "请等待当前计算结束。",
+    "en": "Wait for the current calculation to finish."
+  },
+  "T1E53F168AE": {
+    "zh": "整体调整已应用，可撤销。",
+    "en": "Shared adjustments applied. You can undo this change."
+  },
+  "T11CF0D9274": {
+    "zh": " 部分越界数值已钳位。",
+    "en": " Some out-of-range values were clamped."
+  },
+  "T90054D5305": {
+    "zh": " 复杂曲线已在 256 点内近似。",
+    "en": " Complex curves were approximated within 256 points."
+  },
+  "TF16C991F99": {
+    "zh": "超出计算范围的数值已钳位；其余修改保留。",
+    "en": "Values outside the calculation range were clamped. Other edits were retained."
+  },
+  "T97412F29A5": {
+    "zh": "参数已修改，请重新生成。",
+    "en": "Parameters changed. Generate the kernels again."
+  },
+  "TF51FCBFD23": {
+    "zh": "配置名称已更新，可以直接导出。",
+    "en": "Configuration name updated. The result is ready to export."
+  },
+  "TE704B44CD7": {
+    "zh": "模板方向数请输入 2–32 之间的偶数。",
+    "en": "Enter an even direction count from 2 to 32."
+  },
+  "T034F3727B0": {
+    "zh": "加入后超过 32 个方向。",
+    "en": "Adding these sources would exceed 32 directions."
+  },
+  "T2C954ED050": {
+    "zh": "卷积核已生成。",
+    "en": "Kernels generated."
+  },
+  "T2AFC7DC5EF": {
+    "zh": "生成已取消。",
+    "en": "Generation cancelled."
+  },
+  "TCFDCD16119": {
+    "zh": "生成失败：",
+    "en": "Generation failed: "
+  },
+  "TB21EEC1263": {
+    "zh": "参数已变化，请先重新生成。",
+    "en": "Parameters changed. Generate the kernels again."
+  },
+  "T961EF8B1BC": {
+    "zh": "已导出到 ",
+    "en": "Exported to "
+  },
+  "TC55E9D64E5": {
+    "zh": "导出失败：",
+    "en": "Export failed: "
+  },
+  "T429EA3AF44": {
+    "zh": "导出配置",
+    "en": "Export configuration"
+  },
+  "T2678356BA9": {
+    "zh": "声场配置 (*.json)|*.json",
+    "en": "Sound field configuration (*.json)|*.json"
+  },
+  "T0EAF9C8B45": {
+    "zh": "项目已保存：",
+    "en": "Project saved: "
+  },
+  "TB48B651829": {
+    "zh": "导入配置",
+    "en": "Import configuration"
+  },
+  "TD26B962E05": {
+    "zh": "已打开 ",
+    "en": "Opened "
+  },
+  "T012CF64049": {
+    "zh": "未找到随程序附带的 docs/guide.html。请保留完整发布文件夹。",
+    "en": "The bundled docs/guide.html was not found. Keep the complete application folder."
+  },
+  "TB6E77060DB": {
+    "zh": "使用指南",
+    "en": "User guide"
+  },
+  "T909A4608AD": {
+    "zh": "打开指南失败",
+    "en": "Could not open the guide"
+  },
+  "TB469D01528": {
+    "zh": "请检查红框内的数值。",
+    "en": "Check the values outlined in red."
+  },
+  "T405A0AD878": {
+    "zh": "曲线已修改。",
+    "en": "Curve updated."
+  },
+  "T12C8F97662": {
+    "zh": "编辑器尚未连接项目。",
+    "en": "The editor is not connected to a project."
+  },
+  "T3E90A7341C": {
+    "zh": "仅生成经过人头的音箱直达声。",
+    "en": "Generate only the loudspeakers' direct sound through the head model."
+  },
+  "T4E2FA76DC8": {
+    "zh": "在“方向分布”中创建一组反射源，或进入详细配置逐个添加。",
+    "en": "Create a group in “Direction distribution”, or add individual sources in the detailed editor."
+  },
+  "T0CD5D904E1": {
+    "zh": "{0} 个可编辑源 · 右半边自动镜像",
+    "en": "{0} editable sources · Right half mirrored automatically"
+  },
+  "T4D4EF9B8AD": {
+    "zh": "确认后将按这些整体参数创建反射源。",
+    "en": "Confirm to create reflection sources using these shared parameters."
+  },
+  "T02773ED5B7": {
+    "zh": "越界数值已钳位；其余修改保留。",
+    "en": "Out-of-range values were clamped. Other edits were retained."
+  },
+  "T2951C091D0": {
+    "zh": "整体 ×{0:0.00} · 1 kHz {1:0.###} s",
+    "en": "Overall ×{0:0.00} · {1:0.###} s at 1 kHz"
+  },
+  "T99CC00FC93": {
+    "zh": "参考额外路程 m",
+    "en": "Reference excess path / m"
+  },
+  "T8FF25E36B9": {
+    "zh": "衰减时间已整体缩放。",
+    "en": "All decay times scaled together."
+  },
+  "T5EA1E81727": {
+    "zh": "分析失败：",
+    "en": "Analysis failed: "
+  },
+  "T4CBF266ED0": {
+    "zh": "额外路程 m",
+    "en": "Excess path / m"
+  },
+  "T5CC7096F35": {
+    "zh": "1 kHz 能量包络 · 虚线为反射变密尺度。",
+    "en": "1 kHz energy envelope · Dashed line marks the density build-up scale."
+  },
+  "T4153B35A52": {
+    "zh": "调整模板的整体曲线与方向分布。",
+    "en": "Adjust the template's shared curves and direction distribution."
+  },
+  "T17E01C23CB": {
+    "zh": " · 模板参数",
+    "en": " · Template parameters"
+  },
+  "T82C1C0262A": {
+    "zh": "混响能量占比 / %",
+    "en": "Reverberant energy / %"
+  },
+  "TCA8CCCC57E": {
+    "zh": "目标为 EQ 与带通后的混响分量占比；通过整体混响增益预修正保持。",
+    "en": "Target reverberant component fraction after EQ and bandpass, maintained by broadband wet precompensation."
+  },
+  "T3824A86182": {
+    "zh": "直达声空气吸收",
+    "en": "Direct-sound air absorption"
+  },
+  "T10EB6D2120": {
+    "zh": "空气吸收距离 / m",
+    "en": "Air absorption distance / m"
+  },
+  "T2CD0F3BE87": {
+    "zh": "取消",
+    "en": "Cancel"
+  },
+  "T36F33ADAF0": {
+    "zh": "确认",
+    "en": "Confirm"
+  },
+  "T368672781F": {
+    "zh": "确认并生成卷积核",
+    "en": "Confirm and generate kernels"
+  },
+  "TC15035EE01": {
+    "zh": "修改整体曲线或方向分布后，按模板重新生成反射源。",
+    "en": "Changing shared curves or directions regenerates the template's reflection sources."
+  },
+  "T4374175386": {
+    "zh": "请检查控制点数值与顺序",
+    "en": "Check the control-point values and their order"
+  },
+  "TAD36B620F8": {
+    "zh": "变密尺度",
+    "en": "Density build-up scale"
+  },
+  "T6044E9F095": {
+    "zh": "前",
+    "en": "Front"
+  },
+  "T9C0E5041CA": {
+    "zh": "L 音箱",
+    "en": "L speaker"
+  },
+  "TE1563CA0FE": {
+    "zh": "R 音箱",
+    "en": "R speaker"
+  },
+  "T790FB514BD": {
+    "zh": "拖动空白处旋转 · 点击方向选择源",
+    "en": "Drag empty space to rotate · Click a direction to select its source"
+  },
+  "T176C09844E": {
+    "zh": "镜像",
+    "en": "Mirror"
+  },
+  "T3506EAB72D": {
+    "zh": "（镜像）",
+    "en": " (mirror)"
+  },
+  "T059421366A": {
+    "zh": "仅显示 ",
+    "en": "Show only "
+  },
+  "TB1288E4AC0": {
+    "zh": "全部显示",
+    "en": "Show all"
+  },
+  "T757127C5A0": {
+    "zh": "点击图例开关曲线；右键单独显示。",
+    "en": "Click a legend entry to toggle a curve; right-click to isolate it."
+  },
+  "T74C2DABE30": {
+    "zh": "生成卷积核后显示分析结果",
+    "en": "Generate kernels to display analysis"
+  },
+  "T7096D722A3": {
+    "zh": "点击图例显示曲线",
+    "en": "Click a legend entry to show a curve"
+  },
+  "T9AB5A91FF3": {
+    "zh": "# Soundstage IR Generator — 四路径双耳卷积\n# 配置使用绝对路径，更换位置后请重新导出。\n# 设备采样率须与 WAV 一致：",
+    "en": "# Soundstage IR Generator — Four-path binaural convolution\n# This configuration uses absolute paths. Export again after moving files.\n# Device sample rate must match the WAV files: "
+  },
+  "T9F362DB7C7": {
+    "zh": "APO使用说明.txt",
+    "en": "APO_README.txt"
+  },
+  "T3BF241DC47": {
+    "zh": "在 Equalizer APO 中 Include 本目录中以 _APO.txt 结尾的配置文件。\n四条 WAV 使用绝对路径。更换文件夹或文件名后，请重新导出配置。\n卷积核已包含设定的空间 EQ、20 Hz–20 kHz 带通和共同增益，可直接使用。\n设备采样率：",
+    "en": "In Equalizer APO, Include the configuration ending in _APO.txt in this folder.\nThe four WAV files use absolute paths. Export again after moving or renaming files.\nThe kernels include spatial EQ, the 20 Hz–20 kHz bandpass and common gain.\nDevice sample rate: "
+  },
+  "T6370457031": {
+    "zh": " Hz。请保留原有耳机 EQ。\n",
+    "en": " Hz. Keep your existing headphone EQ.\n"
+  },
+  "T78B83067E3": {
+    "zh": "人头模型：",
+    "en": "Head model: "
+  },
+  "TFE48EFE512": {
+    "zh": "空间 EQ：总开关 {0}，一级 {1:0.##}%，二级 {2:0.##}%（严格镜像不使用二级）。\n",
+    "en": "Spatial EQ: master {0}, stage 1 {1:0.##}%, stage 2 {2:0.##}% (stage 2 is unused with strict mirroring).\n"
+  },
+  "T777D29EC43": {
+    "zh": "实际参考电平 {0:F2} dB。\n",
+    "en": "Actual reference level {0:F2} dB.\n"
+  },
+  "T99551B705C": {
+    "zh": "混响能量占比：目标 {0:F3}%，最终 {1:F3}%。整体混响预修正 {2:+0.000;-0.000;0} dB。\n",
+    "en": "Reverberant energy: target {0:F3}%, final {1:F3}%. Broadband wet precompensation {2:+0.000;-0.000;0} dB.\n"
+  },
+  "T10E72641EB": {
+    "zh": "人头参考精确校正：{0}；各启用方向等能量单位冲激测试，双耳平均功率非相干叠加，直接求逆到平直目标；不使用混响随机核或平滑。\n",
+    "en": "Exact head-reference EQ: {0}; equal-energy unit impulses for enabled directions, noncoherent binaural mean power, inverted to a flat target without random reverberation kernels or smoothing.\n"
+  },
+  "TF4F0EAD111": {
+    "zh": "启用",
+    "en": "Enabled"
+  },
+  "T3FD47EDCE4": {
+    "zh": "关闭",
+    "en": "Off"
+  },
+  "TA041D0162C": {
+    "zh": "缺少 ",
+    "en": "Missing "
+  },
+  "T98A2812480": {
+    "zh": ".exe。处理歌曲需要 FFmpeg；请在“处理歌曲”中选择 ffmpeg.exe，同目录需有 ffprobe.exe。",
+    "en": ".exe. Audio processing requires FFmpeg. Select ffmpeg.exe under “Process audio”; ffprobe.exe must be in the same folder."
+  },
+  "TD12B9C224B": {
+    "zh": "未知的歌曲电平处理模式。",
+    "en": "Unknown audio level-processing mode."
+  },
+  "T64324EBB5F": {
+    "zh": "目标响度 LUFS",
+    "en": "Target loudness / LUFS"
+  },
+  "TE602D654C1": {
+    "zh": "找不到输入音频。",
+    "en": "Input audio file not found."
+  },
+  "T30561B7A34": {
+    "zh": "文件中没有音轨。",
+    "en": "The file contains no audio track."
+  },
+  "TC991C1E436": {
+    "zh": "本功能接受单声道或双声道歌曲，请先将多声道素材转换成立体声。",
+    "en": "This feature accepts mono or stereo audio. Convert multichannel material to stereo first."
+  },
+  "TAA083C6923": {
+    "zh": "_空间处理",
+    "en": "_spatial"
+  },
+  "TB6097839D1": {
+    "zh": "读取音频并匹配卷积核采样率…",
+    "en": "Reading audio and matching the kernel sample rate…"
+  },
+  "T9463690657": {
+    "zh": "读取 / 重采样…",
+    "en": "Reading / resampling…"
+  },
+  "TFE7C3B9354": {
+    "zh": "音轨为空。",
+    "en": "The audio track is empty."
+  },
+  "T22D87B4EB5": {
+    "zh": "四路径卷积 / 保留完整尾部…",
+    "en": "Four-path convolution / preserving the complete tail…"
+  },
+  "T647F5D3660": {
+    "zh": "卷积输出长度不匹配，未导出不完整音频。",
+    "en": "Convolution output length mismatch. Incomplete audio was not exported."
+  },
+  "T513D41CBA3": {
+    "zh": "扫描卷积结果响度与真峰值…",
+    "en": "Measuring convolved loudness and true peak…"
+  },
+  "T1E74B286B4": {
+    "zh": "输出包含非有限数值。",
+    "en": "The output contains nonfinite values."
+  },
+  "T6BAC9A40AA": {
+    "zh": "扫描响度与真峰值…",
+    "en": "Measuring loudness and true peak…"
+  },
+  "TBB266E8BA8": {
+    "zh": "固定响度增益 → 双声道联动 0 dB 限幅…",
+    "en": "Fixed loudness gain → stereo-linked 0 dB limiting…"
+  },
+  "TB3AB2B00D1": {
+    "zh": "保持卷积后电平 → 仅对峰值限幅…",
+    "en": "Keeping convolved level → peak limiting only…"
+  },
+  "TA565C40D65": {
+    "zh": "双声道联动 / 超采样限幅…",
+    "en": "Stereo-linked / oversampled limiting…"
+  },
+  "TC9E4E9B211": {
+    "zh": "限幅后的长度不匹配。",
+    "en": "Output length mismatch after limiting."
+  },
+  "T57B21E5D1F": {
+    "zh": "限幅结果包含非有限数值。",
+    "en": "The limited output contains nonfinite values."
+  },
+  "T5F9DEC16D0": {
+    "zh": "输出峰值超过 0 dBFS，请选择仅限幅或响度补偿后限幅，或用 float32 WAV 保留原始结果。",
+    "en": "Output peaks exceed 0 dBFS. Choose limiting or loudness normalization with limiting, or use float32 WAV to retain the raw result."
+  },
+  "T4636A3ED00": {
+    "zh": "编码歌曲…",
+    "en": "Encoding audio…"
+  },
+  "T0B19CE03E8": {
+    "zh": "重新解码成品，复查响度与真峰值…",
+    "en": "Decoding the exported file to verify loudness and true peak…"
+  },
+  "T048EF2ABB2": {
+    "zh": "复查成品响度与真峰值…",
+    "en": "Verifying final loudness and true peak…"
+  },
+  "TB717030138": {
+    "zh": "修正编码后的峰值超限，重新编码…",
+    "en": "Correcting peaks introduced by encoding and re-encoding…"
+  },
+  "T9A49EE06D7": {
+    "zh": "收紧限幅阈值，保持其余部分电平并重新编码…",
+    "en": "Tightening the limiter threshold while retaining the remaining level, then re-encoding…"
+  },
+  "T69AF22FCCB": {
+    "zh": "编码后真峰值仍超过上限，未交付不合格文件。",
+    "en": "True peak still exceeds the ceiling after encoding. The file was not delivered."
+  },
+  "T535B30DF8A": {
+    "zh": "静音、片段过短或低于测量门限：未提升响度，仍执行限幅。",
+    "en": "Silence, a short segment or a signal below the measurement gate: no loudness boost applied; limiting remains active."
+  },
+  "T3ED0E6BB5C": {
+    "zh": "不可测量 / 静音",
+    "en": "Not measurable / silence"
+  },
+  "T0EF9B00F59": {
+    "zh": "试听说明.txt",
+    "en": "LISTENING_NOTES.txt"
+  },
+  "T591813D222": {
+    "zh": "歌曲已包含空间卷积、空间校正 EQ 和最终带通。用耳机播放时关闭重复的空间卷积，个人耳机 EQ 可照常使用。\n{0} Hz；保留完整尾部。\n响度处理：{1}\n处理前 {2}；成品 {3}；成品真峰值 {4}。\n响度补偿 {5:F2} dB；编码/峰值额外修正 {6:F2} dB。\n{7}\n增益已实际写入音频，不依赖 ReplayGain 标签。仅限幅模式不施加整体增益；响度补偿模式的成品响度可能低于目标。\n{8}\n",
+    "en": "This file includes spatial convolution, spatial EQ and the final bandpass. Disable duplicate spatial convolution for headphone playback; keep your personal headphone EQ.\n{0} Hz; complete tail retained.\nLevel processing: {1}\nBefore processing {2}; final {3}; final true peak {4}.\nLoudness gain {5:F2} dB; additional encoding/peak adjustment {6:F2} dB.\n{7}\nGain is written into the audio and does not depend on ReplayGain tags. Limiter-only mode applies no overall gain; normalized output may remain below the target loudness.\n{8}\n"
+  },
+  "T42287A0F96": {
+    "zh": "扫描 → 固定增益 → 0 dB 限幅",
+    "en": "Measure → fixed gain → 0 dB limiting"
+  },
+  "T025876C5D8": {
+    "zh": "保持卷积后电平 → 仅限幅",
+    "en": "Keep convolved level → peak limiting only"
+  },
+  "T9ECCCB1ECF": {
+    "zh": "旁路",
+    "en": "Bypass"
+  },
+  "TC38BA8B915": {
+    "zh": "限幅器阈值 {0:F2} dBFS；成品峰值上限 0 dB。",
+    "en": "Limiter threshold {0:F2} dBFS; final peak ceiling 0 dB."
+  },
+  "T24ACFE2F65": {
+    "zh": "音频已导出：",
+    "en": "Audio exported: "
+  },
+  "TEC67973FB9": {
+    "zh": "未完成.txt",
+    "en": "INCOMPLETE.txt"
+  },
+  "TE2532F7DD8": {
+    "zh": "已取消；输入文件保持不变。",
+    "en": "Cancelled. The input file is unchanged."
+  },
+  "T52BD81AEF9": {
+    "zh": "无法启动音频工具。",
+    "en": "Could not start the audio tool."
+  },
+  "T8C0282BFA0": {
+    "zh": "音频工具处理失败：",
+    "en": "Audio tool failed: "
+  },
+  "T2E2C47CB71": {
+    "zh": "响度扫描未返回测量结果。",
+    "en": "Loudness measurement returned no result."
+  },
+  "TA9BB84707B": {
+    "zh": "响度扫描缺少 ",
+    "en": "Loudness measurement is missing "
+  },
+  "TA009CC2422": {
+    "zh": "找不到选定的 ffmpeg.exe，请重新选择。",
+    "en": "The selected ffmpeg.exe was not found. Select it again."
+  },
+  "TD16B706464": {
+    "zh": "请选择 ffmpeg.exe 文件。",
+    "en": "Select an ffmpeg.exe file."
+  },
+  "TC1D0810C75": {
+    "zh": "FFmpeg 同目录缺少 ffprobe.exe，请选择完整构建中的 ffmpeg.exe。",
+    "en": "ffprobe.exe is missing from the FFmpeg folder. Select ffmpeg.exe from a complete build."
+  },
+  "TB868EF5AC9": {
+    "zh": "所选工具没有返回 FFmpeg / ffprobe 版本信息。",
+    "en": "The selected tools did not return FFmpeg / ffprobe version information."
+  },
+  "T964D5967E2": {
+    "zh": "此 FFmpeg 缺少歌曲卷积所需的 afir 参数，请使用较新的完整构建。",
+    "en": "This FFmpeg build lacks afir options required for convolution. Use a recent complete build."
+  },
+  "T06D19C1142": {
+    "zh": "FFmpeg 检查超时，请确认选择的是可运行的完整构建。",
+    "en": "FFmpeg check timed out. Select a working complete build."
+  },
+  "TAD9A4699A2": {
+    "zh": "FFT 长度超出平台容量。",
+    "en": "FFT length exceeds platform capacity."
+  },
+  "T11B29F0F09": {
+    "zh": "响应包含非有限数值。",
+    "en": "The response contains nonfinite values."
+  },
+  "T5EA5B422D8": {
+    "zh": "：参考响应为空或包含无效数值。",
+    "en": ": the reference response is empty or invalid."
+  },
+  "TCBD282516C": {
+    "zh": "：频段能量无法分辨，无法设计有效 EQ。",
+    "en": ": band energy cannot be resolved; a valid EQ cannot be designed."
+  },
+  "T2C95CC5FB7": {
+    "zh": "校正响应超出双精度表示范围。",
+    "en": "The correction response exceeds double-precision range."
+  },
+  "T891AFCFA2D": {
+    "zh": "使用说明.txt",
+    "en": "README.txt"
+  },
+  "T4DA1AD7D43": {
+    "zh": "Soundstage IR Generator · 耳机空间音效卷积核 / {0}\n{1} Hz · IEEE float32 · {2:F3} 秒\n四路径顺序：L 输入→左耳、R 输入→左耳、L 输入→右耳、R 输入→右耳。\nMatrix 文件按上述顺序打包，供矩阵卷积器读取。\n{3}；四条路径共同使用，保留相对电平和延时。\n显示的直达声零点对应 WAV 第 {4:F3} 个样本；共同前导 {5:F3} ms。\n混响分量能量占比：目标 {6:F3}%，EQ 前 {7:F3}%，最终 {8:F3}%。混响整体预修正 {9:+0.000;-0.000;0} dB（{10} 次频谱计算）。基准为 20 Hz–20 kHz 等功率独立输入、双耳合计。\n共同输出标定 {11:+0.00;-0.00;0} dB。\n最大频点路径幅度和 {12:F2} dB；任意输入峰值的保守上界 {13:F2} dB。可据此设置播放增益。\n最终四路径以 20 Hz–20 kHz 平直带通为目标，与平滑最小相位校正一起在频域合成。20 Hz 与 20 kHz 位于目标通带。\n校正时间预算 {14} 样本；有限长度合成偏差 {15:F3} dB，尾部移除能量 {16:F1} dB。\n人头模型：{17}。\n",
+    "en": "Soundstage IR Generator · Headphone spatial-audio kernels / {0}\n{1} Hz · IEEE float32 · {2:F3} s\nPath order: L input→Left ear, R input→Left ear, L input→Right ear, R input→Right ear.\nThe Matrix file packs channels in this order for matrix convolvers.\n{3}; use all four paths together to retain relative levels and delays.\nDisplayed direct-sound zero corresponds to WAV sample {4:F3}; common lead-in {5:F3} ms.\nReverberant component energy: target {6:F3}%, before EQ {7:F3}%, final {8:F3}%. Broadband wet precompensation {9:+0.000;-0.000;0} dB ({10} spectral evaluations). Reference: equal-power independent inputs over 20 Hz–20 kHz, summed over both ears.\nCommon output calibration {11:+0.00;-0.00;0} dB.\nMaximum frequency-bin path-magnitude sum {12:F2} dB; conservative arbitrary-input peak bound {13:F2} dB. Use these to set playback headroom.\nThe final paths combine a flat 20 Hz–20 kHz bandpass target with smoothed minimum-phase EQ in the frequency domain. Both 20 Hz and 20 kHz are in the target passband.\nCorrection time budget {14} samples; finite-length synthesis error {15:F3} dB, removed tail energy {16:F1} dB.\nHead model: {17}.\n"
+  },
+  "T3FAD179C2A": {
+    "zh": "EQ 已写入四条核",
+    "en": "EQ is included in the four kernels"
+  },
+  "T773C7AA03E": {
+    "zh": "EQ 已旁路，最终带通仍生效",
+    "en": "EQ bypassed; final bandpass remains active"
+  },
+  "T81C290CCD5": {
+    "zh": "实际参考电平 {0:F2} dB；平滑残差参考：{1}。\n",
+    "en": "Actual reference level {0:F2} dB; smoothed residual reference: {1}.\n"
+  },
+  "T8480B95BD5": {
+    "zh": "WAV 通道长度不一致。",
+    "en": "WAV channel lengths do not match."
+  },
+  "T1F623819E1": {
+    "zh": "需要 float32 WAV。",
+    "en": "A float32 WAV file is required."
+  },
+  "T446EE246BB": {
+    "zh": "缺少 WAV 数据。",
+    "en": "WAV data is missing."
+  },
+  "T55BD07C4FF": {
+    "zh": "生成 {0} · {1}/{2}",
+    "en": "Generating {0} · {1}/{2}"
+  },
+  "TE93AFED2AE": {
+    "zh": "标定人头 · 各方向单位冲激非相干功率",
+    "en": "Calibrating head · Noncoherent unit-impulse power by direction"
+  },
+  "T0547273FA4": {
+    "zh": "统计直达声与混响频谱能量",
+    "en": "Measuring direct and reverberant spectral energy"
+  },
+  "T6A1D513695": {
+    "zh": "频域平滑校正与带通目标合成",
+    "en": "Combining smoothed EQ and bandpass targets in the frequency domain"
+  },
+  "TCD34C15216": {
+    "zh": "混响占比预修正未完全收敛：目标 {0:F3}%，频谱预计 {1:F3}%。",
+    "en": "Wet-balance precompensation did not fully converge: target {0:F3}%, predicted {1:F3}%."
+  },
+  "TC315C64EB5": {
+    "zh": "{0}：相对平均增益，最大提升 {1:F1} dB @ {2:F1} Hz，最大衰减 {3:F1} dB @ {4:F1} Hz。",
+    "en": "{0}: relative to mean gain, maximum boost {1:F1} dB @ {2:F1} Hz, maximum cut {3:F1} dB @ {4:F1} Hz."
+  },
+  "T6DC9231411": {
+    "zh": "{0}：校正后平滑响应相对目标的 RMS 偏差 {1:F2} dB。",
+    "en": "{0}: smoothed post-EQ RMS deviation from target {1:F2} dB."
+  },
+  "T0EF97F9C49": {
+    "zh": "有限长度合成的平滑幅频偏差 {0:F2} dB；尾部移除能量 {1:F1} dB。",
+    "en": "Finite-length smoothed magnitude error {0:F2} dB; removed tail energy {1:F1} dB."
+  },
+  "TE16D36EFD7": {
+    "zh": "共同增益与最终核分析",
+    "en": "Common gain and final kernel analysis"
+  },
+  "TBCF447EB62": {
+    "zh": "最大频点路径幅度和 {0:F1} dB；可据此设置播放余量。",
+    "en": "Maximum frequency-bin path-magnitude sum {0:F1} dB; allow corresponding playback headroom."
+  },
+  "T5A5992177E": {
+    "zh": "短瞬态仍可能超过数字满刻度，任意输入峰值的保守上界为 {0:F1} dB；播放增益及耳机 EQ 需要相应余量。",
+    "en": "Short transients can exceed digital full scale. Conservative arbitrary-input peak bound: {0:F1} dB; allow corresponding headroom in playback gain and headphone EQ."
+  },
+  "TD44D6AD5F8": {
+    "zh": "最终混响占比 {0:F3}%，目标 {1:F3}%；有限长度输出的实测偏差 {2:+0.000;-0.000;0} 个百分点。",
+    "en": "Final reverberant fraction {0:F3}%, target {1:F3}%; measured finite-length error {2:+0.000;-0.000;0} percentage points."
+  },
+  "T96B6E9779D": {
+    "zh": "最终校正响应无法有效分析。",
+    "en": "The final corrected response cannot be analyzed reliably."
+  },
+  "TC0B3FBFF51": {
+    "zh": "完成",
+    "en": "Complete"
+  },
+  "T54D8698926": {
+    "zh": "两耳复响应平均",
+    "en": "Mean complex response of both ears"
+  },
+  "TC5BAF16951": {
+    "zh": "每耳同相输入响应",
+    "en": "Per-ear response to identical inputs"
+  },
+  "TEAD6C1FB4C": {
+    "zh": "共同时间前导不足。",
+    "en": "Insufficient common lead-in."
+  },
+  "T98FC054303": {
+    "zh": "FABIAN 带外延伸重建误差过大：{0:F3} dB。",
+    "en": "FABIAN bandwidth-extension reconstruction error is too large: {0:F3} dB."
+  },
+  "T29F719C4B8": {
+    "zh": "FABIAN 带宽重建遇到精确零点或无效数值。",
+    "en": "FABIAN bandwidth reconstruction encountered an exact zero or invalid value."
+  },
+  "TBC0E986654": {
+    "zh": "人头校正需要至少一个启用方向。",
+    "en": "Head calibration requires at least one enabled direction."
+  },
+  "T8DB03ED735": {
+    "zh": "人头功率参考在 {0:F2} Hz 为零或无效，无法求逆。",
+    "en": "Head power reference is zero or invalid at {0:F2} Hz and cannot be inverted."
+  },
+  "T8A2F5DBCF5": {
+    "zh": "人头 EQ（单位冲激·非相干功率）",
+    "en": "Head EQ (unit impulse · noncoherent power)"
+  },
+  "T8044C44B3C": {
+    "zh": "球形头 · Brown–Duda 遮挡与时差",
+    "en": "Spherical head · Brown–Duda shadowing and delay"
+  },
+  "T755B926C6E": {
+    "zh": "FABIAN · 耳廓与肩胸部",
+    "en": "FABIAN · Pinnae and torso"
+  },
+  "T09ED91EBC1": {
+    "zh": " · 共同频响补偿",
+    "en": " · Common-response compensation"
+  },
+  "TF4E0601F09": {
+    "zh": " · 原始 HRTF",
+    "en": " · Original HRTF"
+  },
+  "T53821FE2B5": {
+    "zh": " · 带外边缘延伸",
+    "en": " · Band-edge extension"
+  },
+  "T2E1E42706F": {
+    "zh": "缺少内置 FABIAN 数据，请重新复制完整发布程序。",
+    "en": "Embedded FABIAN data is missing. Copy the complete application folder again."
+  },
+  "T9D819A4A5B": {
+    "zh": "FABIAN 数据格式不匹配。",
+    "en": "FABIAN data format mismatch."
+  },
+  "TA99C76A870": {
+    "zh": "FABIAN 数据头错误。",
+    "en": "Invalid FABIAN data header."
+  },
+  "T168A20947E": {
+    "zh": "FABIAN 采样率不受支持。",
+    "en": "Unsupported FABIAN sample rate."
+  },
+  "TB040F44A1D": {
+    "zh": "源增益",
+    "en": "Source gain"
+  },
+  "T6F87B0A612": {
+    "zh": "频谱 tilt",
+    "en": "Spectral tilt"
+  },
+  "T57D4854A69": {
+    "zh": "首反射额外路程",
+    "en": "First-reflection excess path"
+  },
+  "TAF7383FAB0": {
+    "zh": "扩散建立路程",
+    "en": "Diffusion build-up path"
+  },
+  "T77CCF3865F": {
+    "zh": "能量曲线",
+    "en": "Energy curve"
+  },
+  "TC2D0E3E81E": {
+    "zh": "衰减时间",
+    "en": "Decay time"
+  },
+  "T7217068273": {
+    "zh": "缺少完整包络。",
+    "en": "The complete envelope is missing."
+  },
+  "T3DB135AFB1": {
+    "zh": "完整能量包络",
+    "en": "Complete energy envelope"
+  },
+  "T6876EF7E62": {
+    "zh": "完整包络须保留首反射、建立标记和末端控制点；末端为 −60 dB。",
+    "en": "Keep the first-reflection, build-up and final envelope anchors. The last point must be −60 dB."
+  },
+  "TF182FF0005": {
+    "zh": "完整包络最后一段须下降至 −60 dB。",
+    "en": "The final envelope segment must descend to −60 dB."
+  },
+  "T4615CCEDF8": {
+    "zh": "{0}须在 {1} 至 {2} 之间。",
+    "en": "{0} must be between {1} and {2}."
+  },
+  "TF9D3D8F097": {
+    "zh": "反射源",
+    "en": "Reflection source"
+  },
+  "TB88B3A190B": {
+    "zh": "环绕",
+    "en": "Surround"
+  },
+  "T6DED4E175C": {
+    "zh": " 副本",
+    "en": " copy"
+  },
+  "T03707F4AF6": {
+    "zh": "空白模板",
+    "en": "Blank Template"
+  },
+  "T360EBC0163": {
+    "zh": "此项目版本不受支持。",
+    "en": "This project version is unsupported."
+  },
+  "T37F170DEA0": {
+    "zh": "采样率须为 44100、48000 或 96000。",
+    "en": "Sample rate must be 44100, 48000 or 96000 Hz."
+  },
+  "TC5575D6405": {
+    "zh": "总方向数不能超过 32。",
+    "en": "The total direction count cannot exceed 32."
+  },
+  "T0116169A65": {
+    "zh": "源 ID 必须唯一。",
+    "en": "Source IDs must be unique."
+  },
+  "T022E7C3A42": {
+    "zh": "至少启用直达声或一个反射源。",
+    "en": "Enable direct sound or at least one reflection source."
+  },
+  "TCBAE9D1580": {
+    "zh": "未知人头模型。",
+    "en": "Unknown head model."
+  },
+  "T1755501DAB": {
+    "zh": "头部半径",
+    "en": "Head radius"
+  },
+  "TE79A7F3AD7": {
+    "zh": "头部遮挡",
+    "en": "Head shadowing"
+  },
+  "T6F0680C8AD": {
+    "zh": "一级平滑分母",
+    "en": "Stage 1 smoothing denominator"
+  },
+  "T0F1FA09C89": {
+    "zh": "二级平滑分母",
+    "en": "Stage 2 smoothing denominator"
+  },
+  "T64940235DF": {
+    "zh": "一级 EQ 强度",
+    "en": "Stage 1 EQ strength"
+  },
+  "T84C014E36A": {
+    "zh": "二级合成 EQ 强度",
+    "en": "Stage 2 combined EQ strength"
+  },
+  "TE7FD785848": {
+    "zh": "混响能量占比",
+    "en": "Reverberant energy fraction"
+  },
+  "T9DD4035A65": {
+    "zh": "输出增益",
+    "en": "Output gain"
+  },
+  "TFBF4BDF0EE": {
+    "zh": "音箱方位角",
+    "en": "Speaker azimuth"
+  },
+  "T2E67479A4D": {
+    "zh": "音箱仰角",
+    "en": "Speaker elevation"
+  },
+  "TB6516B47CA": {
+    "zh": "空气吸收距离",
+    "en": "Air absorption distance"
+  },
+  "T35355D67BA": {
+    "zh": "左侧方位角",
+    "en": "Left-side azimuth"
+  },
+  "TC7959E166E": {
+    "zh": "仰角",
+    "en": "Elevation"
+  },
+  "TA52D5F17B1": {
+    "zh": "R 相对增益",
+    "en": "Relative R gain"
+  },
+  "T3EA0AAAB7D": {
+    "zh": "空项目。",
+    "en": "Empty project."
+  },
+  "T16318F411B": {
+    "zh": "{0}需要 2–256 个控制点。",
+    "en": "{0} requires 2–256 control points."
+  },
+  "T6C31190790": {
+    "zh": " 横坐标",
+    "en": " X coordinate"
+  },
+  "TB66093080F": {
+    "zh": " 纵坐标",
+    "en": " Y coordinate"
+  },
+  "T07721C37CA": {
+    "zh": "{0}控制点必须按横坐标递增，衰减形状须不升高。",
+    "en": "{0} control points must have increasing X coordinates; the decay shape must not rise."
+  },
+  "T3280F44014": {
+    "zh": "成品响应为空或包含无效数值。",
+    "en": "The final response is empty or invalid."
+  },
+  "T348A784813": {
+    "zh": "输出增益或卷积核包含无效数值。",
+    "en": "Output gain or kernels contain invalid values."
+  },
+  "TA20E70D568": {
+    "zh": "输出增益超出双精度表示范围。",
+    "en": "Output gain exceeds double-precision range."
+  },
+  "T3D0AA5B7B8": {
+    "zh": "卷积核无法保存为有效 float32 数据。",
+    "en": "The kernels cannot be saved as valid float32 data."
+  },
+  "T41B86BD94F": {
+    "zh": "未命名声场",
+    "en": "Untitled Sound Field"
+  },
+  "T91D9D15DE7": {
+    "zh": "中频尾长参考",
+    "en": "Midband tail reference"
+  },
+  "TCF932BA28E": {
+    "zh": "双音箱直达声 · 混响 0%",
+    "en": "Two direct speakers · 0% reverberation"
+  },
+  "T8645BBBBA2": {
+    "zh": "直达声起点 · 自定义反射方向",
+    "en": "Start with direct sound · Add your own directions"
+  },
+  "T4572456505": {
+    "zh": "{0} 方向 · 尾长 {1:0.##} s · 混响 {2:0.#}%",
+    "en": "{0} directions · {1:0.##} s tail · {2:0.#}% reverberation"
+  },
+  "T3E9F8413BC": {
+    "zh": "上方",
+    "en": "Upper"
+  },
+  "TCD96E6D0C2": {
+    "zh": "后侧",
+    "en": "Rear"
+  },
+  "TE5910C76A3": {
+    "zh": "前侧",
+    "en": "Front"
+  },
+  "TD93E973E6E": {
+    "zh": "侧向",
+    "en": "Side"
+  },
+  "TE58D6EEE73": {
+    "zh": "缺少内置模板数据。",
+    "en": "Embedded template data is missing."
+  },
+  "T7BCC0C3AD4": {
+    "zh": "紧凑监听",
+    "en": "Compact Monitor"
+  },
+  "T8D82472AB0": {
+    "zh": "宽频短尾，平坦低中频、柔和高频滚降；轻量近场起点。",
+    "en": "A short broadband tail with flat bass and mids and a gentle treble roll-off. A light near-field starting point."
+  },
+  "TDD69038D90": {
+    "zh": "（推荐）轻量混响、柔和反射起点与舒展尾部，适合日常听音乐。",
+    "en": "(Recommended) Light reverberation, a gentle onset and an open tail for everyday music listening."
+  },
+  "TA42CAB5BE5": {
+    "zh": "前向空间",
+    "en": "Frontal Space"
+  },
+  "T94F6630F47": {
+    "zh": "近乎平坦的宽频短反射，少量前向空间；高频轻吸收。",
+    "en": "Short, nearly flat broadband reflections with a little frontal space and light treble absorption."
+  },
+  "TC2DCF9F09F": {
+    "zh": "温暖环绕",
+    "en": "Warm Surround"
+  },
+  "T3F512209B4": {
+    "zh": "从低频向高频连续吸收；较长的低频尾部与柔和高频。",
+    "en": "Absorption increases smoothly with frequency, with a longer bass tail and soft treble."
+  },
+  "TB02304F4BD": {
+    "zh": "明亮短厅",
+    "en": "Bright Short Hall"
+  },
+  "T17594671F9": {
+    "zh": "较宽的反射频带与紧凑尾部；亮度和尾长分别设定。",
+    "en": "Broadband reflections and a compact tail. Brightness and tail length are controlled separately."
+  },
+  "T8FB14E359D": {
+    "zh": "上方包围",
+    "en": "Overhead Surround"
+  },
+  "T072C17DF84": {
+    "zh": "反射环绕头部上方，宽频尾部逐渐向高频衰减。",
+    "en": "Reflections surround the upper head, with a broadband tail that gradually decays faster at high frequencies."
+  },
+  "TA3AA5024AC": {
+    "zh": "控制室",
+    "en": "Control Room"
+  },
+  "T142DF3E3A0": {
+    "zh": "清晰直接的声像，克制的早段反射与轻量短尾；宽频吸收平滑过渡。",
+    "en": "Clear, direct imaging with restrained early reflections and a light short tail; smoothly varying broadband absorption."
+  },
+  "T1A54F0D1EC": {
+    "zh": "自由场",
+    "en": "Free Field"
+  },
+  "T2DA9F071F4": {
+    "zh": "两只虚拟音箱经人头到达双耳；混响关闭，保留可调音箱角度与空间 EQ。",
+    "en": "Two virtual speakers through the head model, with reverberation off and adjustable speaker angles and spatial EQ."
+  },
+  "TBC26E9E47B": {
+    "zh": "柔和音乐厅",
+    "en": "Gentle Concert Hall"
+  },
+  "T913C01499F": {
+    "zh": "混响占主体，低频略长，密集早段之后温和消退。",
+    "en": "Reverberation dominates, with a slightly longer bass tail and a gentle decay after a dense early section."
+  },
+  "T8B80A6D0CE": {
+    "zh": "悠长大厅",
+    "en": "Long Hall"
+  },
+  "T6B469D0BF5": {
+    "zh": "远座位的混响比例；宽低频平台、较长低音与逐渐变暗的长尾。",
+    "en": "A distant-seat reverberant balance, a broad bass plateau and a long tail that gradually darkens."
+  },
+  "T7B2DFFB3C6": {
+    "zh": "从直达声开始，逐步添加自己的反射源。",
+    "en": "Start with direct sound and add your own reflection sources."
+  },
+  "T48916C7892": {
+    "zh": "模板方向数量为 2–32 之间的偶数。",
+    "en": "Template direction count must be an even number from 2 to 32."
+  },
+  "T8E0F99FE89": {
+    "zh": "请选择至少一个现有反射源。",
+    "en": "Select at least one existing reflection source."
+  },
+  "TC855443674": {
+    "zh": "项目已变化，请重新读取调整范围后再应用。",
+    "en": "The project has changed. Reload the adjustment scope before applying edits."
+  },
+  "T8C8699B525": {
+    "zh": "未知的批量状态。",
+    "en": "Unknown batch state."
+  },
+  "T36EAF8A59D": {
+    "zh": "一级左耳 EQ",
+    "en": "Stage 1 · Left-ear EQ"
+  },
+  "T0D1E4C8FBB": {
+    "zh": "一级右耳 EQ",
+    "en": "Stage 1 · Right-ear EQ"
+  },
+  "T25A537B729": {
+    "zh": "二级共同 EQ",
+    "en": "Stage 2 · Common EQ"
+  },
+  "TF31F61C45F": {
+    "zh": "预修正混响占比 · 频谱计算 {0}",
+    "en": "Precompensating wet balance · Spectral evaluation {0}"
+  },
+  "T9B48F518FE": {
+    "zh": "混响预修正超出双精度范围。",
+    "en": "Wet precompensation exceeds double-precision range."
+  },
+  "TCC3B94BCE7": {
+    "zh": "混响占比无法有效估计。",
+    "en": "The reverberant fraction cannot be estimated reliably."
+  },
+  "T00BD3960FE": {
+    "zh": "展开",
+    "en": "Expand"
+  },
+  "TAFD4B78353": {
+    "zh": "收起",
+    "en": "Collapse"
+  },
+  "T6BADC2D8AF": {
+    "zh": "模板选择",
+    "en": "Templates"
+  },
+  "T596A2E2D14": {
+    "zh": "选择声场模板",
+    "en": "Choose a sound field"
+  },
+  "T00DBD9D3F4": {
+    "zh": "选一个起点，再调整频谱、衰减和空间分布。",
+    "en": "Choose a starting point, then adjust its spectrum, decay and spatial distribution."
+  },
+  "T22A3CE2995": {
+    "zh": "调整当前模板…",
+    "en": "Edit current template…"
+  },
+  "T69933D5E2E": {
+    "zh": "导入配置…",
+    "en": "Import configuration…"
+  },
+  "T148D195E21": {
+    "zh": "配置",
+    "en": "Configuration"
+  },
+  "TA68D97A23D": {
+    "zh": "直达声与人头",
+    "en": "Direct sound and head model"
+  },
+  "TB9D41CA8D5": {
+    "zh": "启用直达声",
+    "en": "Enable direct sound"
+  },
+  "T9F7AC1715E": {
+    "zh": "音箱方位 ±°",
+    "en": "Speaker azimuth / ±°"
+  },
+  "TDE5023C743": {
+    "zh": "音箱仰角 °",
+    "en": "Speaker elevation / °"
+  },
+  "TB9ADD5130D": {
+    "zh": "空气吸收",
+    "en": "Air absorption"
+  },
+  "TB0F4A76337": {
+    "zh": "距离 / m",
+    "en": "Distance / m"
+  },
+  "TE56432A058": {
+    "zh": "人头模型",
+    "en": "Head model"
+  },
+  "T88547F7C86": {
+    "zh": "去除共同频响",
+    "en": "Remove common response"
+  },
+  "T818BAD7E65": {
+    "zh": "头部半径 m",
+    "en": "Head radius / m"
+  },
+  "TD64E380011": {
+    "zh": "头部遮挡强度 0…2",
+    "en": "Head shadow strength / 0…2"
+  },
+  "T878E1CAB13": {
+    "zh": "反射声场",
+    "en": "Reflected sound field"
+  },
+  "TCF2D5FEFBD": {
+    "zh": "目标为 EQ 与带通后的混响分量占比。通过整体混响增益预修正保持，结果区显示实际值。",
+    "en": "Target reverberant component fraction after EQ and bandpass. Broadband wet precompensation maintains the target; the results show the measured value."
+  },
+  "TFA3E1FE942": {
+    "zh": "反射源详细配置…",
+    "en": "Edit individual sources…"
+  },
+  "T3450F6F9D0": {
+    "zh": "随机细节",
+    "en": "Random detail"
+  },
+  "T30ECA98DC1": {
+    "zh": "随机种子",
+    "en": "Random seed"
+  },
+  "T7C575D0B9A": {
+    "zh": "换一个种子",
+    "en": "New seed"
+  },
+  "TECB74C0AC0": {
+    "zh": "强制随机镜像",
+    "en": "Mirror random detail"
+  },
+  "T4CE33330EE": {
+    "zh": "频响校正",
+    "en": "Frequency-response correction"
+  },
+  "T8F161768F0": {
+    "zh": "启用频响校正",
+    "en": "Enable frequency-response correction"
+  },
+  "T997425B6CA": {
+    "zh": "一级 · 每耳校正强度 %",
+    "en": "Stage 1 · Per-ear EQ strength / %"
+  },
+  "T0C7B545A0F": {
+    "zh": "平滑 1/N oct：N",
+    "en": "Smoothing: 1/N octave · N"
+  },
+  "T059DCFB4B5": {
+    "zh": "二级 · 中置校正强度 %",
+    "en": "Stage 2 · Center EQ strength / %"
+  },
+  "T7F3F479954": {
+    "zh": "强度：0% 保留原响应，100% 完整校正。平滑宽度为 1/N 倍频程。",
+    "en": "Strength: 0% retains the response; 100% applies full correction. Smoothing width is 1/N octave."
+  },
+  "T7AD32BE618": {
+    "zh": "拖动调整配置与图表的比例；方向键微调",
+    "en": "Drag to resize the settings and charts; use arrow keys for fine adjustment"
+  },
+  "TFE0D6DBDB0": {
+    "zh": "调整配置与图表的比例",
+    "en": "Resize settings and charts"
+  },
+  "TEC0882D652": {
+    "zh": "导出与后处理",
+    "en": "Export and post-process"
+  },
+  "TA2C70E0794": {
+    "zh": "导出声场",
+    "en": "Export sound field"
+  },
+  "T2CB335990E": {
+    "zh": "卷积核状态",
+    "en": "Kernel status"
+  },
+  "T52945D5611": {
+    "zh": "生成卷积核",
+    "en": "Generate kernels"
+  },
+  "T61420A4031": {
+    "zh": "读取声场参数 JSON 文件",
+    "en": "Read a sound field configuration JSON file"
+  },
+  "T7452D5100A": {
+    "zh": "导出配置…",
+    "en": "Export configuration…"
+  },
+  "T15948D750F": {
+    "zh": "保存声场参数与随机种子为 JSON 文件",
+    "en": "Save sound field parameters and random seed as JSON"
+  },
+  "TEA6AA5FBC2": {
+    "zh": "取消生成",
+    "en": "Cancel generation"
+  },
+  "TD38F541674": {
+    "zh": "卷积文件",
+    "en": "Convolution files"
+  },
+  "T6D4D219A7B": {
+    "zh": "导出父目录",
+    "en": "Export parent folder"
+  },
+  "TCEBB313808": {
+    "zh": "每次导出新建一个以模板和配置命名的文件夹，包含四条 WAV、四通道路径包和项目参数。",
+    "en": "Each export creates a folder named after the template and configuration, containing four WAV files, a four-channel path bundle and project parameters."
+  },
+  "T38FB82AE14": {
+    "zh": "导出名称",
+    "en": "Export name"
+  },
+  "T1B22517086": {
+    "zh": "导出 WAV",
+    "en": "Export WAV"
+  },
+  "TDC264F8601": {
+    "zh": "导出 Equalizer APO 配置",
+    "en": "Export Equalizer APO configuration"
+  },
+  "TE89C69853A": {
+    "zh": "APO 文件保存到程序旁的 EqualizerAPO 文件夹。配置引用卷积文件的绝对路径，移动后请重新导出。",
+    "en": "APO files are saved in EqualizerAPO beside the application. They reference absolute WAV paths; export again after moving the files."
+  },
+  "TF9130E5956": {
+    "zh": "已导出路径",
+    "en": "Exported path"
+  },
+  "TB97C49ACB9": {
+    "zh": "复制路径",
+    "en": "Copy path"
+  },
+  "T5584513748": {
+    "zh": "导出路径",
+    "en": "Export path"
+  },
+  "T4BEE5B9D94": {
+    "zh": "结果信息",
+    "en": "Result details"
+  },
+  "T50CE2EB2CB": {
+    "zh": "复制结果信息",
+    "en": "Copy result details"
+  },
+  "TCCA3890D8F": {
+    "zh": "卷积结果信息",
+    "en": "Kernel result details"
+  },
+  "TF5E7780974": {
+    "zh": "处理歌曲",
+    "en": "Process audio"
+  },
+  "T34BDB05F4C": {
+    "zh": "FFmpeg 路径",
+    "en": "FFmpeg path"
+  },
+  "T6E2F4B6378": {
+    "zh": "选择 ffmpeg.exe…",
+    "en": "Select ffmpeg.exe…"
+  },
+  "T90F13C967E": {
+    "zh": "自动查找",
+    "en": "Find automatically"
+  },
+  "T432172E204": {
+    "zh": "检查可用性",
+    "en": "Check availability"
+  },
+  "T3BAD4D5E32": {
+    "zh": "选择完整构建中的 ffmpeg.exe，同目录需有 ffprobe.exe；需要支持 libsoxr。路径会自动记住。",
+    "en": "Select ffmpeg.exe from a complete build with ffprobe.exe in the same folder and libsoxr support. The path is saved automatically."
+  },
+  "T82DD360F00": {
+    "zh": "拖放音频到这里",
+    "en": "Drop an audio file here"
+  },
+  "TA7D49ABED1": {
+    "zh": "选择音频文件",
+    "en": "Choose audio file"
+  },
+  "T32F594E193": {
+    "zh": "支持 WAV、FLAC、MP3、M4A 等格式，导出双声道音频并保留混响尾部。",
+    "en": "Accepts WAV, FLAC, MP3, M4A and other formats. Exports stereo audio with the full reverberation tail."
+  },
+  "T41D0E52F0A": {
+    "zh": "输出格式",
+    "en": "Output format"
+  },
+  "T3952DC03B1": {
+    "zh": "输出父目录",
+    "en": "Output parent folder"
+  },
+  "T693E3F6AE8": {
+    "zh": "目标 LUFS",
+    "en": "Target LUFS"
+  },
+  "TDA0451AA2A": {
+    "zh": "音乐分享默认 −18 LUFS，可设 −30 至 −9；LUFS 是整体响度，0 dB 是峰值上限。",
+    "en": "Default sharing level: −18 LUFS; range −30 to −9. LUFS measures integrated loudness; 0 dB is the peak ceiling."
+  },
+  "T60E35B0043": {
+    "zh": "响度补偿默认 −18 LUFS；仅限幅保留卷积后电平。",
+    "en": "Loudness normalization defaults to −18 LUFS. Limiter-only mode retains the convolved level."
+  },
+  "T5C3E0BCCC4": {
+    "zh": "处理并导出歌曲",
+    "en": "Process and export audio"
+  },
+  "T8B69BCF552": {
+    "zh": "取消处理",
+    "en": "Cancel processing"
+  },
+  "T4A45AD491A": {
+    "zh": "打开输出文件夹",
+    "en": "Open output folder"
+  },
+  "T9A7A66B7EB": {
+    "zh": "方向分布",
+    "en": "Direction distribution"
+  },
+  "TFB3291B042": {
+    "zh": "总方向数 2–32，偶数",
+    "en": "Total directions: even number, 2–32"
+  },
+  "TD7C6393CE7": {
+    "zh": "个方向",
+    "en": "directions"
+  },
+  "T0965D992E8": {
+    "zh": "朝向偏转 °",
+    "en": "Yaw offset / °"
+  },
+  "TFC84E978F0": {
+    "zh": "仰角偏移 °",
+    "en": "Elevation offset / °"
+  },
+  "T3A53599CF3": {
+    "zh": "半侧覆盖 °",
+    "en": "Half-side coverage / °"
+  },
+  "T0689D9C44B": {
+    "zh": "新源相对权重 dB",
+    "en": "New-source relative weight / dB"
+  },
+  "T5F90003F5B": {
+    "zh": "组名",
+    "en": "Group name"
+  },
+  "TA087155023": {
+    "zh": "替换现有方向",
+    "en": "Replace existing directions"
+  },
+  "T0874359CA1": {
+    "zh": "生成方向",
+    "en": "Generate directions"
+  },
+  "T0C369FD520": {
+    "zh": "能量频谱 / dB",
+    "en": "Energy spectrum / dB"
+  },
+  "TD269D3B4DB": {
+    "zh": "衰减时间尺度 / 秒 · 随频率",
+    "en": "Decay time scale / s · By frequency"
+  },
+  "TCE03A29B14": {
+    "zh": "复位缩放",
+    "en": "Reset scale"
+  },
+  "TEDD4C7F07A": {
+    "zh": "向左缩短，向右延长；全部衰减时间控制点同比缩放，对数纵轴上等同整条曲线上下平移。",
+    "en": "Move left to shorten or right to lengthen all decay times proportionally. This shifts the curve vertically on its logarithmic axis."
+  },
+  "T3E095C26B0": {
+    "zh": "整体缩短 ← → 整体延长；边界内保留比例",
+    "en": "Shorter ← → Longer; ratios retained within bounds"
+  },
+  "T22F16B6BF6": {
+    "zh": "建立段",
+    "en": "Build-up"
+  },
+  "T2D644541CB": {
+    "zh": "全程",
+    "en": "Full range"
+  },
+  "TEBE8055765": {
+    "zh": "完整能量包络 / dB",
+    "en": "Complete energy envelope / dB"
+  },
+  "T0DD66AAF9D": {
+    "zh": "拖动控制点修改，双击新增，右键删除。三张曲线统一调整当前模板中的反射源。",
+    "en": "Drag points to edit, double-click to add, right-click to delete. These three curves adjust all reflection sources in the current template."
+  },
+  "T387B841C7B": {
+    "zh": "首反射额外路程 / m",
+    "en": "First-reflection excess path / m"
+  },
+  "T9642BF35D1": {
+    "zh": "反射变密路程 / m",
+    "en": "Density build-up path / m"
+  },
+  "TBBE0C1602D": {
+    "zh": "R 相对增益调整 / dB",
+    "en": "Relative R gain adjustment / dB"
+  },
+  "T549E614D44": {
+    "zh": "R tilt 调整 / dB/oct",
+    "en": "R tilt adjustment / dB/oct"
+  },
+  "T57C0F5F0C8": {
+    "zh": "方向、启用与 R 激励模式",
+    "en": "Direction, enable state and R excitation"
+  },
+  "TEECF91E3D2": {
+    "zh": "方位偏移 / °",
+    "en": "Azimuth offset / °"
+  },
+  "T3999B85DC5": {
+    "zh": "仰角偏移 / °",
+    "en": "Elevation offset / °"
+  },
+  "TF69DB9B91E": {
+    "zh": "源启用状态",
+    "en": "Source enable state"
+  },
+  "TF624118BEA": {
+    "zh": "保留原状",
+    "en": "Keep unchanged"
+  },
+  "T2A4540B127": {
+    "zh": "全部启用",
+    "en": "Enable all"
+  },
+  "TC5169F0230": {
+    "zh": "全部停用",
+    "en": "Disable all"
+  },
+  "T725D9DD860": {
+    "zh": "R 激励方式",
+    "en": "R excitation mode"
+  },
+  "TC5DC1C733D": {
+    "zh": "自动衍生",
+    "en": "Derive automatically"
+  },
+  "T03BED6139A": {
+    "zh": "独立编辑（保留当前参数）",
+    "en": "Edit independently (retain current parameters)"
+  },
+  "TB1BE1EF247": {
+    "zh": "精确编辑曲线控制点",
+    "en": "Edit exact control-point values"
+  },
+  "TE855B9F5BC": {
+    "zh": "频谱：Hz / dB",
+    "en": "Spectrum: Hz / dB"
+  },
+  "T7515C09C08": {
+    "zh": "衰减时间：Hz / 秒",
+    "en": "Decay time: Hz / s"
+  },
+  "TBEE6593BCA": {
+    "zh": "包络：参考额外路程 m / dB",
+    "en": "Envelope: reference excess path / m / dB"
+  },
+  "T62D1AFDDFB": {
+    "zh": "横坐标",
+    "en": "X coordinate"
+  },
+  "TCDA1D55C52": {
+    "zh": "值",
+    "en": "Value"
+  },
+  "T4C96D8080C": {
+    "zh": "卷积结果",
+    "en": "Convolution results"
+  },
+  "T9919DB867B": {
+    "zh": "配置名称",
+    "en": "Configuration name"
+  },
+  "TE39C49C168": {
+    "zh": "采样率 / Hz",
+    "en": "Sample rate / Hz"
+  },
+  "TF82F76F577": {
+    "zh": "输出增益 / dB",
+    "en": "Output gain / dB"
+  },
+  "T926A50B98E": {
+    "zh": "撤销",
+    "en": "Undo"
+  },
+  "T03717B6F10": {
+    "zh": "重做",
+    "en": "Redo"
+  },
+  "T3B38FE0929": {
+    "zh": "最终四路径",
+    "en": "Final four paths"
+  },
+  "T41CA1D9540": {
+    "zh": "最终每耳同相输入响应",
+    "en": "Final per-ear response to identical inputs"
+  },
+  "T6D2FB71C08": {
+    "zh": "EQ 前每耳同相输入响应",
+    "en": "Per-ear response to identical inputs before EQ"
+  },
+  "TD49407A0B6": {
+    "zh": "直达声四路径",
+    "en": "Four direct-sound paths"
+  },
+  "T53566E1F1D": {
+    "zh": "当前源 · 头部处理前",
+    "en": "Current source · Before head rendering"
+  },
+  "T7A65EFD9DF": {
+    "zh": "当前源和镜像 · 四路径",
+    "en": "Current source and mirror · Four paths"
+  },
+  "TAAF8562D88": {
+    "zh": "EQ 滤波器",
+    "en": "EQ filters"
+  },
+  "T918B8FEA7C": {
+    "zh": "幅频响应",
+    "en": "Magnitude response"
+  },
+  "TE3CCD0C22C": {
+    "zh": "脉冲响应",
+    "en": "Impulse response"
+  },
+  "T1603E2EC90": {
+    "zh": "能量衰减",
+    "en": "Energy decay"
+  },
+  "TFF00AF2489": {
+    "zh": "展开相位",
+    "en": "Unwrapped phase"
+  },
+  "T2E34C461F1": {
+    "zh": "群延迟",
+    "en": "Group delay"
+  },
+  "T18380BF1F9": {
+    "zh": "复位视图",
+    "en": "Reset view"
+  },
+  "T0DCC23107D": {
+    "zh": "显示全部曲线",
+    "en": "Show all curves"
+  },
+  "T29ECCEB632": {
+    "zh": "显示平滑",
+    "en": "Smooth display"
+  },
+  "T976781B387": {
+    "zh": "显示带通范围",
+    "en": "Show bandpass range"
+  },
+  "TB80A9AC6DD": {
+    "zh": "扩展幅频视图至 5 Hz 起和 −100 dB，检查带通衰减。",
+    "en": "Extend magnitude view down to 5 Hz and −100 dB to inspect the bandpass roll-off."
+  },
+  "T16DA74A431": {
+    "zh": "滚轮缩放 · 拖动平移 · 双击复位 · 点击图例开关曲线",
+    "en": "Wheel: zoom · Drag: pan · Double-click: reset · Click legend: toggle curve"
+  },
+  "T4E4843A412": {
+    "zh": "反射源详细配置",
+    "en": "Detailed source editor"
+  },
+  "T99D20248AA": {
+    "zh": "反射源 / 左半边",
+    "en": "Reflection sources / Left half"
+  },
+  "T50EF2F4CF6": {
+    "zh": "新建",
+    "en": "New"
+  },
+  "TFFC82E5F04": {
+    "zh": "操作 ▾",
+    "en": "Actions ▾"
+  },
+  "T2A79FCBC68": {
+    "zh": "复制源",
+    "en": "Duplicate source"
+  },
+  "T3F533D72CD": {
+    "zh": "删除所选源",
+    "en": "Delete selected sources"
+  },
+  "TE7614CA7C7": {
+    "zh": "复制参数",
+    "en": "Copy parameters"
+  },
+  "T5D72EC3697": {
+    "zh": "粘贴参数",
+    "en": "Paste parameters"
+  },
+  "T7ED454D175": {
+    "zh": "当前参数 → 全部所选",
+    "en": "Current parameters → All selected"
+  },
+  "T33700A3BB5": {
+    "zh": "Ctrl / Shift 多选；点击组名选择整组。",
+    "en": "Ctrl / Shift: multi-select. Click a group name to select the group."
+  },
+  "TB0FE2A90AA": {
+    "zh": "复位视角",
+    "en": "Reset orientation"
+  },
+  "TB856DC8977": {
+    "zh": "L 输入激励",
+    "en": "L input excitation"
+  },
+  "T70F0883257": {
+    "zh": "R 输入激励",
+    "en": "R input excitation"
+  },
+  "T60F106E3AD": {
+    "zh": "频谱与衰减",
+    "en": "Spectrum and decay"
+  },
+  "T332F6CD3A7": {
+    "zh": "能量频谱轮廓 / dB",
+    "en": "Energy spectrum envelope / dB"
+  },
+  "T1589507CC5": {
+    "zh": "衰减时间尺度 / 秒",
+    "en": "Decay time scale / s"
+  },
+  "TC5987DA29F": {
+    "zh": "拖点修改 · 双击新增 · 右键删除",
+    "en": "Drag: edit · Double-click: add · Right-click: delete"
+  },
+  "T715722DC5A": {
+    "zh": "精确编辑控制点",
+    "en": "Edit exact control points"
+  },
+  "TEAF4BB53FF": {
+    "zh": "衰减：Hz / 秒",
+    "en": "Decay: Hz / s"
+  },
+  "T9D89B6BBEC": {
+    "zh": "包络：额外路程 m / dB",
+    "en": "Envelope: excess path / m / dB"
+  },
+  "TF2EDE272AF": {
+    "zh": "方向与激励",
+    "en": "Direction and excitation"
+  },
+  "TA2B9FC10EC": {
+    "zh": "方位角 −180…0°",
+    "en": "Azimuth / −180…0°"
+  },
+  "T8A31BEF29A": {
+    "zh": "仰角 −90…90°",
+    "en": "Elevation / −90…90°"
+  },
+  "T2F22357225": {
+    "zh": "启用此源及镜像",
+    "en": "Enable this source and its mirror"
+  },
+  "T74F2A77613": {
+    "zh": "首反射额外路程 m",
+    "en": "First-reflection excess path / m"
+  },
+  "TE73C880935": {
+    "zh": "反射变密路程 m",
+    "en": "Density build-up path / m"
+  },
+  "TE57760C5F4": {
+    "zh": "自动生成 R 激励参数",
+    "en": "Derive R excitation parameters automatically"
+  },
+  "TFC81097FCB": {
+    "zh": "R 相对增益 dB",
+    "en": "Relative R gain / dB"
+  },
+  "T64DA380154": {
+    "zh": "包络",
+    "en": "Envelope"
+  },
+  "TC01CF21EE9": {
+    "zh": "完整能量包络 / 额外路程",
+    "en": "Complete energy envelope / Excess path"
+  },
+  "TE1D01BA5F6": {
+    "zh": "完整曲线",
+    "en": "Complete curve"
+  },
+  "TFB937ACF65": {
+    "zh": "放大建立段",
+    "en": "Zoom into build-up"
+  },
+  "TCF7EDF0681": {
+    "zh": "拖动控制点；双击增加；右键删除非锚点。先放大建立段，再编辑首反到变密之间的能量。",
+    "en": "Drag points, double-click to add, right-click to delete non-anchor points. Zoom into build-up to edit energy between the first reflection and the density marker."
+  },
+  "T084B71C596": {
+    "zh": "首反、建立和尾端的位置由路程与衰减参数控制。末端保持 −60 dB，之后继续衰减到约 −80 dB 再截断。",
+    "en": "First reflection, build-up and tail anchors follow path and decay parameters. The final anchor remains at −60 dB, followed by decay to approximately −80 dB and truncation."
+  },
+  "LanguagePreferenceError": {
+    "zh": "语言已切换，本次偏好未能保存：{0}",
+    "en": "Language changed for this session; could not save preference: {0}"
+  }
+}

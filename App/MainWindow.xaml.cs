@@ -11,7 +11,7 @@ public partial class MainWindow:Window
     SourceEditorWindow? sourceWindow;
     public MainWindow()
     {
-        InitializeComponent();DataContext=VM;ResizePreviewHost.Install(this);
+        InitializeComponent();Title="Soundstage IR Generator "+(System.Reflection.CustomAttributeExtensions.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>(typeof(MainWindow).Assembly)?.InformationalVersion.Split('+')[0]??typeof(MainWindow).Assembly.GetName().Version!.ToString(3));DataContext=VM;ResizePreviewHost.Install(this);
         VM.CommitTemplateEdits=CommitConfiguration;
         VM.HasTemplateEdits=()=>EditorInput.HasDirty(SettingsBody)||AnalysisArea.HasPendingEdits||(sourceWindow?.HasPendingEdits??false);
         VM.RequestTemplate=card=>{var dialog=new TemplateDialog(card){Owner=this};return dialog.ShowDialog()==true?dialog.Selection:null;};
@@ -21,9 +21,9 @@ public partial class MainWindow:Window
     void OpenGuide(object sender,RoutedEventArgs e)
     {
         string guide=Path.Combine(VM.Root,"docs","guide.html");
-        if(!File.Exists(guide)){MessageBox.Show(this,"未找到随程序附带的 docs/guide.html。请保留完整发布文件夹。","使用指南");return;}
-        try{System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(guide){UseShellExecute=true});}
-        catch(Exception ex){MessageBox.Show(this,ex.Message,"打开指南失败");}
+        if(!File.Exists(guide)){MessageBox.Show(this,SoundstageIR.Core.TextCatalog.T("T012CF64049"),SoundstageIR.Core.TextCatalog.T("TB6E77060DB"));return;}
+        try{System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(new Uri(guide).AbsoluteUri+(SoundstageIR.Core.TextCatalog.English?"#en-guide":"#zh-guide")){UseShellExecute=true});}
+        catch(Exception ex){MessageBox.Show(this,ex.Message,SoundstageIR.Core.TextCatalog.T("T909A4608AD"));}
     }
     void WindowLoaded(object sender,RoutedEventArgs e)
     {
@@ -33,7 +33,7 @@ public partial class MainWindow:Window
     }
     void Edited(object sender,RoutedEventArgs e)
     {
-        if(!loaded)return;
+        if(!loaded||VM.Localizing)return;
         if(sender is TextBox box)EditorInput.Update(box);
         VM.Commit();VM.PendingChanged();
     }
@@ -96,7 +96,7 @@ public partial class MainWindow:Window
     internal bool CommitConfiguration()
     {
         EditorInput.Commit(SettingsBody);
-        if(EditorInput.HasErrors(SettingsBody)){VM.SetStatus("请检查红框内的数值。");return false;}
+        if(EditorInput.HasErrors(SettingsBody)){VM.SetStatus(SoundstageIR.Core.TextCatalog.T("TB469D01528"));return false;}
         if(!AnalysisArea.CommitEdits()||sourceWindow?.CommitEdits()==false)return false;
         VM.Commit();VM.PendingChanged();return true;
     }

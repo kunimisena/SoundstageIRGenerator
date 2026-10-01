@@ -11,7 +11,7 @@ public static class ApoExporter
     }
     public static void WriteConfig(GenerationResult result,string path)
     {
-        var config=new StringBuilder("# Soundstage IR Generator — 四路径双耳卷积\n# 配置使用绝对路径，更换位置后请重新导出。\n# 设备采样率须与 WAV 一致："+result.Project.SampleRate+" Hz\nCopy: LL=L LR=L RL=R RR=R\n");
+        var config=new StringBuilder(SoundstageIR.Core.TextCatalog.T("T9AB5A91FF3")+result.Project.SampleRate+" Hz\nCopy: LL=L LR=L RL=R RR=R\n");
         int[] routes=[0,2,1,3];string[] channels=["LL","LR","RL","RR"];
         for(int i=0;i<4;i++)
         {
@@ -21,12 +21,12 @@ public static class ApoExporter
         }
         config.AppendLine("Copy: L=LL+RL R=LR+RR").AppendLine("Channel: L R");
         File.WriteAllText(Path.Combine(path,OutputNames.File(result.Project,"APO.txt")),config.ToString(),new UTF8Encoding(false));
-        File.WriteAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),"在 Equalizer APO 中 Include 本目录中以 _APO.txt 结尾的配置文件。\n四条 WAV 使用绝对路径。更换文件夹或文件名后，请重新导出配置。\n卷积核已包含设定的空间 EQ、20 Hz–20 kHz 带通和共同增益，可直接使用。\n设备采样率："+result.Project.SampleRate+" Hz。请保留原有耳机 EQ。\n");
-        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),"人头模型："+HeadRenderer.Description(result.Project)+"。\n");
-        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),$"空间 EQ：总开关 {result.Project.Equalize}，一级 {result.Project.EarEqStrengthPercent:0.##}%，二级 {result.Project.CenterEqStrengthPercent:0.##}%（严格镜像不使用二级）。\n");
-        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),$"实际参考电平 {result.OutputReferenceDb:F2} dB。\n"+string.Join("\n",result.Warnings)+"\n");
-        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),$"混响能量占比：目标 {(result.Project.Direct.Enabled?result.Project.ReflectionEnergyPercent:100):F3}%，最终 {result.ReflectionPercentAfterEq:F3}%。整体混响预修正 {result.WetBalance.GainDb:+0.000;-0.000;0} dB。\n");
-        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),$"人头参考精确校正：{(result.HeadEq.Length>1?"启用":"关闭")}；各启用方向等能量单位冲激测试，双耳平均功率非相干叠加，直接求逆到平直目标；不使用混响随机核或平滑。\n");
+        File.WriteAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.T("T3BF241DC47")+result.Project.SampleRate+SoundstageIR.Core.TextCatalog.T("T6370457031"));
+        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.T("T78B83067E3")+TextCatalog.Diagnostic(HeadRenderer.Description(result.Project))+"。\n");
+        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.F("TFE48EFE512", result.Project.Equalize, result.Project.EarEqStrengthPercent, result.Project.CenterEqStrengthPercent));
+        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.F("T777D29EC43", result.OutputReferenceDb)+string.Join("\n",result.Warnings.Select(TextCatalog.Diagnostic))+"\n");
+        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.F("T99551B705C", (result.Project.Direct.Enabled?result.Project.ReflectionEnergyPercent:100), result.ReflectionPercentAfterEq, result.WetBalance.GainDb));
+        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.F("T10E72641EB", (result.HeadEq.Length>1?SoundstageIR.Core.TextCatalog.T("TF4F0EAD111"):SoundstageIR.Core.TextCatalog.T("T3FD47EDCE4"))));
         if(result.Project.HeadModel==HeadModelKind.Fabian)
         {
             var notice=Path.Combine(AppContext.BaseDirectory,"FABIAN-NOTICE.txt");

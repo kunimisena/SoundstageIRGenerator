@@ -1,4 +1,26 @@
-# 4.12.0 构建与验证 / Build and validation
+# 4.13.0 构建与验证 / Build and validation
+
+本版增加简体中文与英文切换。声学生成、头部处理、EQ 和归一化算法保持不变。
+
+This release adds Simplified Chinese and English presentation. Acoustic generation, head processing, EQ and normalization algorithms are unchanged.
+
+## 本次检查 / Bilingual checks
+
+- 发布程序的 67 项定向检查通过：资源、切换与持久化、全部模板、配置读写、图表状态和导出。
+- 同一配置分别在中文和英文环境生成，四条卷积核逐样本相同；导出的 float32 WAV 与预览数据逐样本对应。
+- 切换语言保留生成结果、选中项、图表缩放和隐藏曲线；不重复计算 FFT。
+- 英文页面在 100%、150%、200% 缩放下离屏布局；检查正常与窄窗口截图。真实多显示器 DPI 切换和桌面操作由用户验收。
+- Windows x64 Release 发布零警告、零错误。中英文使用指南与离线帮助同步更新。
+
+The published application passed 67 targeted assertions. The four kernels are sample-identical between Chinese and English generation, and exported float32 samples match the preview. Language changes preserve project and plot state without repeating FFT analysis. Offscreen layouts and screenshots cover 100%, 150% and 200% scaling within the supported minimum window size. Live multi-monitor DPI transitions and interactive acceptance remain for manual testing. Release build and publish completed with zero warnings and errors.
+
+本次未重复执行全部声学回归，也未运行歌曲处理；以下保留 4.12.0 的历史验证记录。
+
+The full acoustic regression and song rendering were not rerun for this update. The following section records the earlier 4.12.0 validation.
+
+---
+
+# 4.12.0 历史记录 / Previous validation
 
 ## 正式处理 / Standard processing
 

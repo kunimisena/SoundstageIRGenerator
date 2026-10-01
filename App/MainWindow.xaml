@@ -1,20 +1,21 @@
-<Window x:Class="SoundstageIRGenerator.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:SoundstageIRGenerator" Style="{StaticResource {x:Type Window}}" Title="Soundstage IR Generator 4.10.0" Width="1320" Height="880" MinWidth="760" MinHeight="620" WindowStartupLocation="CenterScreen" Loaded="WindowLoaded">
+<Window x:Class="SoundstageIRGenerator.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:SoundstageIRGenerator" Style="{StaticResource {x:Type Window}}" Title="Soundstage IR Generator" Width="1320" Height="880" MinWidth="760" MinHeight="620" WindowStartupLocation="CenterScreen" Loaded="WindowLoaded">
  <Window.InputBindings><KeyBinding Key="Z" Modifiers="Control" Command="{Binding UndoCommand}"/><KeyBinding Key="Y" Modifiers="Control" Command="{Binding RedoCommand}"/><KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveCommand}"/></Window.InputBindings>
+ <Grid>
  <TabControl x:Name="Pages" Margin="12" SelectedIndex="0" SelectionChanged="WorkflowChanged">
- <TabItem x:Name="PresetPage" Header="模板选择">
+ <TabItem x:Name="PresetPage" Header="{DynamicResource T6BADC2D8AF}">
   <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="20">
-   <TextBlock Text="选择声场模板" FontSize="24" Margin="0,0,0,8"/>
-   <TextBlock Text="选一个起点，再调整频谱、衰减和空间分布。" Style="{StaticResource Hint}"/>
+   <TextBlock Text="{DynamicResource T596A2E2D14}" FontSize="24" Margin="0,0,0,8"/>
+   <TextBlock Text="{DynamicResource T00DBD9D3F4}" Style="{StaticResource Hint}"/>
    <ItemsControl ItemsSource="{Binding PresetCards}" Margin="0,14,0,0"><ItemsControl.ItemsPanel><ItemsPanelTemplate><local:AdaptiveGrid ItemMinWidth="280"/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate>
-    <Button Command="{Binding DataContext.PresetCommand,RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" HorizontalContentAlignment="Stretch" Padding="18" Margin="0,0,12,12" Background="{StaticResource Paper}" MinHeight="160">
+    <Button ContentTemplate="{x:Null}" Command="{Binding DataContext.PresetCommand,RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" HorizontalContentAlignment="Stretch" Padding="18" Margin="0,0,12,12" Background="{StaticResource Paper}" MinHeight="160">
      <StackPanel><TextBlock Text="{Binding Name}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap"/><TextBlock Text="{Binding Details}" Style="{StaticResource Hint}" Margin="0,10,0,8"/><TextBlock Text="{Binding Description}" TextWrapping="Wrap"/></StackPanel>
     </Button>
    </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
-   <WrapPanel Margin="0,14,0,0"><Button Content="调整当前模板…" Click="EditCurrentTemplate" IsEnabled="{Binding Ready}"/><Button Content="导入配置…" Command="{Binding OpenCommand}"/><Button Content="使用指南" Click="OpenGuide"/></WrapPanel>
+   <WrapPanel Margin="0,14,0,0"><Button Content="{DynamicResource T22A3CE2995}" Click="EditCurrentTemplate" IsEnabled="{Binding Ready}"/><Button Content="{DynamicResource T69933D5E2E}" Command="{Binding OpenCommand}"/><Button Content="{DynamicResource TB6E77060DB}" Click="OpenGuide"/></WrapPanel>
    <TextBox Text="{Binding Status,Mode=OneWay}" Style="{StaticResource SelectableOutput}"/>
   </StackPanel></ScrollViewer>
  </TabItem>
- <TabItem x:Name="ConfigurationPage" Header="配置">
+ <TabItem x:Name="ConfigurationPage" Header="{DynamicResource T148D195E21}">
   <Grid x:Name="ConfigurationLayout" Margin="16">
    <Grid.RowDefinitions><RowDefinition x:Name="SettingsRow" Height="*"/><RowDefinition x:Name="SplitterRow" Height="0"/><RowDefinition x:Name="AnalysisRow" Height="0"/></Grid.RowDefinitions>
    <Grid.ColumnDefinitions><ColumnDefinition x:Name="SettingsColumn" Width="3*"/><ColumnDefinition x:Name="SplitterColumn" Width="12"/><ColumnDefinition x:Name="AnalysisColumn" Width="2*"/></Grid.ColumnDefinitions>
@@ -22,73 +23,73 @@
     <ScrollViewer x:Name="SettingsScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
      <StackPanel x:Name="SettingsBody" Margin="0,0,16,0">
       <TextBlock Text="{Binding P.Name}" FontSize="24" Margin="0,0,0,18"/>
-      <GroupBox Header="直达声与人头" IsEnabled="{Binding Ready}"><StackPanel><CheckBox x:Name="DirectSoundToggle" Content="启用直达声" IsChecked="{Binding DirectEnabled}"/><UniformGrid Columns="2"><StackPanel><TextBlock Text="音箱方位 ±°" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Direct.Angle}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="音箱仰角 °" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Direct.Elevation}" LostFocus="Edited"/></StackPanel></UniformGrid><WrapPanel><CheckBox Content="空气吸收" IsChecked="{Binding P.Direct.AirAbsorption}" Click="Edited"/><TextBlock Text="距离 / m" VerticalAlignment="Center" Margin="8,0"/><TextBox Width="90" Text="{Binding P.Direct.AirAbsorptionDistance}" LostFocus="Edited" IsEnabled="{Binding P.Direct.AirAbsorption}"/></WrapPanel>
-<TextBlock Text="人头模型" Margin="0,12,0,4"/><ComboBox x:Name="HeadModelSelector" ItemsSource="{Binding HeadModelNames}" SelectedIndex="{Binding HeadModelIndex,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/><CheckBox x:Name="FabianCtfToggle" Content="去除共同频响" Visibility="{Binding FabianHeadSelected,Converter={StaticResource BoolVisibility}}" IsChecked="{Binding P.FabianCtfCompensation}" Click="Edited"/><UniformGrid x:Name="SphereParameters" Visibility="{Binding SphereHeadSelected,Converter={StaticResource BoolVisibility}}" Columns="2"><StackPanel><TextBlock Text="头部半径 m" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.HeadRadius}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="头部遮挡强度 0…2" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.HeadShadow}" LostFocus="Edited"/></StackPanel></UniformGrid></StackPanel></GroupBox>
-      <GroupBox Header="反射声场"><StackPanel>
-       <StackPanel IsEnabled="{Binding ReflectionEnergyEditable}"><TextBlock Text="混响能量占比 / %" ToolTip="目标为 EQ 与带通后的混响分量占比。通过整体混响增益预修正保持，结果区显示实际值。"/><DockPanel><TextBox x:Name="WetPercentEditor" DockPanel.Dock="Right" Width="76" Text="{Binding ReflectionEnergyPercent}" LostFocus="Edited"/><Slider x:Name="WetPercentSlider" Minimum="0" Maximum="100" Value="{Binding ReflectionEnergyPercent}" Thumb.DragCompleted="Edited" LostFocus="Edited" Margin="0,6,14,8"/></DockPanel></StackPanel>
+      <GroupBox Header="{DynamicResource TA68D97A23D}" IsEnabled="{Binding Ready}"><StackPanel><CheckBox x:Name="DirectSoundToggle" Content="{DynamicResource TB9D41CA8D5}" IsChecked="{Binding DirectEnabled}"/><UniformGrid Columns="2"><StackPanel><TextBlock Text="{DynamicResource T9F7AC1715E}" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Direct.Angle}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="{DynamicResource TDE5023C743}" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Direct.Elevation}" LostFocus="Edited"/></StackPanel></UniformGrid><WrapPanel><CheckBox Content="{DynamicResource TB9ADD5130D}" IsChecked="{Binding P.Direct.AirAbsorption}" Click="Edited"/><TextBlock Text="{DynamicResource TB0F4A76337}" VerticalAlignment="Center" Margin="8,0"/><TextBox Width="90" Text="{Binding P.Direct.AirAbsorptionDistance}" LostFocus="Edited" IsEnabled="{Binding P.Direct.AirAbsorption}"/></WrapPanel>
+<TextBlock Text="{DynamicResource TE56432A058}" Margin="0,12,0,4"/><ComboBox x:Name="HeadModelSelector" ItemsSource="{Binding HeadModelNames}" DisplayMemberPath="Label" SelectedIndex="{Binding HeadModelIndex,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/><CheckBox x:Name="FabianCtfToggle" Content="{DynamicResource T88547F7C86}" Visibility="{Binding FabianHeadSelected,Converter={StaticResource BoolVisibility}}" IsChecked="{Binding P.FabianCtfCompensation}" Click="Edited"/><UniformGrid x:Name="SphereParameters" Visibility="{Binding SphereHeadSelected,Converter={StaticResource BoolVisibility}}" Columns="2"><StackPanel><TextBlock Text="{DynamicResource T818BAD7E65}" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.HeadRadius}" LostFocus="Edited"/></StackPanel><StackPanel><TextBlock Text="{DynamicResource TD64E380011}" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.HeadShadow}" LostFocus="Edited"/></StackPanel></UniformGrid></StackPanel></GroupBox>
+      <GroupBox Header="{DynamicResource T878E1CAB13}"><StackPanel>
+       <StackPanel IsEnabled="{Binding ReflectionEnergyEditable}"><TextBlock Text="{DynamicResource T82C1C0262A}" ToolTip="{DynamicResource TCF2D5FEFBD}"/><DockPanel><TextBox x:Name="WetPercentEditor" DockPanel.Dock="Right" Width="76" Text="{Binding ReflectionEnergyPercent}" LostFocus="Edited"/><Slider x:Name="WetPercentSlider" Minimum="0" Maximum="100" Value="{Binding ReflectionEnergyPercent}" Thumb.DragCompleted="Edited" LostFocus="Edited" Margin="0,6,14,8"/></DockPanel></StackPanel>
        <TextBlock Text="{Binding DirectionSummary}" Style="{StaticResource Hint}"/>
-       <Button Content="反射源详细配置…" Click="OpenAdvanced" HorizontalAlignment="Left" IsEnabled="{Binding Ready}" Margin="0,12,0,0"/>
+       <Button Content="{DynamicResource TFA3E1FE942}" Click="OpenAdvanced" HorizontalAlignment="Left" IsEnabled="{Binding Ready}" Margin="0,12,0,0"/>
       </StackPanel></GroupBox>
-      <GroupBox Header="随机细节" IsEnabled="{Binding Ready}"><StackPanel><TextBlock Text="随机种子"/><DockPanel><Button DockPanel.Dock="Right" Content="换一个种子" Command="{Binding SeedCommand}"/><TextBox Text="{Binding P.Seed}" LostFocus="Edited"/></DockPanel><CheckBox Content="强制随机镜像" IsChecked="{Binding P.StrictMirror}" Click="Edited"/><TextBlock Text="{Binding SymmetryHint}" Style="{StaticResource Hint}"/></StackPanel></GroupBox>
-      <GroupBox x:Name="EqControls" Header="频响校正" IsEnabled="{Binding Ready}"><StackPanel>
-       <CheckBox Content="启用频响校正" IsChecked="{Binding P.Equalize}" Click="Edited"/>
+      <GroupBox Header="{DynamicResource T3450F6F9D0}" IsEnabled="{Binding Ready}"><StackPanel><TextBlock Text="{DynamicResource T30ECA98DC1}"/><DockPanel><Button DockPanel.Dock="Right" Content="{DynamicResource T7C575D0B9A}" Command="{Binding SeedCommand}"/><TextBox Text="{Binding P.Seed}" LostFocus="Edited"/></DockPanel><CheckBox Content="{DynamicResource TECB74C0AC0}" IsChecked="{Binding P.StrictMirror}" Click="Edited"/><TextBlock Text="{Binding SymmetryHint}" Style="{StaticResource Hint}"/></StackPanel></GroupBox>
+      <GroupBox x:Name="EqControls" Header="{DynamicResource T4CE33330EE}" IsEnabled="{Binding Ready}"><StackPanel>
+       <CheckBox Content="{DynamicResource T8F161768F0}" IsChecked="{Binding P.Equalize}" Click="Edited"/>
        <UniformGrid Columns="2">
         <StackPanel Margin="0,0,10,0" IsEnabled="{Binding EarEqEditable}">
-         <TextBlock Text="一级 · 每耳校正强度 %" Style="{StaticResource Hint}"/>
+         <TextBlock Text="{DynamicResource T997425B6CA}" Style="{StaticResource Hint}"/>
          <TextBox x:Name="EarEqStrengthBox" Text="{Binding EarEqStrengthPercent,UpdateSourceTrigger=LostFocus}"/>
          <Slider x:Name="EarEqStrengthSlider" Minimum="0" Maximum="100" Value="{Binding EarEqStrengthPercent}" SmallChange="1" LargeChange="10"/>
-         <TextBlock Text="平滑 1/N oct：N" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Smooth1}" LostFocus="Edited"/>
+         <TextBlock Text="{DynamicResource T0C7B545A0F}" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Smooth1}" LostFocus="Edited"/>
         </StackPanel>
         <StackPanel IsEnabled="{Binding CenterEqEditable}">
-         <TextBlock Text="二级 · 中置校正强度 %" Style="{StaticResource Hint}"/>
+         <TextBlock Text="{DynamicResource T059DCFB4B5}" Style="{StaticResource Hint}"/>
          <TextBox x:Name="CenterEqStrengthBox" Text="{Binding CenterEqStrengthPercent,UpdateSourceTrigger=LostFocus}"/>
          <Slider x:Name="CenterEqStrengthSlider" Minimum="0" Maximum="100" Value="{Binding CenterEqStrengthPercent}" SmallChange="1" LargeChange="10"/>
-         <TextBlock Text="平滑 1/N oct：N" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Smooth2}" LostFocus="Edited"/>
+         <TextBlock Text="{DynamicResource T0C7B545A0F}" Style="{StaticResource Hint}"/><TextBox Text="{Binding P.Smooth2}" LostFocus="Edited"/>
         </StackPanel>
        </UniformGrid>
-       <TextBlock Text="强度：0% 保留原响应，100% 完整校正。平滑宽度为 1/N 倍频程。" Style="{StaticResource Hint}"/></StackPanel></GroupBox>
+       <TextBlock Text="{DynamicResource T7F3F479954}" Style="{StaticResource Hint}"/></StackPanel></GroupBox>
      </StackPanel>
     </ScrollViewer>
    </Grid>
-   <GridSplitter x:Name="ConfigurationSplitter" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" ShowsPreview="True" Background="{StaticResource Panel}" Cursor="SizeWE" Focusable="True" KeyboardIncrement="12" DragCompleted="SplitCompleted" ToolTip="拖动调整配置与图表的比例；方向键微调" AutomationProperties.Name="调整配置与图表的比例">
+   <GridSplitter x:Name="ConfigurationSplitter" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" ShowsPreview="True" Background="{StaticResource Panel}" Cursor="SizeWE" Focusable="True" KeyboardIncrement="12" DragCompleted="SplitCompleted" ToolTip="{DynamicResource T7AD32BE618}" AutomationProperties.Name="{DynamicResource TFE0D6DBDB0}">
     <GridSplitter.Template><ControlTemplate TargetType="GridSplitter"><Border x:Name="Handle" Background="{TemplateBinding Background}" CornerRadius="3"><TextBlock Text="⋮" FontSize="23" Foreground="{StaticResource Accent}" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Handle" Property="Background" Value="{StaticResource Edge}"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Handle" Property="Background" Value="{StaticResource Edge}"/></Trigger></ControlTemplate.Triggers></ControlTemplate></GridSplitter.Template>
    </GridSplitter>
    <local:ResultPanel x:Name="AnalysisArea" Grid.Column="2" Margin="8,0,0,0"/>
   </Grid>
  </TabItem>
- <TabItem x:Name="ExportPage" Header="导出与后处理">
+ <TabItem x:Name="ExportPage" Header="{DynamicResource TEC0882D652}">
   <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="24" MaxWidth="1000" HorizontalAlignment="Stretch">
-   <TextBlock Text="导出声场" FontSize="24" Margin="0,0,0,12"/>
-   <GroupBox Header="卷积核状态"><StackPanel>
+   <TextBlock Text="{DynamicResource TA2C70E0794}" FontSize="24" Margin="0,0,0,12"/>
+   <GroupBox Header="{DynamicResource T2CB335990E}"><StackPanel>
     <TextBlock x:Name="ExportReadiness" Text="{Binding ExportState}" TextWrapping="Wrap" Margin="0,0,0,10"/>
-    <WrapPanel><Button x:Name="ExportGenerateButton" Content="生成卷积核" Command="{Binding GenerateCommand}" FontWeight="SemiBold"/><Button x:Name="ExportPageImportConfigButton" Content="导入配置…" Command="{Binding OpenCommand}" ToolTip="读取声场参数 JSON 文件"/><Button x:Name="ExportPageExportConfigButton" Content="导出配置…" Command="{Binding SaveCommand}" ToolTip="保存声场参数与随机种子为 JSON 文件"/><Button Content="取消生成" Command="{Binding CancelCommand}" Visibility="{Binding Generating,Converter={StaticResource BoolVisibility}}"/></WrapPanel>
+    <WrapPanel><Button x:Name="ExportGenerateButton" Content="{DynamicResource T52945D5611}" Command="{Binding GenerateCommand}" FontWeight="SemiBold"/><Button x:Name="ExportPageImportConfigButton" Content="{DynamicResource T69933D5E2E}" Command="{Binding OpenCommand}" ToolTip="{DynamicResource T61420A4031}"/><Button x:Name="ExportPageExportConfigButton" Content="{DynamicResource T7452D5100A}" Command="{Binding SaveCommand}" ToolTip="{DynamicResource T15948D750F}"/><Button Content="{DynamicResource TEA6AA5FBC2}" Command="{Binding CancelCommand}" Visibility="{Binding Generating,Converter={StaticResource BoolVisibility}}"/></WrapPanel>
     <ProgressBar Value="{Binding Progress,Mode=OneWay}" Height="6" Visibility="{Binding Generating,Converter={StaticResource BoolVisibility}}"/>
    </StackPanel></GroupBox>
-   <GroupBox Header="卷积文件"><StackPanel>
-    <TextBlock Text="导出父目录"/><TextBox Text="{Binding ExportParent}" IsEnabled="{Binding Ready}"/>
-    <TextBlock Text="每次导出新建一个以模板和配置命名的文件夹，包含四条 WAV、四通道路径包和项目参数。" Style="{StaticResource Hint}"/>
-    <TextBlock Text="导出名称"/><TextBox Text="{Binding ExportLabel,Mode=OneWay}" Style="{StaticResource SelectableOutput}"/>
-    <Button ToolTip="{Binding ExportState}" ToolTipService.ShowOnDisabled="True" Content="导出 WAV" Command="{Binding ExportCommand}" HorizontalAlignment="Left"/>
-    <Button ToolTip="{Binding ExportState}" ToolTipService.ShowOnDisabled="True" Content="导出 Equalizer APO 配置" Command="{Binding ApoExportCommand}" HorizontalAlignment="Left" Margin="0,12,0,4"/>
-    <TextBlock Text="APO 文件保存到程序旁的 EqualizerAPO 文件夹。配置引用卷积文件的绝对路径，移动后请重新导出。" Style="{StaticResource Hint}"/>
-    <TextBlock Text="已导出路径" Style="{StaticResource Hint}"/>
-    <DockPanel Margin="0,8"><Button DockPanel.Dock="Right" Content="复制路径" Command="{Binding CopyOutputTextCommand}" CommandParameter="{Binding LastExport}" VerticalAlignment="Top"/><TextBox Text="{Binding LastExport,Mode=OneWay}" Style="{StaticResource SelectableOutput}" AutomationProperties.Name="导出路径"/></DockPanel>
-    <Expander Header="结果信息"><StackPanel><Button Content="复制结果信息" Command="{Binding CopyOutputTextCommand}" CommandParameter="{Binding Metrics}" HorizontalAlignment="Left"/><TextBox Text="{Binding Metrics,Mode=OneWay}" Style="{StaticResource SelectableOutput}" MaxHeight="320" AutomationProperties.Name="卷积结果信息"/></StackPanel></Expander>
+   <GroupBox Header="{DynamicResource TD38F541674}"><StackPanel>
+    <TextBlock Text="{DynamicResource T6D4D219A7B}"/><TextBox Text="{Binding ExportParent}" IsEnabled="{Binding Ready}"/>
+    <TextBlock Text="{DynamicResource TCEBB313808}" Style="{StaticResource Hint}"/>
+    <TextBlock Text="{DynamicResource T38FB82AE14}"/><TextBox Text="{Binding ExportLabel,Mode=OneWay}" Style="{StaticResource SelectableOutput}"/>
+    <Button ToolTip="{Binding ExportState}" ToolTipService.ShowOnDisabled="True" Content="{DynamicResource T1B22517086}" Command="{Binding ExportCommand}" HorizontalAlignment="Left"/>
+    <Button ToolTip="{Binding ExportState}" ToolTipService.ShowOnDisabled="True" Content="{DynamicResource TDC264F8601}" Command="{Binding ApoExportCommand}" HorizontalAlignment="Left" Margin="0,12,0,4"/>
+    <TextBlock Text="{DynamicResource TE89C69853A}" Style="{StaticResource Hint}"/>
+    <TextBlock Text="{DynamicResource TF9130E5956}" Style="{StaticResource Hint}"/>
+    <DockPanel Margin="0,8"><Button DockPanel.Dock="Right" Content="{DynamicResource TB97C49ACB9}" Command="{Binding CopyOutputTextCommand}" CommandParameter="{Binding LastExport}" VerticalAlignment="Top"/><TextBox Text="{Binding LastExport,Mode=OneWay}" Style="{StaticResource SelectableOutput}" AutomationProperties.Name="{DynamicResource T5584513748}"/></DockPanel>
+    <Expander Header="{DynamicResource T4BEE5B9D94}"><StackPanel><Button Content="{DynamicResource T50CE2EB2CB}" Command="{Binding CopyOutputTextCommand}" CommandParameter="{Binding Metrics}" HorizontalAlignment="Left"/><TextBox Text="{Binding Metrics,Mode=OneWay}" Style="{StaticResource SelectableOutput}" MaxHeight="320" AutomationProperties.Name="{DynamicResource TCCA3890D8F}"/></StackPanel></Expander>
    </StackPanel></GroupBox>
-   <Expander Header="处理歌曲" IsExpanded="True" Margin="0,16"><StackPanel Margin="12">
+   <Expander Header="{DynamicResource TF5E7780974}" IsExpanded="True" Margin="0,16"><StackPanel Margin="12">
      <GroupBox Header="FFmpeg"><StackPanel>
-      <TextBox x:Name="FfmpegPathBox" Text="{Binding FfmpegPathDisplay,Mode=OneWay}" Style="{StaticResource SelectableOutput}" AutomationProperties.Name="FFmpeg 路径"/>
-      <WrapPanel IsEnabled="{Binding CanConfigureAudioTools}"><Button Content="选择 ffmpeg.exe…" Command="{Binding ChooseFfmpegCommand}"/><Button Content="自动查找" Command="{Binding AutoFfmpegCommand}"/><Button Content="检查可用性" Command="{Binding CheckFfmpegCommand}"/></WrapPanel>
-      <TextBlock Text="选择完整构建中的 ffmpeg.exe，同目录需有 ffprobe.exe；需要支持 libsoxr。路径会自动记住。" Style="{StaticResource Hint}"/>
+      <TextBox x:Name="FfmpegPathBox" Text="{Binding FfmpegPathDisplay,Mode=OneWay}" Style="{StaticResource SelectableOutput}" AutomationProperties.Name="{DynamicResource T34BDB05F4C}"/>
+      <WrapPanel IsEnabled="{Binding CanConfigureAudioTools}"><Button Content="{DynamicResource T6E2F4B6378}" Command="{Binding ChooseFfmpegCommand}"/><Button Content="{DynamicResource T90F13C967E}" Command="{Binding AutoFfmpegCommand}"/><Button Content="{DynamicResource T432172E204}" Command="{Binding CheckFfmpegCommand}"/></WrapPanel>
+      <TextBlock Text="{DynamicResource T3BAD4D5E32}" Style="{StaticResource Hint}"/>
       <TextBox Text="{Binding AudioToolStatus,Mode=OneWay}" Style="{StaticResource SelectableOutput}"/>
      </StackPanel></GroupBox>
      <Border AllowDrop="True" DragOver="AudioDragOver" Drop="AudioDrop" Background="{StaticResource Panel}" BorderBrush="{StaticResource Edge}" BorderThickness="1" CornerRadius="2" Padding="22">
-      <StackPanel IsEnabled="{Binding Ready}"><TextBlock Text="拖放音频到这里" FontSize="18"/><DockPanel Margin="0,12,0,0"><Button DockPanel.Dock="Right" Content="选择音频文件" Command="{Binding ChooseAudioCommand}"/><TextBox Text="{Binding AudioInput}" IsReadOnly="True"/></DockPanel><TextBlock Text="支持 WAV、FLAC、MP3、M4A 等格式，导出双声道音频并保留混响尾部。" Style="{StaticResource Hint}"/></StackPanel>
+      <StackPanel IsEnabled="{Binding Ready}"><TextBlock Text="{DynamicResource T82DD360F00}" FontSize="18"/><DockPanel Margin="0,12,0,0"><Button DockPanel.Dock="Right" Content="{DynamicResource TA7D49ABED1}" Command="{Binding ChooseAudioCommand}"/><TextBox Text="{Binding AudioInput}" IsReadOnly="True"/></DockPanel><TextBlock Text="{DynamicResource T32F594E193}" Style="{StaticResource Hint}"/></StackPanel>
      </Border>
-     <UniformGrid Columns="2" Margin="0,18,0,0" IsEnabled="{Binding Ready}"><StackPanel><TextBlock Text="输出格式"/><ComboBox ItemsSource="{Binding AudioFormats}" SelectedIndex="{Binding AudioFormatIndex}"/></StackPanel><StackPanel><TextBlock Text="输出父目录"/><TextBox Text="{Binding AudioOutputParent}"/></StackPanel></UniformGrid>
-     <WrapPanel IsEnabled="{Binding Ready}"><ComboBox x:Name="AudioLevelModeSelector" ItemsSource="{Binding AudioLevelModes}" SelectedIndex="{Binding AudioLevelModeIndex}" Width="280"/><TextBlock Text="目标 LUFS" VerticalAlignment="Center" Margin="8,0"/><TextBox x:Name="LoudnessTargetEditor" IsEnabled="{Binding AudioNormalizesLoudness}" Text="{Binding AudioTargetLufs,ValidatesOnExceptions=True}" Width="68" ToolTip="音乐分享默认 −18 LUFS，可设 −30 至 −9；LUFS 是整体响度，0 dB 是峰值上限。"/></WrapPanel>
-     <TextBlock Text="响度补偿默认 −18 LUFS；仅限幅保留卷积后电平。" Style="{StaticResource Hint}"/>
-     <WrapPanel Margin="0,12"><Button Content="处理并导出歌曲" Command="{Binding RenderAudioCommand}" Padding="24,12" /><Button Content="取消处理" Command="{Binding CancelCommand}"/><Button Content="打开输出文件夹" Command="{Binding OpenAudioOutputCommand}"/></WrapPanel>
+     <UniformGrid Columns="2" Margin="0,18,0,0" IsEnabled="{Binding Ready}"><StackPanel><TextBlock Text="{DynamicResource T41D0E52F0A}"/><ComboBox ItemsSource="{Binding AudioFormats}" SelectedIndex="{Binding AudioFormatIndex}"/></StackPanel><StackPanel><TextBlock Text="{DynamicResource T3952DC03B1}"/><TextBox Text="{Binding AudioOutputParent}"/></StackPanel></UniformGrid>
+     <WrapPanel IsEnabled="{Binding Ready}"><ComboBox x:Name="AudioLevelModeSelector" ItemsSource="{Binding AudioLevelModes}" DisplayMemberPath="Label" SelectedIndex="{Binding AudioLevelModeIndex}" Width="280"/><TextBlock Text="{DynamicResource T693E3F6AE8}" VerticalAlignment="Center" Margin="8,0"/><TextBox x:Name="LoudnessTargetEditor" IsEnabled="{Binding AudioNormalizesLoudness}" Text="{Binding AudioTargetLufs,ValidatesOnExceptions=True}" Width="68" ToolTip="{DynamicResource TDA0451AA2A}"/></WrapPanel>
+     <TextBlock Text="{DynamicResource T60E35B0043}" Style="{StaticResource Hint}"/>
+     <WrapPanel Margin="0,12"><Button Content="{DynamicResource T5C3E0BCCC4}" Command="{Binding RenderAudioCommand}" Padding="24,12" /><Button Content="{DynamicResource T8B69BCF552}" Command="{Binding CancelCommand}"/><Button Content="{DynamicResource T4A45AD491A}" Command="{Binding OpenAudioOutputCommand}"/></WrapPanel>
      <TextBlock Text="{Binding ResultState}" Foreground="{StaticResource Accent}"/><TextBox Text="{Binding AudioSummary,Mode=OneWay}" Style="{StaticResource SelectableOutput}" Margin="0,12"/>
     </StackPanel></Expander>
    <ProgressBar Value="{Binding Progress,Mode=OneWay}" Height="6" Margin="0,8" Visibility="{Binding Busy,Converter={StaticResource BoolVisibility}}"/>
@@ -96,4 +97,6 @@
   </StackPanel></ScrollViewer>
  </TabItem>
  </TabControl>
+ <ComboBox x:Name="LanguageSelector" Width="124" Height="30" Margin="0,16,24,0" HorizontalAlignment="Right" VerticalAlignment="Top" SelectedIndex="{Binding LanguageIndex}" IsEnabled="{Binding Ready}" AutomationProperties.Name="Language / 语言" ToolTip="Language / 语言"><ComboBoxItem Content="简体中文"/><ComboBoxItem Content="English"/></ComboBox>
+ </Grid>
 </Window>

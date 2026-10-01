@@ -10,7 +10,7 @@ Windows x64 with a .NET 8 SDK. `global.json` accepts the latest installed stable
 ./build.ps1
 ```
 
-This builds Release, runs eight targeted core suites (recommended/new presets, EQ strengths, head model, presets, shared editing, release naming, energy and EQ accuracy), and publishes a self-contained application to `publish/SoundstageIRGenerator/`. It does not copy personal projects into a distribution. It retains existing local runtime data when publishing over your own portable folder.
+This builds Release, runs core suites covering head bandwidth and calibration, wet balance, spectra, presets, EQ, editing and exports, and publishes a self-contained application to `publish/SoundstageIRGenerator/`. It does not copy personal projects into a distribution. It retains existing local runtime data when publishing over your own portable folder.
 
 ```powershell
 # Full DSP, statistics, long-tail, audio mastering and offscreen WPF checks:
@@ -23,7 +23,7 @@ This builds Release, runs eight targeted core suites (recommended/new presets, E
 ./build.ps1 -FFmpegDirectory 'C:\path\to\ffmpeg'
 ```
 
-Full audio tests need FFmpeg/ffprobe available before tests (e.g. under Program Files or on PATH). Offscreen WPF checks run on Windows without showing a window. `-FFmpegDirectory` copies tools during publishing; audio tests resolve FFmpeg through PATH or Program Files. Tests write under `artifacts/`. Ordinary CI does not claim to run audio or desktop acceptance: it builds and runs the eight core suites.
+Full audio tests need FFmpeg/ffprobe available before tests (e.g. under Program Files or on PATH). Offscreen WPF checks run on Windows without showing a window. `-FFmpegDirectory` copies tools during publishing; audio tests resolve FFmpeg through PATH or Program Files. Tests write under `artifacts/`. Ordinary CI does not claim to run audio or desktop acceptance: it builds and runs the core suites.
 
 ## Public source vs local portable data
 
@@ -75,3 +75,9 @@ The converter writes the embedded table and its manifest. Verify source hashes a
 Project JSON uses schema version 5. TemplateName identifies the template, TemplateSources stores template parameters, and Sources stores per-source edits. Configurations are exported and imported as JSON. Built-in templates default to first-stage EQ at 100% and second-stage EQ at 0%. The [validation record](../VALIDATION.md) identifies the tested version, scope and results.
 
 Local FFmpeg preferences live in `settings/audio-tools.json`, excluded from Git and clean packages. Use `tools/package.ps1` for public packages; users select FFmpeg in the song-processing panel.
+
+## Bilingual resources
+
+`Core/Localization/strings.json` stores paired Chinese and English text, accessed through `Core/TextCatalog.cs`. WPF dynamic resources update labels, and `App/UiLanguage.cs` persists the language preference. Presentation language is separate from numeric calculations and project JSON. Preserve formatting placeholders and units when translating.
+
+Run `SoundstageIRGenerator.exe --language-check <output-folder>` for targeted checks covering language switching, all templates, plot state, sample-identical generation and export readback. Checks run offscreen and write results to the supplied directory.

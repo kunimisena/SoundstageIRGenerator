@@ -21,7 +21,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public event Action? VisualChanged;
     public event Action? PresetApplied;
     public Func<PresetCard,TemplateSelection?>? RequestTemplate {get;set;}
-    public string ReflectionTimingHint=>Editing is {} e ? $"首反相对直达 +{e.OnsetMs:0.##} ms；约 {e.BuildMs:0.##} ms 内由疏变密。" : "";
+    public string ReflectionTimingHint=>Editing is {} e ? SoundstageIR.Core.TextCatalog.F("TCA9D17AE42", e.OnsetMs, e.BuildMs) : "";
     public Func<bool>? CommitTemplateEdits {get;set;}
     public Func<bool>? HasTemplateEdits {get;set;}
     public Project TemplateProject {get {var p=ProjectIO.Clone(P);p.Sources=ProjectIO.Clone(P.TemplateSources);return p;}}
@@ -34,7 +34,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public AnalysisCache AnalysisCache {get;}=new();
     void Notify([CallerMemberName]string? n=null)=>PropertyChanged?.Invoke(this,new(n));
     public string Root {get;}
-    public Project P {get;private set;}=Presets.BuiltIn.Single(p=>p.Name=="宽阔监听").Create();
+    public Project P {get;private set;}=PresetPresentation.Create(Presets.BuiltIn.Single(p=>p.Name=="宽阔监听"));
     public ObservableCollection<ReflectionPair> Sources {get;}=[];
     public ObservableCollection<PresetCard> PresetCards {get;}=[];
     public List<ReflectionPair> Selection {get;set;}=[];
@@ -44,8 +44,8 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public int ExcitationIndex {get=>excitationIndex;set{excitationIndex=value;Notify("");VisualChanged?.Invoke();}}
     public Excitation? Editing=>Selected==null?null:ExcitationIndex==0?Selected.Left:Selected.AutoRight||Selected.Median?Selected.EffectiveRight():Selected.Right;
     public bool CanEditExcitation=>Selected!=null&&(ExcitationIndex==0||(!Selected.AutoRight&&!Selected.Median));
-    public string ExcitationHint=>ExcitationIndex==0?"L 输入 · 当前方向的统计核":Selected?.Median==true?"对称面：两输入共享参数":Selected?.AutoRight==true?"R 输入 · 从 L 参数自动衍生（预览）":"R 输入 · 独立编辑";
-    public string SymmetryHint=>P.StrictMirror?"参数镜像 · 随机细节镜像 · 一个共同 EQ":"参数镜像 · 随机细节独立 · 两级 EQ";
+    public string ExcitationHint=>ExcitationIndex==0?SoundstageIR.Core.TextCatalog.T("T0379C8AF73"):Selected?.Median==true?SoundstageIR.Core.TextCatalog.T("T4135DA672E"):Selected?.AutoRight==true?SoundstageIR.Core.TextCatalog.T("T57AFA93579"):SoundstageIR.Core.TextCatalog.T("TA7D48C3CB0");
+    public string SymmetryHint=>P.StrictMirror?SoundstageIR.Core.TextCatalog.T("T70C5A189ED"):SoundstageIR.Core.TextCatalog.T("T4927B3F9BD");
     public bool DirectEnabled
     {
         get=>P.Direct.Enabled;
@@ -74,47 +74,48 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
         get=>P.CenterEqStrengthPercent;
         set {double v=EditingLimits.Clamp(value,0,100);if(Busy||v==P.CenterEqStrengthPercent)return;P.CenterEqStrengthPercent=v;Commit();}
     }
-    public string WeightLabel=>"源相对权重 dB";
-    public string EnergySummary=>Result==null?"":$"混响能量：目标 {(Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100):0.0}% · 最终 {Result.ReflectionPercentAfterEq:0.0}%"+(Result.Warnings.Count>0?$" · {Result.Warnings.Count} 条生成提示（悬停查看）":"");
-    public string GenerationNotes=>Result==null?"":string.Join("\n",Result.Warnings);
+    public string WeightLabel=>SoundstageIR.Core.TextCatalog.T("T57400350D5");
+    public string EnergySummary=>Result==null?"":SoundstageIR.Core.TextCatalog.F("TA1E21B6668", (Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100), Result.ReflectionPercentAfterEq)+(Result.Warnings.Count>0?SoundstageIR.Core.TextCatalog.F("T4E7A1F9406", Result.Warnings.Count):"");
+    public string GenerationNotes=>Result==null?"":string.Join("\n",Result.Warnings.Select(TextCatalog.Diagnostic));
     public bool Busy {get;private set;}
     public bool Ready=>!Busy;
     public bool Generating {get;private set;}
     public bool CanExport=>Ready&&Result!=null&&!Stale;
     bool stale=true;
     public bool Stale {get=>stale||pendingEdits;private set=>stale=value;}
-    public string ResultState=>Generating?"正在生成…":Result==null?"尚未生成":Stale?"参数已修改 · 图表待更新":"已生成 · 当前参数";
-    public string ExportState=>Generating?"正在生成卷积核，完成后即可导出。":Busy?"正在处理，请稍候。":Result==null?"尚未生成卷积核。点击“生成卷积核”，完成后即可导出。":Stale?"卷积核与编辑参数不一致。请生成卷积核后导出。":$"{Result.Project.Name} · 卷积核与当前参数一致，可以导出。";
-    public string DirectionSummary=>$"{P.DirectionCount} 个方向 / {Sources.Count} 个可编辑源";
-    public string Status {get;private set;}="选择模板开始，或打开已有配置。";
+    public string ResultState=>Generating?SoundstageIR.Core.TextCatalog.T("TA8B8730C96"):Result==null?SoundstageIR.Core.TextCatalog.T("TD5638D161F"):Stale?SoundstageIR.Core.TextCatalog.T("TE1BA3603B5"):SoundstageIR.Core.TextCatalog.T("T298BC14648");
+    public string ExportState=>Generating?SoundstageIR.Core.TextCatalog.T("T6CFC7BCBFE"):Busy?SoundstageIR.Core.TextCatalog.T("T6E15B35025"):Result==null?SoundstageIR.Core.TextCatalog.T("T4145E1FB25"):Stale?SoundstageIR.Core.TextCatalog.T("T9964066893"):SoundstageIR.Core.TextCatalog.F("T12AB49F98A", Result.Project.Name);
+    public string DirectionSummary=>SoundstageIR.Core.TextCatalog.F("TDE2675EE93", P.DirectionCount, Sources.Count);
+    string rawStatus=SoundstageIR.Core.TextCatalog.T("T3573E79B8C");
+    public string Status {get=>TextCatalog.Diagnostic(rawStatus);private set=>rawStatus=value;}
     public double Progress {get;private set;}
     public GenerationResult? Result {get;private set;}
-    public string Metrics=>Result==null?"":$"{Result.Duration:F3} s  ·  {Result.Project.SampleRate/1000.0:G} kHz  ·  计算 {Result.Seconds:F2} s\n{HeadRenderer.Description(Result.Project)}\n混响分量能量：目标 {(Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100):F2}% / EQ 前 {Result.ReflectionPercentBeforeEq:F2}% / 最终 {Result.ReflectionPercentAfterEq:F2}%\n混响整体预修正 {Result.WetBalance.GainDb:+0.00;-0.00;0} dB · {Result.WetBalance.Evaluations} 次频谱计算\n共同标定 {Result.CommonGainDb:+0.00;-0.00;0} dB  ·  前导 {Result.ZeroSample:F0} 样本\n参考电平 {Result.OutputReferenceDb:F2} dB\n{Result.EqResidualReference}：平滑残差 RMS {Result.EqResidualDb:F2} dB  ·  频点峰值上界 {Result.MaxBinGainDb:F1} dB\n峰值增益保守上界 {Result.PeakBoundDb:F1} dB\n有限长度合成偏差 {Result.ProjectionErrorDb:F3} dB · 尾部移除能量 {Result.DiscardedEnergyDb:F1} dB\n"+string.Join("\n",Result.EqReports.Select(e=>$"{e.Stage}：增益范围 {e.MaximumCutDb:F1}～{e.MaximumBoostDb:F1} dB · {e.Taps} 点时间预算 · 参考平滑残差 {e.ResponseResidualDb:F3} dB"))+"\n"+GenerationNotes;
+    public string Metrics=>Result==null?"":SoundstageIR.Core.TextCatalog.F("T136BC05279", Result.Duration, Result.Project.SampleRate/1000.0, Result.Seconds, TextCatalog.Diagnostic(HeadRenderer.Description(Result.Project)), (Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100), Result.ReflectionPercentBeforeEq, Result.ReflectionPercentAfterEq, Result.WetBalance.GainDb, Result.WetBalance.Evaluations, Result.CommonGainDb, Result.ZeroSample, Result.OutputReferenceDb, TextCatalog.Diagnostic(Result.EqResidualReference), Result.EqResidualDb, Result.MaxBinGainDb, Result.PeakBoundDb, Result.ProjectionErrorDb, Result.DiscardedEnergyDb)+string.Join("\n",Result.EqReports.Select(e=>SoundstageIR.Core.TextCatalog.F("T076E536AA3", TextCatalog.Diagnostic(e.Stage), e.MaximumCutDb, e.MaximumBoostDb, e.Taps, e.ResponseResidualDb)))+"\n"+GenerationNotes;
     public string ExportLabel=>OutputNames.Label(P);
     public string SuggestedProjectFileName=>ExportLabel+".json";
     public string ExportParent {get;set;}
     public string LastExport {get;private set;}="";
     public string ProjectFile {get;private set;}="";
-    public string[] HeadModelNames {get;}=["球形头 · 遮挡与时差","FABIAN · 耳廓、头与肩胸部"];
+    public LocalizedOption[] HeadModelNames {get;}=[new("TB5C9ED8404"), new("T4E25C361CA")];
     public int HeadModelIndex
     {
         get=>(int)P.HeadModel;
-        set {if(value<0||value>1||Busy||value==(int)P.HeadModel)return;P.HeadModel=(HeadModelKind)value;Commit();}
+        set {if(Localizing||value<0||value>1||Busy||value==(int)P.HeadModel)return;P.HeadModel=(HeadModelKind)value;Commit();}
     }
     public bool SphereHeadSelected=>P.HeadModel==HeadModelKind.Sphere;
     public bool FabianHeadSelected=>P.HeadModel==HeadModelKind.Fabian;
     public string HeadModelHint=>FabianHeadSelected
-        ? "直达与反射均使用 FABIAN。约 2° 方向网格；保留幅相和耳间时差。解剖响应始终镜像，随机镜像开关只控制反射细节。"
-        : "球形头的遮挡与时差，可调半径和遮挡强度。";
+        ? SoundstageIR.Core.TextCatalog.T("T9C32D627E1")
+        : SoundstageIR.Core.TextCatalog.T("TCC55B89955");
     public int[] SampleRates {get;}=[44100,48000,96000];
-    public string[] LayoutNames {get;}=["水平环绕","球形环绕","上半球","前向扇区","镜像成对"];
+    public LocalizedOption[] LayoutNames {get;}=[new("T787C02ABE0"), new("TF04CB441BB"), new("T3D6D92FF9B"), new("TDBB3C16A87"), new("T08D4421B83")];
     public int LayoutIndex {get;set;}
     public int TemplateCount {get;set;}=8;
     public double TemplateYaw {get;set;}
     public double TemplateElevation {get;set;}
     public double TemplateCoverage {get;set;}=90;
     public double TemplateEnergy {get;set;}=0;
-    public string TemplateGroup {get;set;}="新反射组";
+    public string TemplateGroup {get;set;}=SoundstageIR.Core.TextCatalog.T("T20B85E0505");
     public bool TemplateReplace {get;set;}=true;
     readonly Stack<string> undo=[];readonly Stack<string> redo=[];
     string snapshot="";ReflectionPair? clipboard;
@@ -161,12 +162,12 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
         TemplateCommand=new ActionCommand(_=>Safe(GenerateTemplate),()=>Ready);
         NewSourceCommand=new ActionCommand(_=>Safe(()=>
         {
-            if(P.Sources.Sum(s=>s.Multiplicity)>30)throw new InvalidOperationException("最多 32 个方向。");
-            var s=new ReflectionPair{Name="新反射源",Group="自定义"};P.Sources.Add(s);Commit();RefreshSources();Selected=s;
+            if(P.Sources.Sum(s=>s.Multiplicity)>30)throw new InvalidOperationException(SoundstageIR.Core.TextCatalog.T("T3E314792C4"));
+            var s=new ReflectionPair{Name=SoundstageIR.Core.TextCatalog.T("T918B2B558A"),Group=SoundstageIR.Core.TextCatalog.T("T4EAFA9E925")};P.Sources.Add(s);Commit();RefreshSources();Selected=s;
         }),()=>Ready);
         DuplicateCommand=new ActionCommand(_=>Safe(Duplicate),()=>Ready&&Selected!=null);
         DeleteCommand=new ActionCommand(_=>{foreach(var s in Targets())P.Sources.Remove(s);Commit();RefreshSources();},()=>Ready&&Selected!=null);
-        CopyCommand=new ActionCommand(_=>{clipboard=ProjectIO.Clone(Selected!);SetStatus("参数已复制；粘贴时保留目标方向并分配新随机实现。");},()=>Selected!=null);
+        CopyCommand=new ActionCommand(_=>{clipboard=ProjectIO.Clone(Selected!);SetStatus(SoundstageIR.Core.TextCatalog.T("T3F6661C298"));},()=>Selected!=null);
         PasteCommand=new ActionCommand(_=>Paste(true),()=>Ready&&clipboard!=null&&Selected!=null);
         BatchCommand=new ActionCommand(_=>{clipboard=ProjectIO.Clone(Selected!);Paste(false);},()=>Ready&&Selected!=null&&Selection.Count>1);
         SeedCommand=new ActionCommand(_=>{P.Seed=Random.Shared.Next(1,int.MaxValue);Commit();},()=>Ready);
@@ -174,10 +175,10 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public async Task ApplyTemplateAsync(TemplateSelection selection)
     {
         if(Busy)return;
-        SetProject(selection.Project);SetStatus("已载入 "+P.Name);PresetApplied?.Invoke();
+        SetProject(selection.Project);SetStatus(SoundstageIR.Core.TextCatalog.T("T73D20904DB")+P.Name);PresetApplied?.Invoke();
         if(selection.Generate)await GenerateAsync();
     }
-    static string FindRoot()
+    internal static string FindRoot()
     {
         if(App.TestRoot!=null)return App.TestRoot;
         if(File.Exists(Path.Combine(AppContext.BaseDirectory,"portable.txt")))return AppContext.BaseDirectory;
@@ -187,19 +188,20 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     }
     public void ApplyReflectionEdit(ReflectionEditSession edit)
     {
-        if(Busy)throw new InvalidOperationException("请等待当前计算结束。");
+        if(Busy)throw new InvalidOperationException(SoundstageIR.Core.TextCatalog.T("TD2033E3B6C"));
         var next=edit.Apply(TemplateProject);next.TemplateSources=ProjectIO.Clone(next.Sources);var selectedIds=Selection.Select(s=>s.Id).ToHashSet();var selectedId=Selected?.Id;
         P=next;Commit();RefreshSources();Selection=Sources.Where(s=>selectedIds.Contains(s.Id)).ToList();
         Selected=Sources.FirstOrDefault(s=>s.Id==selectedId)??Sources.FirstOrDefault();
-        SetStatus("整体调整已应用，可撤销。"+(edit.ClampedValues>0?" 部分越界数值已钳位。":"")+(edit.CurveSimplified?" 复杂曲线已在 256 点内近似。":""));
+        SetStatus(SoundstageIR.Core.TextCatalog.T("T1E53F168AE")+(edit.ClampedValues>0?SoundstageIR.Core.TextCatalog.T("T11CF0D9274"):"")+(edit.CurveSimplified?SoundstageIR.Core.TextCatalog.T("T90054D5305"):""));
     }
     public void SetStatus(string s){Status=s;Notify(nameof(Status));}
     public void Commit()
     {
-        int clamped=EditingLimits.Normalize(P);if(clamped>0)SetStatus("超出计算范围的数值已钳位；其余修改保留。");
+        if(Localizing)return;
+        int clamped=EditingLimits.Normalize(P);if(clamped>0)SetStatus(SoundstageIR.Core.TextCatalog.T("TF16C991F99"));
         string next=ProjectIO.Serialize(P);if(next==snapshot)return;undo.Push(snapshot);redo.Clear();snapshot=next;
         RefreshResultIdentity();
-        if(!string.IsNullOrEmpty(LastExport))Status=stale?"参数已修改，请重新生成。":"配置名称已更新，可以直接导出。";
+        if(!string.IsNullOrEmpty(LastExport))Status=stale?SoundstageIR.Core.TextCatalog.T("T97412F29A5"):SoundstageIR.Core.TextCatalog.T("TF51FCBFD23");
         LastExport="";
         Notify("");VisualChanged?.Invoke();CommandManager.InvalidateRequerySuggested();
     }
@@ -223,7 +225,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     List<ReflectionPair> Targets()=>Selection.Count>0?Selection.ToList():Selected==null?[]:[Selected];
     void Duplicate()
     {
-        var add=Targets().Select(s=>s.CloneIndependent()).ToList();if(P.Sources.Sum(s=>s.Multiplicity)+add.Sum(s=>s.Multiplicity)>32)throw new InvalidOperationException("最多 32 个方向。");
+        var add=Targets().Select(s=>s.CloneIndependent()).ToList();if(P.Sources.Sum(s=>s.Multiplicity)+add.Sum(s=>s.Multiplicity)>32)throw new InvalidOperationException(SoundstageIR.Core.TextCatalog.T("T3E314792C4"));
         P.Sources.AddRange(add);Commit();RefreshSources();Selected=add.FirstOrDefault();
     }
     void Paste(bool independent)
@@ -240,10 +242,10 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public void GenerateTemplate()
     {
         if(CommitTemplateEdits?.Invoke()==false)return;
-        if(TemplateCount<2||TemplateCount>32||TemplateCount%2!=0)throw new InvalidOperationException("模板方向数请输入 2–32 之间的偶数。");
+        if(TemplateCount<2||TemplateCount>32||TemplateCount%2!=0)throw new InvalidOperationException(SoundstageIR.Core.TextCatalog.T("TE704B44CD7"));
         var e=P.TemplateSources.FirstOrDefault()?.Left.Clone()??new Excitation();e.GainDb=TemplateEnergy;
         var generated=Templates.Create((Distribution)LayoutIndex,TemplateCount,TemplateYaw,TemplateElevation,TemplateCoverage,e,TemplateGroup);
-        if(!TemplateReplace&&P.TemplateSources.Sum(s=>s.Multiplicity)+TemplateCount>32)throw new InvalidOperationException("加入后超过 32 个方向。");
+        if(!TemplateReplace&&P.TemplateSources.Sum(s=>s.Multiplicity)+TemplateCount>32)throw new InvalidOperationException(SoundstageIR.Core.TextCatalog.T("T034F3727B0"));
         if(TemplateReplace)P.TemplateSources.Clear();P.TemplateSources.AddRange(generated);P.Sources=ProjectIO.Clone(P.TemplateSources);Commit();RefreshSources();
     }
     public async Task<bool> GenerateAsync()
@@ -254,32 +256,32 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
             if(CommitTemplateEdits?.Invoke()==false)return false;
             Commit();P.Validate();var input=ProjectIO.Clone(P);var version=snapshot;Busy=true;Generating=true;Progress=0;Notify("");CommandManager.InvalidateRequerySuggested();
             cancellation=new();var progress=new Progress<(double Fraction,string Message)>(v=>{Progress=v.Fraction*100;Status=v.Message;Notify(nameof(Progress));Notify(nameof(Status));});
-            var r=await Task.Run(()=>Generator.Generate(input,progress,cancellation.Token));Result=r;Stale=snapshot!=version;Status="卷积核已生成。";return true;
+            var r=await Task.Run(()=>Generator.Generate(input,progress,cancellation.Token));Result=r;Stale=snapshot!=version;Status=SoundstageIR.Core.TextCatalog.T("T2C954ED050");return true;
         }
-        catch(OperationCanceledException){Status="生成已取消。";return false;}
-        catch(Exception e){Status="生成失败："+e.Message;return false;}
+        catch(OperationCanceledException){Status=SoundstageIR.Core.TextCatalog.T("T2AFC7DC5EF");return false;}
+        catch(Exception e){Status=SoundstageIR.Core.TextCatalog.T("TCFDCD16119")+e.Message;return false;}
         finally{Generating=false;Busy=false;cancellation?.Dispose();cancellation=null;Notify("");VisualChanged?.Invoke();CommandManager.InvalidateRequerySuggested();}
     }
     public void Cancel()=>cancellation?.Cancel();
     public async Task<string?> ExportAsync()
     {
-        if(Busy||CommitTemplateEdits?.Invoke()==false)return null;Commit();if(Result==null||Stale){SetStatus("参数已变化，请先重新生成。");return null;}
-        try{Busy=true;Notify("");var r=Result;string path=ExportParent;LastExport=await Task.Run(()=>Exporter.Export(r,path));Status="已导出到 "+LastExport;return LastExport;}
-        catch(Exception e){Status="导出失败："+e.Message;return null;}
+        if(Busy||CommitTemplateEdits?.Invoke()==false)return null;Commit();if(Result==null||Stale){SetStatus(SoundstageIR.Core.TextCatalog.T("TB21EEC1263"));return null;}
+        try{Busy=true;Notify("");var r=Result;string path=ExportParent;LastExport=await Task.Run(()=>Exporter.Export(r,path));Status=SoundstageIR.Core.TextCatalog.T("T961EF8B1BC")+LastExport;return LastExport;}
+        catch(Exception e){Status=SoundstageIR.Core.TextCatalog.T("TC55E9D64E5")+e.Message;return null;}
         finally{Busy=false;Notify("");CommandManager.InvalidateRequerySuggested();}
     }
     void SaveDialog()
     {
         if(CommitTemplateEdits?.Invoke()==false)return;
         Commit();P.Validate();Directory.CreateDirectory(Path.Combine(Root,"projects"));
-        var dialog=new SaveFileDialog{Title="导出配置",Filter="声场配置 (*.json)|*.json",InitialDirectory=Path.Combine(Root,"projects"),FileName=SuggestedProjectFileName};
-        if(dialog.ShowDialog()==true){ProjectIO.Save(P,dialog.FileName);ProjectFile=dialog.FileName;SetStatus("项目已保存："+ProjectFile);}
+        var dialog=new SaveFileDialog{Title=SoundstageIR.Core.TextCatalog.T("T429EA3AF44"),Filter=SoundstageIR.Core.TextCatalog.T("T2678356BA9"),InitialDirectory=Path.Combine(Root,"projects"),FileName=SuggestedProjectFileName};
+        if(dialog.ShowDialog()==true){ProjectIO.Save(P,dialog.FileName);ProjectFile=dialog.FileName;SetStatus(SoundstageIR.Core.TextCatalog.T("T0EAF9C8B45")+ProjectFile);}
     }
-    void OpenDialog(){var d=new OpenFileDialog{Title="导入配置",Filter="声场配置 (*.json)|*.json",InitialDirectory=Path.Combine(Root,"projects")};if(d.ShowDialog()==true){SetProject(ProjectIO.Load(d.FileName));ProjectFile=d.FileName;SetStatus("已打开 "+ProjectFile);PresetApplied?.Invoke();}}
+    void OpenDialog(){var d=new OpenFileDialog{Title=SoundstageIR.Core.TextCatalog.T("TB48B651829"),Filter=SoundstageIR.Core.TextCatalog.T("T2678356BA9"),InitialDirectory=Path.Combine(Root,"projects")};if(d.ShowDialog()==true){SetProject(ProjectIO.Load(d.FileName));ProjectFile=d.FileName;SetStatus(SoundstageIR.Core.TextCatalog.T("TD26B962E05")+ProjectFile);PresetApplied?.Invoke();}}
     void LoadCards()
     {
         PresetCards.Clear();
-        foreach(var p in Presets.All)PresetCards.Add(new(p.Name,p.Description,p.Details,p));
+        foreach(var p in Presets.All)PresetCards.Add(new(TextCatalog.Source(p.Name),TextCatalog.Source(p.Description),TextCatalog.Diagnostic(p.Details),p));
     }
     void Safe(Action action){try{action();}catch(Exception e){SetStatus(e.Message);}}
 }

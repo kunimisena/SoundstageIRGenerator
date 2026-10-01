@@ -6,7 +6,7 @@
 
 [下载 Windows x64](https://github.com/kunimisena/SoundstageIRGenerator/releases/latest) · [English](README.en.md) · [使用指南](docs/zh-CN/guide.md) · [设计哲学](docs/zh-CN/design.md) · [构建说明](docs/zh-CN/development.md)
 
-Windows 离线工具，配合 Equalizer APO 使用。可以从“宽阔监听”开始，调节混响能量、频谱、衰减与方向分布，生成自己的双耳空间音效。
+Windows 离线工具，配合 Equalizer APO 使用。界面支持简体中文和英文，可在窗口右上角切换，语言选择会自动保存。可以从“宽阔监听”开始，调节混响能量、频谱、衰减与方向分布，生成自己的双耳空间音效。
 
 ![耳机声场、HRTF 与卷积核频响编辑](docs/images/editor.png)
 
@@ -78,7 +78,7 @@ Windows 离线工具，配合 Equalizer APO 使用。可以从“宽阔监听”
 
 ## 开始听
 
-1. 从完整 Windows x64 便携文件夹打开 `SoundstageIRGenerator.exe`，无需另外安装 .NET。界面为中文，文档提供中英两版。
+1. 从完整 Windows x64 便携文件夹打开 `SoundstageIRGenerator.exe`，无需另外安装 .NET。界面与文档均提供简体中文和英文。
 2. 点击模板，在弹窗中调整起始参数，选择“确认”或“确认并生成卷积核”。整体曲线在模板窗口编辑；配置页调整人头与 EQ，图表旁生成卷积核，右侧按钮导入或导出 JSON 配置。逐源细调使用独立窗口。
 3. 点击“导出与后处理”，导出 WAV、Equalizer APO 配置，或处理歌曲。
 4. 通过“导出配置…”保存调好的参数；修改参数后需要重新生成。项目、WAV、APO 和歌曲输出都带模板名称，重名时用序号区分。
@@ -123,7 +123,7 @@ FABIAN 提供实测人头响应，采用 CC BY 4.0；球形头参考 Brown–Dud
 
 ## 状态与致谢
 
-程序版本：**4.12.0**。[构建与验收记录](docs/VALIDATION.md)。
+程序版本：**4.13.0**。[构建与验收记录](docs/VALIDATION.md)。
 
 项目自有代码与文档采用 [MIT 许可证](LICENSE)：允许使用、修改和再分发，保留版权与许可声明即可。
 

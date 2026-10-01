@@ -29,6 +29,10 @@ jobs:
         shell: pwsh
         run: |
           ./build.ps1
+          $app = Join-Path $PWD 'publish/SoundstageIRGenerator/SoundstageIRGenerator.exe'
+          $report = Join-Path $PWD 'artifacts/language'
+          $check = Start-Process -FilePath $app -ArgumentList @('--language-check', ('"' + $report + '"')) -WindowStyle Hidden -Wait -PassThru
+          if ($check.ExitCode -ne 0) { throw 'Bilingual validation failed' }
           $count = 0
           Get-ChildItem artifacts -Recurse -Filter '*results.txt' | ForEach-Object {
             $text = Get-Content $_.FullName -Raw

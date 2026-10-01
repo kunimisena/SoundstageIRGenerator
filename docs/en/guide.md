@@ -4,21 +4,27 @@
 
 Soundstage IR Generator creates four-path binaural impulse responses (IRs) for Equalizer APO or matrix convolution. Head-related transfer functions (HRTFs) describe directional responses at both ears; reverb controls shape ambience, spectrum and decay.
 
+## Interface language
+
+Choose **English** or **简体中文** at the top right of the window. On first launch, Chinese systems use Simplified Chinese; other systems use English. Later launches use the saved choice in `settings/language.json` beside the application.
+
+Switching updates pages, template descriptions, plots and result details while retaining the current configuration and generated kernels. Configuration names, source names and paths remain user data and are preserved. Built-in templates created in English use English default names. Project JSON files work in either language. Language selection is temporarily disabled during generation or export.
+
 ## Three pages
 
 | Page | Purpose |
 |---|---|
-| 模板选择 — Templates | Ten authored fields, a blank template and a parameter dialog |
-| 配置 — Configuration | Direct sound, head model, reflection curves, randomness, EQ and result plots |
-| 导出与后处理 — Export & processing | WAV and Equalizer APO export, plus song rendering |
+| Templates | Ten authored fields, a blank template and a parameter dialog |
+| Configuration | Direct sound, head model, reflection curves, randomness, EQ and result plots |
+| Export and post-process | WAV and Equalizer APO export, plus song rendering |
 
-Click a template card to set its starting parameters. **确认** (Confirm) loads the configuration. **确认并生成卷积核** (Confirm and generate) also starts computation. Cancel retains the current project. The template page also provides **导入配置…** (Import configuration).
+Click a template card to set its starting parameters. **Confirm** loads the configuration. **Confirm and generate kernels** also starts computation. Cancel retains the current project. The template page also provides **Import configuration…**.
 
-The template dialog contains the overall spectrum, decay-time and envelope editors, plus the direction generator. Return to Templates and choose **调整当前模板…** (Edit current template) to revisit this stage. Cancel keeps the current project; confirmation loads the changes.
+The template dialog contains the overall spectrum, decay-time and envelope editors, plus the direction generator. Return to Templates and choose **Edit current template…** to revisit this stage. Cancel keeps the current project; confirmation loads the changes.
 
-Configuration places direct sound, head model, wet energy, random settings and EQ beside the result plot, or above it in a narrow window. Drag the divider to adjust their proportions; the narrow layout uses a horizontal divider and switching back retains the chosen column ratio. **反射源详细配置…** opens a separate window for direction, group, multi-selection and per-source L/R excitation editing. **完成** (Done) closes that window while retaining its edits in the project.
+Configuration places direct sound, head model, wet energy, random settings and EQ beside the result plot, or above it in a narrow window. Drag the divider to adjust their proportions; the narrow layout uses a horizontal divider and switching back retains the chosen column ratio. **Edit individual sources…** opens a separate window for direction, group, multi-selection and per-source L/R excitation editing. **Complete** closes that window while retaining its edits in the project.
 
-The plot toolbar places **导入配置…** (Import configuration) and **导出配置…** (Export configuration) to the right of **生成卷积核** (Generate kernels). Configuration JSON files store parameters and random seeds; exporting a configuration does not require generated kernels. Configuration name, kernel sample rate and output gain are edited in the generation area, alongside Undo and Redo. Parameter changes mark the displayed result as requiring an update.
+The plot toolbar places **Import configuration…** and **Export configuration…** to the right of **Generate kernels**. Configuration JSON files store parameters and random seeds; exporting a configuration does not require generated kernels. Configuration name, kernel sample rate and output gain are edited in the generation area, alongside Undo and Redo. Parameter changes mark the displayed result as requiring an update.
 
 Changing overall template curves or distribution generates downstream sources. Per-source details remain separate. Reopening the template without changing these overall parameters preserves detailed edits. Undo in Configuration can restore the state before confirming a changed template.
 

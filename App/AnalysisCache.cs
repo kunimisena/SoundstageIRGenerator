@@ -18,9 +18,19 @@ public sealed class AnalysisCache
     {
         if(!ReferenceEquals(result,input)){Clear();result=input;}
         var key=(subject is 4 or 5?source:null,subject,kind,kind==0&&smooth,kind==0&&bandpass);
-        if(entries.TryGetValue(key,out var cached)&&!cached.IsFaulted&&!cached.IsCanceled)return cached;
+        if(entries.TryGetValue(key,out var cached)&&!cached.IsFaulted&&!cached.IsCanceled)return Localized(cached);
         foreach(var old in entries.Where(e=>e.Value.IsCompleted).Select(e=>e.Key).Take(Math.Max(0,entries.Count-15)).ToArray())entries.Remove(old);
-        return entries[key]=Build(input,key,lifetime.Token);
+        return Localized(entries[key]=Build(input,key,lifetime.Token));
+    }
+    static readonly System.Runtime.CompilerServices.ConditionalWeakTable<PlotData,Dictionary<string,PlotData>> localizedPlots=new();
+    static async Task<PlotData> Localized(Task<PlotData> task)
+    {
+        var data=await task;
+        var variants=localizedPlots.GetOrCreateValue(data);string language=TextCatalog.Language;
+        if(variants.TryGetValue(language,out var existing))return existing;
+        string title=TextCatalog.Diagnostic(data.Title),unit=TextCatalog.Diagnostic(data.YUnit);
+        if(title==data.Title&&unit==data.YUnit&&data.Lines.All(l=>TextCatalog.Diagnostic(l.Name)==l.Name))return data;
+        return variants[language]=data with {Title=title,YUnit=unit,Lines=data.Lines.Select(l=>l with{Name=TextCatalog.Diagnostic(l.Name)}).ToList()};
     }
     async Task<PlotData> Build(GenerationResult input,(Guid? Source,int Subject,int Kind,bool Smooth,bool Bandpass) key,CancellationToken token)
     {

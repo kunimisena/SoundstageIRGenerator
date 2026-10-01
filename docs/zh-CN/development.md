@@ -10,7 +10,7 @@ Windows x64、.NET 8 SDK 即可；`global.json` 接受已安装的最新稳定 .
 ./build.ps1
 ```
 
-构建 Release，执行推荐与新增模板、EQ 强度、人头、模板参数、整体编辑、发布命名、能量、EQ 精度八组核心检查，然后发布带运行时的程序到 `publish/SoundstageIRGenerator/`。不会把私人项目复制到分发包；覆盖自己的本地程序时保留原有用户数据；要制作干净分发包请用打包脚本或全新输出目录。
+构建 Release，执行人头带宽与校准、干湿平衡、频谱、模板、EQ、编辑与导出等核心检查，然后发布带运行时的程序到 `publish/SoundstageIRGenerator/`。不会把私人项目复制到分发包；覆盖自己的本地程序时保留原有用户数据；要制作干净分发包请用打包脚本或全新输出目录。
 
 ```powershell
 # 完整 DSP、统计、长尾、音频处理和离屏 WPF 检查：
@@ -23,7 +23,7 @@ Windows x64、.NET 8 SDK 即可；`global.json` 接受已安装的最新稳定 .
 ./build.ps1 -FFmpegDirectory 'C:\path\to\ffmpeg'
 ```
 
-完整音频测试需要提前可用的 FFmpeg/ffprobe。离屏 WPF 检查在 Windows 后台运行，不显示窗口。`-FFmpegDirectory` 在发布阶段复制工具；音频测试通过 PATH 或 Program Files 查找 FFmpeg。结果放入 `artifacts/`。普通 CI 只执行八组核心检查和构建，完整音频与手动桌面验收另行进行。
+完整音频测试需要提前可用的 FFmpeg/ffprobe。离屏 WPF 检查在 Windows 后台运行，不显示窗口。`-FFmpegDirectory` 在发布阶段复制工具；音频测试通过 PATH 或 Program Files 查找 FFmpeg。结果放入 `artifacts/`。普通 CI 执行核心检查和构建，完整音频与手动桌面验收另行进行。
 
 ## 源码与本地用户数据分开
 
@@ -75,3 +75,9 @@ python tools/convert_fabian.py C:\path\to\sofa-files
 项目 JSON 使用格式版本 5。TemplateName 标识模板名称，TemplateSources 保存模板参数，Sources 保存逐源编辑参数。配置通过 JSON 导出与导入。内置模板的一级 EQ 默认 100%，二级 EQ 默认 0%。[验收说明](../VALIDATION.md)列出测试版本、范围与结果。
 
 本机 FFmpeg 路径保存在 `settings/audio-tools.json`，已由 Git 和干净打包流程排除。发布使用 `tools/package.ps1` 创建的独立包，FFmpeg 由用户在歌曲处理区选择。
+
+## 中英文资源
+
+`Core/Localization/strings.json` 保存成对的中文与英文文本；`Core/TextCatalog.cs` 提供文本查询。WPF 使用动态资源更新标签，`App/UiLanguage.cs` 保存语言偏好。界面语言与数值计算、配置 JSON 分开，翻译时保留占位符和单位。
+
+运行 `SoundstageIRGenerator.exe --language-check <输出目录>` 可执行定向双语检查，包括语言切换、全部模板、图表状态、逐样本一致性和导出回读。检查在后台离屏运行，结果写入指定目录。

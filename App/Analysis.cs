@@ -9,15 +9,15 @@ public static class Analysis
         double[][] paths;string[] names;double zero=r.ZeroSample;int sr=r.Project.SampleRate;
         switch(subject)
         {
-            case 1:paths=[Dsp.Sum(r.Kernels[0],r.Kernels[1]),Dsp.Sum(r.Kernels[2],r.Kernels[3])];names=["左耳 · L+R","右耳 · L+R"];break;
-            case 2:paths=[Dsp.Sum(r.Raw[0],r.Raw[1]),Dsp.Sum(r.Raw[2],r.Raw[3])];names=["EQ 前左耳","EQ 前右耳"];break;
-            case 3:paths=r.DirectPaths;names=["L→左耳","R→左耳","L→右耳","R→右耳"];break;
+            case 1:paths=[Dsp.Sum(r.Kernels[0],r.Kernels[1]),Dsp.Sum(r.Kernels[2],r.Kernels[3])];names=[SoundstageIR.Core.TextCatalog.T("T1C05DBFE85"),SoundstageIR.Core.TextCatalog.T("TFA2517C585")];break;
+            case 2:paths=[Dsp.Sum(r.Raw[0],r.Raw[1]),Dsp.Sum(r.Raw[2],r.Raw[3])];names=[SoundstageIR.Core.TextCatalog.T("T1DB9A9A808"),SoundstageIR.Core.TextCatalog.T("T9795DDB316")];break;
+            case 3:paths=r.DirectPaths;names=[SoundstageIR.Core.TextCatalog.T("T9D3F49D4CD"),SoundstageIR.Core.TextCatalog.T("TA2E15EF348"),SoundstageIR.Core.TextCatalog.T("TB1B8C7B14B"),SoundstageIR.Core.TextCatalog.T("T39DA9A8DC4")];break;
             case 4:
             case 5:
-                var c=r.Contributions.FirstOrDefault(c=>c.Id==source);if(c==null)return new("卷积结果中没有所选反射源，请生成卷积核","Hz","dB",true,[]);
-                paths=subject==4?[c.LeftInputKernel,c.RightInputKernel]:c.EarPaths;names=subject==4?["L 激励","R 激励"]:["L→左耳","R→左耳","L→右耳","R→右耳"];if(subject==4)zero=0;break;
-            case 6:paths=[r.EarEq[0],r.EarEq[1],r.SecondEq,r.Bandpass,r.HeadEq];names=["一级左耳修正","一级右耳修正","共同第二级修正","带通目标","人头参考修正"];zero=0;break;
-            default:paths=r.Kernels;names=["L→左耳","R→左耳","L→右耳","R→右耳"];break;
+                var c=r.Contributions.FirstOrDefault(c=>c.Id==source);if(c==null)return new(SoundstageIR.Core.TextCatalog.T("T2AB43207A3"),"Hz","dB",true,[]);
+                paths=subject==4?[c.LeftInputKernel,c.RightInputKernel]:c.EarPaths;names=subject==4?[SoundstageIR.Core.TextCatalog.T("T75C357A38C"),SoundstageIR.Core.TextCatalog.T("TF225AC3B52")]:[SoundstageIR.Core.TextCatalog.T("T9D3F49D4CD"),SoundstageIR.Core.TextCatalog.T("TA2E15EF348"),SoundstageIR.Core.TextCatalog.T("TB1B8C7B14B"),SoundstageIR.Core.TextCatalog.T("T39DA9A8DC4")];if(subject==4)zero=0;break;
+            case 6:paths=[r.EarEq[0],r.EarEq[1],r.SecondEq,r.Bandpass,r.HeadEq];names=[SoundstageIR.Core.TextCatalog.T("TE62C5A198F"),SoundstageIR.Core.TextCatalog.T("T7536CB0E03"),SoundstageIR.Core.TextCatalog.T("T5E58F45E99"),SoundstageIR.Core.TextCatalog.T("T324E6B243C"),SoundstageIR.Core.TextCatalog.T("T706ABCC589")];zero=0;break;
+            default:paths=r.Kernels;names=[SoundstageIR.Core.TextCatalog.T("T9D3F49D4CD"),SoundstageIR.Core.TextCatalog.T("TA2E15EF348"),SoundstageIR.Core.TextCatalog.T("TB1B8C7B14B"),SoundstageIR.Core.TextCatalog.T("T39DA9A8DC4")];break;
         }
         var lines=new List<PlotLine>();for(int c=0;c<paths.Length;c++)
         {
@@ -46,7 +46,7 @@ public static class Analysis
             }
             lines.Add(new(names[c],x,y,Colors[c]));
         }
-        string[] titles=[smooth?"功率平滑幅频（仅显示平滑）":"实际幅频 · 不平滑","脉冲响应 · 共同直达零点","实际核的反向积分能量衰减","展开相位 · 已扣除共同前导","群延迟 · 已扣除共同前导"];
-        return new(titles[kind],kind is 1 or 2?"ms":"Hz",kind==1?"幅度":kind==3?"度":kind==4?"ms":"dB",kind is 0 or 3 or 4,lines,kind==0&&bandpass?-100:kind==0&&subject!=6?-60:kind==2?-80:null,kind==0&&subject!=6?20:kind==2?0:null);
+        string[] titles=[smooth?SoundstageIR.Core.TextCatalog.T("T7456508A53"):SoundstageIR.Core.TextCatalog.T("T929A0643CE"),SoundstageIR.Core.TextCatalog.T("T8209C02C79"),SoundstageIR.Core.TextCatalog.T("TFCEABFBB1F"),SoundstageIR.Core.TextCatalog.T("T462C35B346"),SoundstageIR.Core.TextCatalog.T("T4FBE1CDC36")];
+        return new(titles[kind],kind is 1 or 2?"ms":"Hz",kind==1?SoundstageIR.Core.TextCatalog.T("TEC01A9A0DC"):kind==3?SoundstageIR.Core.TextCatalog.T("TE24A9725DF"):kind==4?"ms":"dB",kind is 0 or 3 or 4,lines,kind==0&&bandpass?-100:kind==0&&subject!=6?-60:kind==2?-80:null,kind==0&&subject!=6?20:kind==2?0:null);
     }
 }

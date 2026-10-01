@@ -75,12 +75,12 @@ public sealed class CurveEditor:FrameworkElement
         {double x=r.Left+r.Width*Fraction(f,MinX,MaxX,LogX);dc.DrawLine(new Pen(Paint.Grid,1),new(x,r.Top),new(x,r.Bottom));Paint.Label(dc,f>=1000?$"{f/1000:0.#}k":f.ToString("0.##"),x-9,r.Bottom+5,Paint.Muted,10);}
         Paint.Label(dc,XUnit,r.Left,r.Bottom+19,Paint.Muted,10);
         if(Points is not {Count:>=2})return;
-        if(Points.Any(p=>!double.IsFinite(p.X)||!double.IsFinite(p.Y)||LogX&&p.X<=0||LogY&&p.Y<=0)||Points.Zip(Points.Skip(1)).Any(p=>p.First.X>=p.Second.X)){Paint.Label(dc,"请检查控制点数值与顺序",50,50,Paint.Muted);return;}
+        if(Points.Any(p=>!double.IsFinite(p.X)||!double.IsFinite(p.Y)||LogX&&p.X<=0||LogY&&p.Y<=0)||Points.Zip(Points.Skip(1)).Any(p=>p.First.X>=p.Second.X)){Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("T4374175386"),50,50,Paint.Muted);return;}
         dc.PushClip(new RectangleGeometry(r));
         var poly=Samples().Select(p=>Screen(new(p.X,p.Y)));
         Paint.Line(dc,Editable?Paint.Accent:Paint.Muted,2,poly);
         if(Marker is double marker && marker>=MinX&&marker<=MaxX)
-        {double x=r.Left+r.Width*Fraction(marker,MinX,MaxX,LogX);dc.DrawLine(new Pen(Paint.Muted,1){DashStyle=DashStyles.Dash},new(x,r.Top),new(x,r.Bottom));Paint.Label(dc,"变密尺度",Math.Min(x+4,r.Right-55),r.Top+5,Paint.Muted,10);}
+        {double x=r.Left+r.Width*Fraction(marker,MinX,MaxX,LogX);dc.DrawLine(new Pen(Paint.Muted,1){DashStyle=DashStyles.Dash},new(x,r.Top),new(x,r.Bottom));Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("TAD36B620F8"),Math.Min(x+4,r.Right-55),r.Top+5,Paint.Muted,10);}
         foreach(var point in Points){Point pt=Screen(point);dc.DrawEllipse(Paint.Accent,new Pen(Paint.Paper,2),pt,5,5);}
         dc.Pop();Paint.Label(dc,Unit,r.Right-20,0,Paint.Muted,10);
     }
@@ -133,20 +133,20 @@ public sealed class DirectionView:FrameworkElement
         Paint.PixelsPerDip=VisualTreeHelper.GetDpi(this).PixelsPerDip;
         dc.DrawRectangle(Paint.Paper,null,new(0,0,ActualWidth,ActualHeight));hits.Clear();
         for(int plane=0;plane<3;plane++){int k=plane;Paint.Line(dc,Paint.Grid,1,Enumerable.Range(0,121).Select(i=>{double a=i*Math.PI/60;return k==0?ProjectPoint(Math.Cos(a),0,Math.Sin(a)):k==1?ProjectPoint(Math.Cos(a),Math.Sin(a),0):ProjectPoint(0,Math.Cos(a),Math.Sin(a));}));}
-        Point center=ProjectPoint(0,0,0),front=Direction(0,0,1.17);dc.DrawLine(new Pen(Paint.Grid,1),center,front);Paint.Label(dc,"前",front.X-6,front.Y-12,Paint.Muted);
+        Point center=ProjectPoint(0,0,0),front=Direction(0,0,1.17);dc.DrawLine(new Pen(Paint.Grid,1),center,front);Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("T6044E9F095"),front.X-6,front.Y-12,Paint.Muted);
         if(Project!=null)
         {
             foreach(var s in Project.Sources){Dot(s,s.Azimuth,false);if(!s.Median)Dot(s,-s.Azimuth,true);}
-            if(Project.Direct.Enabled)foreach(int side in new[]{-1,1}){var p=Direction(side*Project.Direct.Angle,Project.Direct.Elevation);dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(171,105,22)),null,new(p.X-6,p.Y-6,12,12));Paint.Label(dc,side<0?"L 音箱":"R 音箱",p.X+(side<0?-52:10),p.Y+12,new SolidColorBrush(Color.FromRgb(171,105,22)));}
+            if(Project.Direct.Enabled)foreach(int side in new[]{-1,1}){var p=Direction(side*Project.Direct.Angle,Project.Direct.Elevation);dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(171,105,22)),null,new(p.X-6,p.Y-6,12,12));Paint.Label(dc,side<0?SoundstageIR.Core.TextCatalog.T("T9C0E5041CA"):SoundstageIR.Core.TextCatalog.T("TE1563CA0FE"),p.X+(side<0?-52:10),p.Y+12,new SolidColorBrush(Color.FromRgb(171,105,22)));}
         }
         DrawHead(dc,center);
-        Paint.Label(dc,"拖动空白处旋转 · 点击方向选择源",12,ActualHeight-23,Paint.Muted,11);
+        Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("T790FB514BD"),12,ActualHeight-23,Paint.Muted,11);
         void Dot(ReflectionPair s,double az,bool mirror)
         {
             var p=Direction(az,s.Elevation);bool selected=s.Id==Selected;Brush b=!s.Enabled?Paint.Grid:mirror?new SolidColorBrush(Color.FromRgb(98,152,226)):Paint.Accent;
             dc.DrawLine(new Pen(Paint.Grid,1),center,p);dc.DrawEllipse(b,selected?new Pen(Paint.Text,2):null,p,selected?7:5,selected?7:5);
-            if(selected)Paint.Label(dc,mirror?"镜像":s.Name,p.X+(mirror?10:-s.Name.Length*11-10),p.Y-25,b,11);
-            hits.Add((p,s.Id,$"{s.Name}{(mirror?"（镜像）":"")}  {az:F1}° / {s.Elevation:F1}°"));
+            if(selected)Paint.Label(dc,mirror?SoundstageIR.Core.TextCatalog.T("T176C09844E"):s.Name,p.X+(mirror?10:-s.Name.Length*11-10),p.Y-25,b,11);
+            hits.Add((p,s.Id,$"{s.Name}{(mirror?SoundstageIR.Core.TextCatalog.T("T3506EAB72D"):"")}  {az:F1}° / {s.Elevation:F1}°"));
         }
     }
     void DrawHead(DrawingContext dc,Point center)
@@ -184,7 +184,7 @@ public sealed class PlotView:FrameworkElement
         set
         {
             if(ReferenceEquals(data,value))return;
-            string? key=value==null?null:$"{value.Title}|{value.XUnit}|{value.YUnit}|{value.LogX}";
+            string? key=value==null?null:$"{TextCatalog.Identity(value.Title)}|{value.XUnit}|{TextCatalog.Identity(value.YUnit)}|{value.LogX}";
             if(key!=dataKey){dataKey=key;viewport=null;hidden.Clear();}
             data=value;lineRanges.Clear();drawings.Clear();
             if(value!=null)foreach(var line in value.Lines)
@@ -246,10 +246,10 @@ public sealed class PlotView:FrameworkElement
     PlotBounds panBounds;
     bool panning;
     public bool IsZoomed=>viewport!=null;
-    public bool IsLineVisible(string name)=>!hidden.Contains(name);
-    public void ToggleLine(string name){if(!hidden.Add(name))hidden.Remove(name);InvalidateVisual();}
-    public void ShowAll(){if(Data!=null)foreach(var line in Data.Lines)hidden.Remove(line.Name);InvalidateVisual();}
-    public void ShowOnly(string name){if(Data!=null)foreach(var line in Data.Lines){if(line.Name==name)hidden.Remove(line.Name);else hidden.Add(line.Name);}InvalidateVisual();}
+    public bool IsLineVisible(string name)=>!hidden.Contains(TextCatalog.Identity(name));
+    public void ToggleLine(string name){name=TextCatalog.Identity(name);if(!hidden.Add(name))hidden.Remove(name);InvalidateVisual();}
+    public void ShowAll(){if(Data!=null)foreach(var line in Data.Lines)hidden.Remove(TextCatalog.Identity(line.Name));InvalidateVisual();}
+    public void ShowOnly(string name){if(Data!=null)foreach(var line in Data.Lines){if(line.Name==name)hidden.Remove(TextCatalog.Identity(line.Name));else hidden.Add(TextCatalog.Identity(line.Name));}InvalidateVisual();}
     public void ResetView(){viewport=null;InvalidateVisual();}
     public void Zoom(double factor,double xFraction=.5,double yFraction=.5)
     {
@@ -270,8 +270,8 @@ public sealed class PlotView:FrameworkElement
             else if(e.ChangedButton==MouseButton.Right)
             {
                 var menu=new System.Windows.Controls.ContextMenu();
-                var solo=new System.Windows.Controls.MenuItem{Header="仅显示 "+hit.Name};solo.Click+=(_,_)=>ShowOnly(hit.Name);menu.Items.Add(solo);
-                var all=new System.Windows.Controls.MenuItem{Header="全部显示"};all.Click+=(_,_)=>ShowAll();menu.Items.Add(all);menu.IsOpen=true;e.Handled=true;
+                var solo=new System.Windows.Controls.MenuItem{Header=SoundstageIR.Core.TextCatalog.T("T059421366A")+hit.Name};solo.Click+=(_,_)=>ShowOnly(hit.Name);menu.Items.Add(solo);
+                var all=new System.Windows.Controls.MenuItem{Header=SoundstageIR.Core.TextCatalog.T("TB1288E4AC0")};all.Click+=(_,_)=>ShowAll();menu.Items.Add(all);menu.IsOpen=true;e.Handled=true;
             }
             return;
         }
@@ -295,7 +295,7 @@ public sealed class PlotView:FrameworkElement
             double y=bounds.YMin+(area.Bottom-point.Y)/area.Height*(bounds.YMax-bounds.YMin);
             ToolTip=$"{x:0.###} {Data.XUnit} · {y:0.###} {Data.YUnit}";
         }
-        else ToolTip="点击图例开关曲线；右键单独显示。";
+        else ToolTip=SoundstageIR.Core.TextCatalog.T("T757127C5A0");
     }
     protected override void OnMouseUp(MouseButtonEventArgs e){if(panning){panning=false;ReleaseMouseCapture();Cursor=Cursors.Arrow;}}
     protected override void OnLostMouseCapture(MouseEventArgs e){panning=false;Cursor=Cursors.Arrow;}
@@ -304,7 +304,7 @@ public sealed class PlotView:FrameworkElement
         DrawCount++;
         Paint.PixelsPerDip=VisualTreeHelper.GetDpi(this).PixelsPerDip;
         legend.Clear();dc.DrawRectangle(Paint.Paper,null,new(0,0,ActualWidth,ActualHeight));
-        if(Data==null){Paint.Label(dc,"生成卷积核后显示分析结果",20,25,Paint.Muted,14);return;}
+        if(Data==null){Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("T74C2DABE30"),20,25,Paint.Muted,14);return;}
         var d=Data;Paint.Label(dc,d.Title,12,8,Paint.Text,12);
         var all=d.Lines.Where(l=>l.X.Length>0&&l.Y.Length==l.X.Length).ToArray();if(all.Length==0)return;
         double lx=55,ly=0;var layout=new List<(PlotLine Line,Rect Rect)>();
@@ -353,7 +353,7 @@ public sealed class PlotView:FrameworkElement
         double sx=r.Width/(bounds.XMax-bounds.XMin),sy=-r.Height/(bounds.YMax-bounds.YMin);
         var matrix=new Matrix(sx,0,0,sy,r.Left-bounds.XMin*sx,r.Bottom-bounds.YMin*sy);
         dc.PushClip(new RectangleGeometry(r));foreach(var line in valid)drawings[line].Draw(dc,matrix);dc.Pop();
-        if(valid.Length==0)Paint.Label(dc,"点击图例显示曲线",r.Left+15,r.Top+15,Paint.Muted);
+        if(valid.Length==0)Paint.Label(dc,SoundstageIR.Core.TextCatalog.T("T7096D722A3"),r.Left+15,r.Top+15,Paint.Muted);
         Paint.Label(dc,d.YUnit,r.Left,25,Paint.Muted,10);Paint.Label(dc,d.XUnit,r.Right-20,r.Bottom+20,Paint.Muted,10);
     }
     static Brush LineBrush(string source)

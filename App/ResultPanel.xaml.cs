@@ -20,11 +20,11 @@ public partial class ResultPanel:UserControl
     {
         EditorInput.Commit(GenerationSettings);
         if(!EditorInput.HasErrors(GenerationSettings))return true;
-        (vm??DataContext as MainViewModel)?.SetStatus("请检查红框内的数值。");return false;
+        (vm??DataContext as MainViewModel)?.SetStatus(SoundstageIR.Core.TextCatalog.T("TB469D01528"));return false;
     }
     void GenerationEdited(object sender,RoutedEventArgs e)
     {
-        if(vm==null)return;
+        if(vm==null||vm.Localizing)return;
         if(CommitEdits())vm.Commit();
         vm.PendingChanged();
     }
@@ -47,7 +47,7 @@ public partial class ResultPanel:UserControl
             var data=await model!.AnalysisCache.GetAsync(result,model.Selected?.Id,subject,kind,PlotSmooth.IsChecked==true,PlotBandpass.IsChecked==true);
             if(request==version&&!ReferenceEquals(ResultPlot.Data,data))ResultPlot.Data=data;
         }
-        catch(Exception ex){if(request==version)model!.SetStatus("分析失败："+ex.Message);}
+        catch(Exception ex){if(request==version)model!.SetStatus(SoundstageIR.Core.TextCatalog.T("T5EA1E81727")+ex.Message);}
     }
     void ResetPlotView(object sender,RoutedEventArgs e)=>ResultPlot.ResetView();
     void ShowAllCurves(object sender,RoutedEventArgs e)=>ResultPlot.ShowAll();
