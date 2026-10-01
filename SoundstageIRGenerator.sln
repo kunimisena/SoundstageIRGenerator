@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -8,6 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundstageIRGenerator", "App\SoundstageIRGenerator.csproj", "{12881B36-A886-4BB9-98FA-F00DE394E0A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundstageIR.Tests", "Tests\SoundstageIR.Tests.csproj", "{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundstageSpeakers", "SpeakerApp\SoundstageSpeakers.csproj", "{20AD2D12-0453-4D3E-B6E1-C85F82C8C78A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +32,9 @@ Global
 		{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2341A3CC-9064-4F28-9A33-7CE3E5A462C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20AD2D12-0453-4D3E-B6E1-C85F82C8C78A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20AD2D12-0453-4D3E-B6E1-C85F82C8C78A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20AD2D12-0453-4D3E-B6E1-C85F82C8C78A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20AD2D12-0453-4D3E-B6E1-C85F82C8C78A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -57,3 +57,13 @@ These entries identify model and research sources. The papers and standards them
 ## Equalizer APO interoperability / 配置导出
 
 The exporter writes configuration text for [Equalizer APO](https://sourceforge.net/projects/equalizerapo/) and accompanying WAV paths. Equalizer APO is installed separately. / 导出器生成 Equalizer APO 使用的文本配置和 WAV 路径；Equalizer APO 由用户单独安装。
+
+## Loudspeaker playback mathematics / 音箱播放数学模型
+
+Complex spatial playback uses the attributed FABIAN data as a far-field directional model, together with the air-absorption calculation above. Its matrix conversion uses Tikhonov-regularized complex least squares and a local spectral constraint. The implementation is part of this MIT-licensed project.
+
+复杂空间音效采用已列明来源的 FABIAN 远场方向响应及上述空气吸收模型，矩阵转换使用 Tikhonov 正则化复数最小二乘与局部频谱约束。实现代码属于本项目的 MIT 许可部分。
+
+The retained `SphereRange` reference calculation and its unit checks implement the rigid-sphere range solution described by R. O. Duda and W. L. Martens, [Range dependence of the response of a spherical head model](https://www.ece.ucdavis.edu/cipic/wp-content/uploads/sites/12/2015/04/cipic_JASA_Nov_1998.pdf), JASA 104(5), 3048–3058 (1998). The application’s playback model does not apply this near-field correction. The paper is linked, not bundled; FABIAN retains its separate CC BY 4.0 attribution.
+
+代码保留的 `SphereRange` 参考计算与单元检查依据上述刚性球距离响应论文实现；当前应用的播放模型不启用这项近场修正。论文以链接提供，FABIAN 数据继续保留独立的 CC BY 4.0 署名。

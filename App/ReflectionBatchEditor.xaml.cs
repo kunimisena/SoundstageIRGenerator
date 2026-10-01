@@ -8,6 +8,14 @@ namespace SoundstageIRGenerator;
 public partial class ReflectionBatchEditor:UserControl
 {
     public MainViewModel? ViewModel {get;set;}
+    Action<Excitation>? kernelCommit;
+    public void BindKernel(Excitation kernel,Action<Excitation> apply)
+    {
+        kernelCommit=apply;
+        Session=new(kernel);DataContext=Session;rtScaleBase=null;
+        DirectionGenerator.Visibility=DirectionAdjustments.Visibility=RightGainControls.Visibility=RightTiltControls.Visibility=ScopeLabel.Visibility=Visibility.Collapsed;
+        RefreshCurves();EditorBody.IsEnabled=true;Message.Text="";
+    }
     public ReflectionEditSession? Session {get;private set;}
     public bool HasChanges => Session?.HasChanges==true || HasDirtyInput(EditorBody);
     static bool HasDirtyInput(DependencyObject item)
@@ -47,6 +55,7 @@ public partial class ReflectionBatchEditor:UserControl
             if(HasErrors(this))throw new ArgumentException(SoundstageIR.Core.TextCatalog.T("TB469D01528"));
             if(Session==null)return true;
             if(ViewModel==null)throw new InvalidOperationException(SoundstageIR.Core.TextCatalog.T("T12C8F97662"));
+            if(kernelCommit!=null){if(Session.HasChanges)kernelCommit(Session.Reference.Clone());return true;}
             if(!Session.HasChanges)return true;
             ViewModel.ApplyReflectionEdit(Session);
             var feedback=ViewModel.Status;LoadScope();Message.Text=feedback;return true;

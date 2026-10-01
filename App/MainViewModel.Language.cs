@@ -17,7 +17,7 @@ public sealed partial class MainViewModel
                 LoadCards();
                 foreach(var option in HeadModelNames.Concat(LayoutNames).Concat(AudioLevelModes))option.Refresh();
                 foreach(string name in new[]{nameof(LanguageIndex),nameof(ReflectionTimingHint),nameof(ExcitationHint),nameof(SymmetryHint),nameof(WeightLabel),nameof(EnergySummary),nameof(GenerationNotes),nameof(ResultState),nameof(ExportState),nameof(DirectionSummary),nameof(Status),nameof(Metrics),nameof(HeadModelHint),nameof(AudioSummary),nameof(AudioToolStatus)})Notify(name);
-                if(warning!=null)SetStatus(warning);
+                RefreshSpeakerLabels();if(warning!=null)SetStatus(warning);
                 VisualChanged?.Invoke();
             }
             finally{Localizing=false;CommandManager.InvalidateRequerySuggested();}

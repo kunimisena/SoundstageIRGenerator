@@ -22,7 +22,7 @@ try {
             dotnet run --no-build --project '.\Tests\SoundstageIR.Tests.csproj' -c Release -- "$studioRoot\artifacts\acceptance" --statistics --long
             if($LASTEXITCODE -ne 0){throw 'Full validation failed'}
         }else{
-            foreach($suite in @('head-bandwidth','head-reference','wet-balance','spectral','final-presets','eq-strength-only','head-only','preset-only','shared-edit','release-only','energy-only','eq-accuracy')){
+            foreach($suite in @('speakers','head-bandwidth','head-reference','wet-balance','spectral','final-presets','eq-strength-only','head-only','preset-only','shared-edit','release-only','energy-only','eq-accuracy')){
                 dotnet run --no-build --project '.\Tests\SoundstageIR.Tests.csproj' -c Release -- "$studioRoot\artifacts\$suite" "--$suite"
                 if($LASTEXITCODE -ne 0){throw "Validation failed: $suite"}
             }
@@ -30,6 +30,8 @@ try {
     }
     dotnet publish '.\App\SoundstageIRGenerator.csproj' -c Release -r win-x64 --self-contained true -o $OutputDirectory
     if($LASTEXITCODE -ne 0){throw 'Publish failed'}
+    dotnet publish '.\SpeakerApp\SoundstageSpeakers.csproj' -c Release -r win-x64 --self-contained true -o $OutputDirectory
+    if($LASTEXITCODE -ne 0){throw 'Speaker publish failed'}
     # Retain notices from the exact runtime packs used by the self-contained build.
     $deps=Get-Content -LiteralPath (Join-Path $OutputDirectory 'SoundstageIRGenerator.deps.json') -Raw | ConvertFrom-Json
     $cache=$env:NUGET_PACKAGES
@@ -62,6 +64,9 @@ try {
         $report=Join-Path $studioRoot 'artifacts\published-headless'
         $process=Start-Process -FilePath (Join-Path $OutputDirectory 'SoundstageIRGenerator.exe') -ArgumentList @('--headless-check',('"'+$report+'"')) -WindowStyle Hidden -Wait -PassThru
         if($process.ExitCode -ne 0){throw 'Published offscreen validation failed'}
+        $speakerReport=Join-Path $report 'speaker-ui-results.txt'
+        $speakerCheck=Start-Process -FilePath (Join-Path $OutputDirectory 'SoundstageSpeakers.exe') -ArgumentList @('--check',('"'+$speakerReport+'"')) -WindowStyle Hidden -Wait -PassThru
+        if($speakerCheck.ExitCode -ne 0){throw 'Published speaker validation failed'}
     }
 }
 finally {Pop-Location}

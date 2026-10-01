@@ -17,6 +17,8 @@ public sealed class ReflectionEditSession
     // 0 = keep, 1 = on/automatic, 2 = off/manual.
     public int EnabledMode {get;set;}
     public int RightMode {get;set;}
+    public ReflectionEditSession(Excitation kernel)
+    {ids=[];snapshot="";Baseline=kernel.Clone();Baseline.Validate();Reference=Baseline.Clone();}
     public ReflectionEditSession(Project project,IEnumerable<Guid> targets)
     {
         ids=targets.ToHashSet();var sources=project.Sources.Where(s=>ids.Contains(s.Id)).ToArray();

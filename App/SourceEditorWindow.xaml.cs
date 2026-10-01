@@ -11,9 +11,9 @@ public partial class SourceEditorWindow:Window
 {
     public MainViewModel VM {get;}
     bool loaded,syncing,envelopeZoom;
-    public SourceEditorWindow(MainViewModel vm)
+    public SourceEditorWindow(MainViewModel vm, bool showAnalysis=true)
     {
-        VM=vm;InitializeComponent();DataContext=VM;ResizePreviewHost.Install(this);loaded=true;
+        VM=vm;InitializeComponent();DataContext=VM;ResizePreviewHost.Install(this);loaded=true; if(!showAnalysis){AnalysisPanel.Visibility=Visibility.Collapsed;((Grid)AnalysisPanel.Parent).RowDefinitions[1].Height=new GridLength(0);}
         Width=Math.Min(Width,SystemParameters.WorkArea.Width);Height=Math.Min(Height,SystemParameters.WorkArea.Height);
         var view=CollectionViewSource.GetDefaultView(VM.Sources);
         if(view.GroupDescriptions.Count==0)view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ReflectionPair.Group)));

@@ -172,7 +172,7 @@ Here `*` is convolution. WAV output is IEEE float32 at 44.1, 48 or 96 kHz. Use e
 
 ### Equalizer APO
 
-Include the generated `_APO.txt` file in your own APO configuration. Its temporary channels are assigned from L/R, convolved separately, then replaced into the two output channels:
+Include the generated `<name>_Equalizer_APO_Config.txt` file in your own APO configuration. Its temporary channels are assigned from L/R, convolved separately, then replaced into the two output channels:
 
 ```text
 Copy: LL=L LR=L RL=R RR=R

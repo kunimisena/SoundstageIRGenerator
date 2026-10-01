@@ -4,10 +4,11 @@ namespace SoundstageIRGenerator;
 public static class Analysis
 {
     static readonly string[] Colors=["#52DBBF","#EAB66E","#7BAAFF","#D9A4ED","#A35A37","#EF8596"];
-    public static PlotData Build(GenerationResult r,Guid? source,int subject,int kind,bool smooth,bool bandpass=false)
+    public static PlotData Build(GenerationResult r,Guid? source,int subject,int kind,bool smooth,bool bandpass=false,double[][]? customPaths=null,string[]? customNames=null,double? customZero=null)
     {
         double[][] paths;string[] names;double zero=r.ZeroSample;int sr=r.Project.SampleRate;
-        switch(subject)
+        if(customPaths!=null){paths=customPaths;names=customNames!;zero=customZero??zero;}
+        else switch(subject)
         {
             case 1:paths=[Dsp.Sum(r.Kernels[0],r.Kernels[1]),Dsp.Sum(r.Kernels[2],r.Kernels[3])];names=[SoundstageIR.Core.TextCatalog.T("T1C05DBFE85"),SoundstageIR.Core.TextCatalog.T("TFA2517C585")];break;
             case 2:paths=[Dsp.Sum(r.Raw[0],r.Raw[1]),Dsp.Sum(r.Raw[2],r.Raw[3])];names=[SoundstageIR.Core.TextCatalog.T("T1DB9A9A808"),SoundstageIR.Core.TextCatalog.T("T9795DDB316")];break;

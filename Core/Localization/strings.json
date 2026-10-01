@@ -583,13 +583,17 @@
     "zh": "# Soundstage IR Generator — 四路径双耳卷积\n# 配置使用绝对路径，更换位置后请重新导出。\n# 设备采样率须与 WAV 一致：",
     "en": "# Soundstage IR Generator — Four-path binaural convolution\n# This configuration uses absolute paths. Export again after moving files.\n# Device sample rate must match the WAV files: "
   },
+  "Export.ApoConfigFileName": {
+    "zh": "Equalizer_APO配置.txt",
+    "en": "Equalizer_APO_Config.txt"
+  },
   "T9F362DB7C7": {
-    "zh": "APO使用说明.txt",
-    "en": "APO_README.txt"
+    "zh": "导入说明.txt",
+    "en": "Import_Guide.txt"
   },
   "T3BF241DC47": {
-    "zh": "在 Equalizer APO 中 Include 本目录中以 _APO.txt 结尾的配置文件。\n四条 WAV 使用绝对路径。更换文件夹或文件名后，请重新导出配置。\n卷积核已包含设定的空间 EQ、20 Hz–20 kHz 带通和共同增益，可直接使用。\n设备采样率：",
-    "en": "In Equalizer APO, Include the configuration ending in _APO.txt in this folder.\nThe four WAV files use absolute paths. Export again after moving or renaming files.\nThe kernels include spatial EQ, the 20 Hz–20 kHz bandpass and common gain.\nDevice sample rate: "
+    "zh": "在 Equalizer APO 中 Include 本目录中的 {0}。\n四条 WAV 使用绝对路径。更换文件夹或文件名后，请重新导出配置。\n卷积核已包含设定的空间 EQ、20 Hz–20 kHz 带通和共同增益，可直接使用。\n设备采样率：",
+    "en": "In Equalizer APO, Include {0} in this folder.\nThe four WAV files use absolute paths. Export again after moving or renaming files.\nThe kernels include spatial EQ, the 20 Hz–20 kHz bandpass and common gain.\nDevice sample rate: "
   },
   "T6370457031": {
     "zh": " Hz。请保留原有耳机 EQ。\n",
@@ -2006,5 +2010,341 @@
   "LanguagePreferenceError": {
     "zh": "语言已切换，本次偏好未能保存：{0}",
     "en": "Language changed for this session; could not save preference: {0}"
+  },
+  "Speaker.Simple": {
+    "zh": "简单混响",
+    "en": "Simple reverb"
+  },
+  "Speaker.Spatial": {
+    "zh": "复杂空间音效",
+    "en": "Complex spatial audio"
+  },
+  "Speaker.Choose": {
+    "zh": "选择音箱处理模式",
+    "en": "Choose a loudspeaker mode"
+  },
+  "Speaker.Change": {
+    "zh": "选择模式…",
+    "en": "Choose mode…"
+  },
+  "Speaker.Intro": {
+    "zh": "选择需要的处理方式，然后选择模板并调整配置。",
+    "en": "Choose a processing mode, then select a template and configure it."
+  },
+  "Speaker.SimpleInfo": {
+    "zh": "适合一般的音响染色任务。编辑左右两条混响核，直接送入左右音箱。",
+    "en": "For general loudspeaker sound coloration. Edit two reverb kernels sent directly to the left and right speakers."
+  },
+  "Speaker.SpatialInfo": {
+    "zh": "适合能够严格控制音响摆位，并接受 FABIAN 头部近似的用户。编辑方向声场，生成对应实际摆位的四路径卷积核。",
+    "en": "For users who can precisely control speaker placement and accept the FABIAN head approximation. Edit a directional field and generate four convolution paths for the actual layout."
+  },
+  "Speaker.Placement": {
+    "zh": "实际音箱 · 自由场播放路径 F",
+    "en": "Actual speakers · Free-field playback F"
+  },
+  "Speaker.PlacementHint": {
+    "zh": "填写假设的实际音箱位置：两耳中点为原点，正前方 0°，左负右正，距离单位 m。F 使用 FABIAN、当前共同频响选项和 EQ 参数生成完整自由场响应。",
+    "en": "Enter the assumed actual layout: ear midpoint as origin, forward 0°, left negative, right positive; distance in m. F is a complete FABIAN free-field response using the current common-response and EQ settings."
+  },
+  "Speaker.Left": {
+    "zh": "左音箱",
+    "en": "Left speaker"
+  },
+  "Speaker.Right": {
+    "zh": "右音箱",
+    "en": "Right speaker"
+  },
+  "Speaker.Mirror": {
+    "zh": "左侧摆位镜像到右侧",
+    "en": "Mirror left position to right"
+  },
+  "Speaker.Inverse": {
+    "zh": "相对播放矩阵的求逆增益 / dB",
+    "en": "Inverse gain relative to playback matrix / dB"
+  },
+  "Speaker.InverseHint": {
+    "zh": "控制相对于播放矩阵 F 的求逆增益预算。转换通过精确控制两只音箱的相位与干涉来接近目标声场 T；增大预算可减少还原误差，但也可能需要更强相消，对听音位置、人头差异和摆位误差更敏感，出现意料之外的不稳定结果。局部功率约束抑制高 Q 窄谷求逆；请结合预检查和生成结果判断。",
+    "en": "Sets the inverse-gain budget relative to playback matrix F. The transform approaches target field T by precisely controlling phase and interference between the two speakers. A larger budget can reduce reconstruction error but may require stronger cancellation, making results more sensitive to listener position, head differences and placement errors, with unexpectedly unstable reproduction. A local-power constraint suppresses high-Q notch inversion; inspect both the precheck and generated-result diagnostics."
+  },
+  "Speaker.Link": {
+    "zh": "左右共用参数，随机细节独立",
+    "en": "Link L/R parameters, with independent random detail"
+  },
+  "Speaker.LeftKernel": {
+    "zh": "左声道核",
+    "en": "Left-channel kernel"
+  },
+  "Speaker.RightKernel": {
+    "zh": "右声道核",
+    "en": "Right-channel kernel"
+  },
+  "Speaker.SimpleDirect": {
+    "zh": "直达声",
+    "en": "Direct sound"
+  },
+  "Speaker.TargetDirect": {
+    "zh": "虚拟音箱 · 目标声场 T",
+    "en": "Virtual speakers · Target field T"
+  },
+  "Speaker.FinalPaths": {
+    "zh": "音箱输出 · 最终路径",
+    "en": "Speaker outputs · Final paths"
+  },
+  "Speaker.FinalSum": {
+    "zh": "音箱输出 · 最终 L/R 响应",
+    "en": "Speaker outputs · Final L/R responses"
+  },
+  "Speaker.Before": {
+    "zh": "校正前 · L/R 响应",
+    "en": "Before correction · L/R responses"
+  },
+  "Speaker.TargetPaths": {
+    "zh": "目标 T · 原耳机版四路径",
+    "en": "Target T · Original headphone paths"
+  },
+  "Speaker.PredictedPaths": {
+    "zh": "串联 F × C · 四路径",
+    "en": "Cascade F × C · Four paths"
+  },
+  "Speaker.PredictedSum": {
+    "zh": "串联 F × C · 最终 L/R 响应",
+    "en": "Cascade F × C · Final L/R responses"
+  },
+  "Speaker.InversePlot": {
+    "zh": "求逆算子 K",
+    "en": "Inverse operator K"
+  },
+  "Speaker.PathLL": {
+    "zh": "L 输入 → L 音箱",
+    "en": "L input → L speaker"
+  },
+  "Speaker.PathRL": {
+    "zh": "R 输入 → L 音箱",
+    "en": "R input → L speaker"
+  },
+  "Speaker.PathLR": {
+    "zh": "L 输入 → R 音箱",
+    "en": "L input → R speaker"
+  },
+  "Speaker.PathRR": {
+    "zh": "R 输入 → R 音箱",
+    "en": "R input → R speaker"
+  },
+  "Speaker.FinalL": {
+    "zh": "L 音箱 · 最终 L+R",
+    "en": "L speaker · Final L+R"
+  },
+  "Speaker.FinalR": {
+    "zh": "R 音箱 · 最终 L+R",
+    "en": "R speaker · Final L+R"
+  },
+  "Speaker.EarL": {
+    "zh": "串联左耳 · L+R",
+    "en": "Cascade left ear · L+R"
+  },
+  "Speaker.EarR": {
+    "zh": "串联右耳 · L+R",
+    "en": "Cascade right ear · L+R"
+  },
+  "Speaker.SimpleHint": {
+    "zh": "选择双声道混响的起点，再调整频谱、衰减与包络。",
+    "en": "Choose a stereo-reverb starting point, then edit its spectrum, decay and envelope."
+  },
+  "Speaker.SimpleFree": {
+    "zh": "保留直达声，关闭混响。",
+    "en": "Retain direct sound with reverb disabled."
+  },
+  "Speaker.SimpleBlank": {
+    "zh": "从直达声开始，编辑双声道混响核。",
+    "en": "Start with direct sound and edit the two reverb kernels."
+  },
+  "Speaker.SimpleDetails": {
+    "zh": "双声道核 · 尾长 {0:0.##} s · 混响 {1:0.#}%",
+    "en": "Two kernels · Tail {0:0.##} s · Reverb {1:0.#}%"
+  },
+  "Speaker.InvLL": {
+    "zh": "左耳目标 → L 音箱",
+    "en": "Left-ear target → L speaker"
+  },
+  "Speaker.InvRL": {
+    "zh": "右耳目标 → L 音箱",
+    "en": "Right-ear target → L speaker"
+  },
+  "Speaker.InvLR": {
+    "zh": "左耳目标 → R 音箱",
+    "en": "Left-ear target → R speaker"
+  },
+  "Speaker.InvRR": {
+    "zh": "右耳目标 → R 音箱",
+    "en": "Right-ear target → R speaker"
+  },
+  "Speaker.BeforeL": {
+    "zh": "校正前 L 声道",
+    "en": "L channel before correction"
+  },
+  "Speaker.BeforeR": {
+    "zh": "校正前 R 声道",
+    "en": "R channel before correction"
+  },
+  "Speaker.EqL": {
+    "zh": "L 声道 EQ",
+    "en": "L-channel EQ"
+  },
+  "Speaker.EqR": {
+    "zh": "R 声道 EQ",
+    "en": "R-channel EQ"
+  },
+  "Speaker.TargetHint": {
+    "zh": "这里的角度与反射源定义希望听到的目标声场 T。实际音箱定义播放路径 F；生成转换核 C，使 F × C 接近 T。",
+    "en": "These angles and reflection sources define the desired target field T. Actual speakers define playback F; the generated transform C makes F × C approach T."
+  },
+  "Speaker.PlaybackPaths": {
+    "zh": "自由场 F · 完整四路径",
+    "en": "Free field F · Complete four paths"
+  },
+  "Speaker.PlaybackEq": {
+    "zh": "自由场 F · 人头与平滑 EQ",
+    "en": "Free field F · Head and smooth EQ"
+  },
+  "Speaker.Comparison": {
+    "zh": "目标 T 与串联 F × C · L/R 对比",
+    "en": "Target T vs cascade F × C · L/R"
+  },
+  "Speaker.TargetL": {
+    "zh": "目标左耳 · L+R",
+    "en": "Target left ear · L+R"
+  },
+  "Speaker.TargetR": {
+    "zh": "目标右耳 · L+R",
+    "en": "Target right ear · L+R"
+  },
+  "Speaker.Precheck": {
+    "zh": "参数预检查",
+    "en": "Parameter precheck"
+  },
+  "Speaker.Checking": {
+    "zh": "正在检查音箱摆位与目标方向…",
+    "en": "Checking speaker geometry and target directions…"
+  },
+  "Speaker.CheckPending": {
+    "zh": "等待参数检查。",
+    "en": "Waiting for parameter check."
+  },
+  "Speaker.CheckOkay": {
+    "zh": "方向探针未发现超出预算的求逆需求；实际核生成后继续检查。",
+    "en": "Directional probes found no inversion demand beyond the budget. Actual kernels are checked after generation."
+  },
+  "Speaker.ResultRisk": {
+    "zh": "生成结果需要留意",
+    "en": "Generated result needs attention"
+  },
+  "Speaker.ReadyWithRisk": {
+    "zh": "已生成 · 检查发现风险，请查看红色结果提示。",
+    "en": "Generated · Checks found risks; review the red result panel."
+  },
+  "Speaker.CheckOld": {
+    "zh": "以下是上次生成结果的检查；参数已修改，请重新生成。",
+    "en": "These checks describe the previous result. Settings changed; regenerate to update them."
+  },
+  "Speaker.CheckSummaryHint": {
+    "zh": "固定采样：中心、左右／前后各 5 cm、左右转头各 5°。同一套核下每耳功率频响经 1/3 oct 平滑，计算位置间标准差，再在频率和双耳上取 RMS。",
+    "en": "Fixed samples: centre, ±5 cm lateral/fore-aft, and ±5° yaw. The same kernels are used throughout. Ear power responses are smoothed over 1/3 octave; pose-wise dB standard deviations are combined as an RMS across frequency and ears."
+  },
+  "Speaker.DistanceHint": {
+    "zh": "左右音箱镜像、等距时，中心位置的距离仅通过空气吸收影响响应；共同传播延时与电平已归一化。未考虑近场。位置变化检查仍使用实际距离。",
+    "en": "For mirrored, equidistant speakers, distance affects the centre response only through air absorption; common travel time and level are normalized. Near-field effects are not modeled. Position-variation checks still use the actual distance."
+  },
+  "Speaker.TemplateConfirmHint": {
+    "zh": "确认后进入配置页，先设置实际音箱摆位，再生成卷积核。",
+    "en": "Confirm to enter configuration, set the actual speaker layout, then generate the kernels."
+  },
+  "Speaker.GroupResult": {
+    "zh": "结果对照",
+    "en": "Comparison"
+  },
+  "Speaker.GroupTransform": {
+    "zh": "求逆与输出",
+    "en": "Inverse & output"
+  },
+  "Speaker.GroupPlayback": {
+    "zh": "实际音箱",
+    "en": "Actual speakers"
+  },
+  "Speaker.GroupTarget": {
+    "zh": "目标声场",
+    "en": "Target field"
+  },
+  "Speaker.ShortDrive": {
+    "zh": "输出核 C · 四路径",
+    "en": "Output C · Four paths"
+  },
+  "Speaker.ShortDriveSum": {
+    "zh": "输出核 C · L/R 合成",
+    "en": "Output C · L/R sums"
+  },
+  "Speaker.ShortRaw": {
+    "zh": "EQ 前 · 双耳合成",
+    "en": "Before EQ · Ear sums"
+  },
+  "Speaker.ShortDirect": {
+    "zh": "直达声 · 四路径",
+    "en": "Direct sound · Four paths"
+  },
+  "Speaker.ShortSource": {
+    "zh": "源核 · L/R 激励",
+    "en": "Source kernels · L/R"
+  },
+  "Speaker.ShortSourceEars": {
+    "zh": "经过人头 · 四路径",
+    "en": "After head · Four paths"
+  },
+  "Speaker.ShortEq": {
+    "zh": "各级 EQ",
+    "en": "EQ stages"
+  },
+  "Speaker.ShortTarget": {
+    "zh": "目标 T · 四路径",
+    "en": "Target T · Four paths"
+  },
+  "Speaker.ShortCascade": {
+    "zh": "还原结果 · 四路径",
+    "en": "Reconstruction · Four paths"
+  },
+  "Speaker.ShortCascadeSum": {
+    "zh": "还原结果 · 双耳合成",
+    "en": "Reconstruction · Ear sums"
+  },
+  "Speaker.ShortPlayback": {
+    "zh": "自由场 F · 四路径",
+    "en": "Free field F · Four paths"
+  },
+  "Speaker.ShortComparison": {
+    "zh": "目标与还原 · 双耳对照",
+    "en": "Target vs reconstruction"
+  },
+  "Speaker.InversePlotHint": {
+    "zh": "求解时实际使用的正则化播放路径求逆算子，含人头、空气吸收及自由场校准的影响。C = I + K(T − F)。这里显示因果化前的频域算子；幅频、相位与群延迟可查看。最终可播放的卷积核请看输出核 C。",
+    "en": "The regularized playback inverse actually used by the solver, including the head, air absorption and free-field calibration. C = I + K(T − F). Shows the frequency-domain operator before causal projection, with magnitude, phase and group delay. Output C shows the final playable kernels."
+  },
+  "Speaker.KLL": {
+    "zh": "左耳误差 → 左音箱",
+    "en": "Left-ear error → Left speaker"
+  },
+  "Speaker.KLR": {
+    "zh": "右耳误差 → 左音箱",
+    "en": "Right-ear error → Left speaker"
+  },
+  "Speaker.KRL": {
+    "zh": "左耳误差 → 右音箱",
+    "en": "Left-ear error → Right speaker"
+  },
+  "Speaker.KRR": {
+    "zh": "右耳误差 → 右音箱",
+    "en": "Right-ear error → Right speaker"
+  },
+  "Speaker.VirtualAngleHint": {
+    "zh": "建议虚拟音箱角度接近实际音箱角度；相差过大可能需要极强相消，导致极端响应或明显还原误差。",
+    "en": "Keep virtual speaker angles close to the actual speaker angles. Large differences may require extreme cancellation, causing extreme responses or substantial reconstruction errors."
   }
 }

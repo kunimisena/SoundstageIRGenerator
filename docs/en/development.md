@@ -43,10 +43,12 @@ Original code and documentation are MIT-licensed. FABIAN retains its CC BY 4.0 a
 
 Source: [SoundstageIRGenerator](https://github.com/kunimisena/SoundstageIRGenerator). [Releases](https://github.com/kunimisena/SoundstageIRGenerator/releases) contain the Windows portable application, source archive and SHA-256 checksums.
 
-CI builds and runs core checks on pushes and pull requests. For a release, run `./build.ps1 -HeadlessChecks` and `./tools/package.ps1`, tag the version and upload the archives from `publish/packages/`. Maintain Chinese and English documentation together.
+CI builds and runs core checks on pushes and pull requests. For a release, run `./build.ps1 -HeadlessChecks` and `./tools/package.ps1`, set the stable version in `Directory.Build.props` and add `docs/releases/<version>.md`. A push to main runs the checks, then packages clean source, creates the version tag and publishes the Release. The Actions workflow also supports manual release runs. Maintain Chinese and English documentation together.
 
 ## Source map
 
+- `SpeakerApp/`: the speaker entry point, reusing App themes, editors and plots. Both executables ship in one portable folder.
+- `Core/Speakers/`: both speaker modes, playback matrix conversion, pose checks and export.
 - `Core/Models.cs`, `Presets.cs`: project/parameter definitions and built-in templates.
 - `Core/Generator.cs`: direction accumulation, head path timing, energy balance and final processing.
 - `Core/HeadRenderer.cs`: measured head table, symmetry and resampling.
@@ -57,7 +59,7 @@ CI builds and runs core checks on pushes and pull requests. For a release, run `
 - `App/MainWindow.xaml`, `ReflectionBatchEditor*`, `VisualControls.cs`: workflow and plots.
 - `Tests/`: reproducibility, routing, EQ, statistics, media and export checks.
 
-Run `SoundstageIRGenerator.exe --headless-check <output-folder>` for offscreen controls, workflow checks and rendered layout images. Test projects and exports stay under the supplied folder. Manual keyboard, pointer and native monitor-DPI acceptance remains a separate check.
+Run `SoundstageIRGenerator.exe --headless-check <output-folder>` for offscreen controls, workflow checks and rendered layout images. For the speaker application, run `SoundstageSpeakers.exe --check <results.txt>`. Test projects and exports stay under the supplied folder. Manual keyboard, pointer and native monitor-DPI acceptance remains a separate check.
 
 ## Optional FABIAN table regeneration
 

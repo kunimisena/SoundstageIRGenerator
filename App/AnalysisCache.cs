@@ -23,7 +23,7 @@ public sealed class AnalysisCache
         return Localized(entries[key]=Build(input,key,lifetime.Token));
     }
     static readonly System.Runtime.CompilerServices.ConditionalWeakTable<PlotData,Dictionary<string,PlotData>> localizedPlots=new();
-    static async Task<PlotData> Localized(Task<PlotData> task)
+    internal static async Task<PlotData> Localized(Task<PlotData> task)
     {
         var data=await task;
         var variants=localizedPlots.GetOrCreateValue(data);string language=TextCatalog.Language;

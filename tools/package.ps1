@@ -12,7 +12,7 @@ $binary=Join-Path $stage 'binary\SoundstageIRGenerator'
 New-Item -ItemType Directory -Path $source,$Destination -Force | Out-Null
 $rootFiles=@('.gitignore','.gitattributes','Directory.Build.props','global.json','SoundstageIRGenerator.sln','build.ps1','README.md','README.en.md','CONTRIBUTING.md','LICENSE','THIRD_PARTY_NOTICES.md')
 foreach($name in $rootFiles){Copy-Item -LiteralPath (Join-Path $studioRoot $name) -Destination $source}
-foreach($dir in @('App','Core','Tests','tools','docs','.github')){
+foreach($dir in @('App','SpeakerApp','Core','Tests','tools','docs','.github')){
     $base=Join-Path $studioRoot $dir
     foreach($file in Get-ChildItem -LiteralPath $base -File -Recurse -Force){
         $relative=$file.FullName.Substring($studioRoot.Length+1)

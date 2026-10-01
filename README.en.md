@@ -12,6 +12,19 @@ An offline Windows tool for customizable binaural audio and virtual speaker play
 
 The English interface shown above is available in the Windows application. [Follow the illustrated guide](docs/en/guide.md) or [learn to read the kernel plots](docs/en/analysis.md).
 
+## Loudspeaker edition
+
+The same portable folder includes **SoundstageSpeakers.exe**. Choose a mode at startup:
+
+| Mode | Intended use | Generated output |
+|---|---|---|
+| Simple reverb | General loudspeaker sound coloration | Two reverb kernels feeding the left and right speakers |
+| Complex spatial audio | Precisely controlled speaker placement, accepting the FABIAN head approximation | Four playback-compensation paths that approximate a custom target sound field |
+
+Configure complex mode in the order **Actual speakers → Virtual speakers → Head settings**. Confirm a template, set the real layout, then generate. Keep virtual angles close to actual angles. Diagnostics report cancellation, reconstruction error and variation across fixed listener poses. Grouped plots expose the target/reconstruction comparison, inverse operator, playback paths and EQ stages.
+
+Both modes support English and Chinese, saved projects, WAV/Equalizer APO export and offline song rendering. [Loudspeaker workflow, plots and DSP](docs/en/speakers.md)
+
 ## Author’s foreword
 
 <!-- AUTHOR_FOREWORD_START -->
@@ -82,7 +95,7 @@ I asked the AI to check the project's open-source licensing. If there is any inf
 2. In **Templates**, select **Wide Monitor**. Its parameter dialog lets you adjust the reflected spectrum, decay and envelope together. Choose **Confirm** to keep editing, or **Confirm and generate kernels** to calculate immediately.
 3. In **Configuration**, adjust the head model, **Reverberant energy / %**, random detail and EQ. Click **Generate kernels** beside the plot after changing parameters. **Export configuration…** saves an editable JSON project.
 4. In **Export and post-process**, check that the kernels match the current parameters, then choose **Export Equalizer APO configuration** or **Export WAV**.
-5. For Equalizer APO, include the exported `_APO.txt` file in your playback configuration. It routes the four kernels automatically. Keep the WAV files at their exported paths and match the playback-device sample rate to the kernels.
+5. For Equalizer APO, include the exported `<name>_Equalizer_APO_Config.txt` file in your playback configuration. It routes the four kernels automatically. Keep the WAV files at their exported paths and match the playback-device sample rate to the kernels.
 
 ![English template cards for monitor, surround, hall and direct-only fields](docs/images/templates-en.png)
 
@@ -133,3 +146,9 @@ Application version: **4.13.0**. [Build and validation record](docs/VALIDATION.m
 Original code and documentation use the [MIT License](LICENSE): use, modify and redistribute them while retaining the copyright and license notice.
 
 FABIAN is separately attributed under CC BY 4.0. The source and distribution materials exclude personal projects and experimental presets. [Third-party notices and research](THIRD_PARTY_NOTICES.md).
+
+## Loudspeaker edition
+
+The same portable folder includes **SoundstageSpeakers.exe**. Simple reverb edits two output kernels; complex spatial audio converts the virtual binaural field into loudspeaker drives using the actual speaker angles and distances. Both modes support Chinese and English, interactive analysis, project files, WAV/Equalizer APO export and offline audio processing.
+
+[Speaker workflow and DSP reference](docs/en/speakers.md)

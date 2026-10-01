@@ -38,7 +38,7 @@ public sealed partial class MainViewModel
         try
         {
             Busy=true;Notify("");CommandManager.InvalidateRequerySuggested();var result=Result;
-            LastExport=await Task.Run(()=>ApoExporter.Export(result,executableDirectory??AppContext.BaseDirectory));
+            LastExport=await Task.Run(()=>SpeakerResult is {} speaker?SoundstageIR.Core.Speakers.SpeakerExporter.Export(speaker,Path.Combine(executableDirectory??AppContext.BaseDirectory,"SpeakerEqualizerAPO")):ApoExporter.Export(result,executableDirectory??AppContext.BaseDirectory));
             Status=SoundstageIR.Core.TextCatalog.T("TFFFA023EB0")+LastExport;return LastExport;
         }
         catch(Exception ex){Status=SoundstageIR.Core.TextCatalog.T("TE1A22EA03E")+ex.Message;return null;}

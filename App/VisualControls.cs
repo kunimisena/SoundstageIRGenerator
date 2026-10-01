@@ -325,6 +325,10 @@ public sealed class PlotView:FrameworkElement
         var ranges=scale.Select(l=>lineRanges[l]).Where(r=>double.IsFinite(r.XMin)).ToArray();if(ranges.Length==0)return;
         double xmin=ranges.Min(r=>r.XMin),xmax=ranges.Max(r=>r.XMax);if(d.LogX){xmin=Math.Log(xmin);xmax=Math.Log(xmax);}if(xmax<=xmin)xmax=xmin+1;
         double ymin=d.MinY??ranges.Min(r=>r.YMin),ymax=d.MaxY??ranges.Max(r=>r.YMax);
+        // The requested magnitude ceiling is a default, not a clipping limit.
+        // Cached visible-line extrema keep legend changes and resize free of FFT work.
+        if(d.XUnit=="Hz"&&d.YUnit=="dB")
+            ymax=Math.Max(ymax,Math.Ceiling((ranges.Max(r=>r.YMax)+3)/10)*10);
         if(ymax-ymin<1e-8){ymin-=1;ymax+=1;}
         fullBounds=new(xmin,xmax,ymin,ymax);bounds=viewport?.Constrain(fullBounds)??fullBounds;
         double X(double x)=>r.Left+r.Width*((d.LogX?Math.Log(x):x)-bounds.XMin)/(bounds.XMax-bounds.XMin);

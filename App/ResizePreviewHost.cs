@@ -34,7 +34,8 @@ public sealed class ResizePreviewHost:Decorator
         // RenderTargetBitmap capture or redraw of thousands of curve segments.
         surface.CacheMode=previewCache;
     }
-    internal static ResizePreviewHost Install(Window window)
+    public void ReplacePage(UIElement page){surface.Child=page;InvalidateMeasure();}
+    public static ResizePreviewHost Install(Window window)
     {
         if(window.Content is ResizePreviewHost existing)return existing;
         var page=(UIElement)window.Content;window.Content=null;

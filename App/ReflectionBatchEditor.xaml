@@ -1,7 +1,7 @@
 <UserControl x:Class="SoundstageIRGenerator.ReflectionBatchEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:SoundstageIRGenerator">
  <StackPanel Margin="0,8,0,0">
   <TextBlock x:Name="ScopeLabel" Style="{StaticResource Hint}"/>
-       <Expander Header="{DynamicResource T9A7A66B7EB}" IsExpanded="True" Background="{StaticResource Panel}" Padding="10" DataContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding Ready}"><StackPanel>
+       <Expander x:Name="DirectionGenerator" Header="{DynamicResource T9A7A66B7EB}" IsExpanded="True" Background="{StaticResource Panel}" Padding="10" DataContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding Ready}"><StackPanel>
         <WrapPanel><ComboBox ItemsSource="{Binding LayoutNames}" DisplayMemberPath="Label" SelectedIndex="{Binding LayoutIndex}" MinWidth="160"/><TextBox Text="{Binding TemplateCount}" Width="55" ToolTip="{DynamicResource TFB3291B042}"/><TextBlock Text="{DynamicResource TD7C6393CE7}" VerticalAlignment="Center"/></WrapPanel>
         <UniformGrid Columns="3"><StackPanel><TextBlock Text="{DynamicResource T0965D992E8}" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateYaw}"/></StackPanel><StackPanel><TextBlock Text="{DynamicResource TFC84E978F0}" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateElevation}"/></StackPanel><StackPanel><TextBlock Text="{DynamicResource T3A53599CF3}" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateCoverage}"/></StackPanel></UniformGrid>
         <UniformGrid Columns="2"><StackPanel><TextBlock Text="{DynamicResource T0689D9C44B}" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateEnergy}"/></StackPanel><StackPanel><TextBlock Text="{DynamicResource T5F90003F5B}" Style="{StaticResource Hint}"/><TextBox Text="{Binding TemplateGroup}"/></StackPanel></UniformGrid>
@@ -17,10 +17,10 @@
    <local:AdaptiveGrid ItemMinWidth="180">
     <StackPanel><TextBlock Text="{DynamicResource T387B841C7B}" Style="{StaticResource Hint}"/><TextBox x:Name="FirstPathEditor" Text="{Binding Reference.FirstReflectionExtraPath,ValidatesOnExceptions=True}" LostFocus="ScalarChanged"/></StackPanel>
     <StackPanel><TextBlock Text="{DynamicResource T9642BF35D1}" Style="{StaticResource Hint}"/><TextBox Text="{Binding Reference.MixingPath,ValidatesOnExceptions=True}" LostFocus="ScalarChanged"/></StackPanel>
-    <StackPanel><TextBlock Text="{DynamicResource TBBE0C1602D}" Style="{StaticResource Hint}"/><TextBox Text="{Binding RightGainDelta,ValidatesOnExceptions=True}"/></StackPanel>
-    <StackPanel><TextBlock Text="{DynamicResource T549E614D44}" Style="{StaticResource Hint}"/><TextBox Text="{Binding RightTiltDelta,ValidatesOnExceptions=True}"/></StackPanel>
+    <StackPanel x:Name="RightGainControls"><TextBlock Text="{DynamicResource TBBE0C1602D}" Style="{StaticResource Hint}"/><TextBox Text="{Binding RightGainDelta,ValidatesOnExceptions=True}"/></StackPanel>
+    <StackPanel x:Name="RightTiltControls"><TextBlock Text="{DynamicResource T549E614D44}" Style="{StaticResource Hint}"/><TextBox Text="{Binding RightTiltDelta,ValidatesOnExceptions=True}"/></StackPanel>
    </local:AdaptiveGrid>
-   <Expander Header="{DynamicResource T57C0F5F0C8}"><local:AdaptiveGrid ItemMinWidth="180">
+   <Expander x:Name="DirectionAdjustments" Header="{DynamicResource T57C0F5F0C8}"><local:AdaptiveGrid ItemMinWidth="180">
     <StackPanel><TextBlock Text="{DynamicResource TEECF91E3D2}" Style="{StaticResource Hint}"/><TextBox Text="{Binding AzimuthDelta,ValidatesOnExceptions=True}"/></StackPanel>
     <StackPanel><TextBlock Text="{DynamicResource T3999B85DC5}" Style="{StaticResource Hint}"/><TextBox Text="{Binding ElevationDelta,ValidatesOnExceptions=True}"/></StackPanel>
     <StackPanel><TextBlock Text="{DynamicResource TF69DB9B91E}" Style="{StaticResource Hint}"/><ComboBox SelectedIndex="{Binding EnabledMode}"><ComboBoxItem Content="{DynamicResource TF624118BEA}"/><ComboBoxItem Content="{DynamicResource T2A4540B127}"/><ComboBoxItem Content="{DynamicResource TC5169F0230}"/></ComboBox></StackPanel>

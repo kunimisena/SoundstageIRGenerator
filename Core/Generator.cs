@@ -46,6 +46,8 @@ public sealed class Contribution
 }
 public sealed class GenerationResult
 {
+    public string[] OutputRoutes {get;init;}=Generator.RouteNames;
+    public object? ExportProject {get;init;}
     public required Project Project {get;init;}
     public required double[][] Raw {get;init;}
     public required double[][] Kernels {get;init;}
@@ -77,10 +79,11 @@ public sealed class GenerationResult
     public double DiscardedEnergyDb {get;init;}
     public double Duration=>Kernels[0].Length/(double)Project.SampleRate;
 }
+public sealed record DirectScene(double[][] Paths,int ZeroSample,HeadReferenceInput[] HeadInputs);
 public static class Generator
 {
     public static readonly string[] RouteNames=["L_to_LeftEar","R_to_LeftEar","L_to_RightEar","R_to_RightEar"];
-    public static GenerationResult Generate(Project project,IProgress<(double Fraction,string Message)>? progress=null,CancellationToken ct=default)
+    public static GenerationResult Generate(Project project,IProgress<(double Fraction,string Message)>? progress=null,CancellationToken ct=default,DirectScene? directScene=null)
     {
         var watch=System.Diagnostics.Stopwatch.StartNew();var p=ProjectIO.Clone(project);p.Validate();int sr=p.SampleRate;
         ct.ThrowIfCancellationRequested();var head=new HeadRenderer(p);
@@ -89,11 +92,13 @@ public static class Generator
         double referenceDelay=reference.Delay+peak/(double)sr;
         // Shared lead-in covers the selected model and resampler support, independent of tail length.
         int guard=16+(int)Math.Ceiling(Math.Max(0,(referenceDelay-head.MinimumDelay)*sr));
+        if(directScene!=null)guard=directScene.ZeroSample;
         bool headCalibration=p.Equalize&&p.HeadModel==HeadModelKind.Fabian;
         var direct=NewPaths(1);var sum=NewPaths(1);var contributions=new List<Contribution>();
         if(p.Direct.Enabled)
         {
-            for(int input=0;input<2;input++)for(int ear=0;ear<2;ear++)
+            if(directScene!=null)direct=directScene.Paths.Select(h=>(double[])h.Clone()).ToArray();
+            else for(int input=0;input<2;input++)for(int ear=0;ear<2;ear++)
             {
                 var q=head.At((input==0?-1:1)*p.Direct.Angle,p.Direct.Elevation,ear);
                 var h=q.Apply(air,sr);
@@ -129,7 +134,7 @@ public static class Generator
             if(headCalibration)
             {
                 progress?.Report((.76,"标定人头 · 各方向单位冲激非相干功率"));
-                var inputs=HeadReferenceEq.Directions(p).Select(v=>new HeadReferenceInput(head.At(v.Az,v.El,0).Impulse,head.At(v.Az,v.El,1).Impulse)).ToArray();
+                var inputs=directScene?.HeadInputs??HeadReferenceEq.Directions(p).Select(v=>new HeadReferenceInput(head.At(v.Az,v.El,0).Impulse,head.At(v.Az,v.El,1).Impulse)).ToArray();
                 int length=Math.Max(direct.Max(h=>h.Length),wet.Max(h=>h.Length));
                 headEq=HeadReferenceEq.Build(inputs,EqDesigner.FftLength(length,sr),sr,ct);
             }

@@ -27,7 +27,7 @@ Windows x64、.NET 8 SDK 即可；`global.json` 接受已安装的最新稳定 .
 
 ## 源码与本地用户数据分开
 
-仓库根目录是包含 SoundstageIRGenerator.sln 的文件夹。保留 App、Core、Tests、tools、docs、.github 和根目录构建/文档文件。`Core/Data/FABIAN.bin` 约 24 MiB，是正常构建所需数据，刻意纳入版本管理，并附来源与哈希。
+仓库根目录是包含 SoundstageIRGenerator.sln 的文件夹。保留 App、SpeakerApp、Core、Tests、tools、docs、.github 和根目录构建/文档文件。`Core/Data/FABIAN.bin` 约 24 MiB，是正常构建所需数据，刻意纳入版本管理，并附来源与哈希。
 
 `bin`、`obj`、`publish`、`artifacts`、`projects`、`exports`、`EqualizerAPO`、`processed-audio` 和备份文件夹不进 Git，已列入 `.gitignore`。不要直接公开使用过的整个便携目录，其中可能含私人路径、歌曲和参数。
 
@@ -43,10 +43,12 @@ Windows x64、.NET 8 SDK 即可；`global.json` 接受已安装的最新稳定 .
 
 源码仓库：[SoundstageIRGenerator](https://github.com/kunimisena/SoundstageIRGenerator)。[Releases](https://github.com/kunimisena/SoundstageIRGenerator/releases) 提供带运行时的 Windows 程序、源码包和 SHA-256 校验值。
 
-CI 对推送与拉取请求执行构建和核心检查。发布前运行 `./build.ps1 -HeadlessChecks` 与 `./tools/package.ps1`，按版本打标签，并上传 `publish/packages/` 中的发布包。中英文文档同步维护。
+CI 对推送与拉取请求执行构建和核心检查。发布前运行 `./build.ps1 -HeadlessChecks` 与 `./tools/package.ps1`，将稳定版本号写入 `Directory.Build.props`，并提供 `docs/releases/<版本>.md`。推送 main 后，现有工作流完成检查，再从干净源码打包、建立版本标签并发布 Release；也可在 Actions 手动运行发布。中英文文档同步维护。
 
 ## 代码入口
 
+- `SpeakerApp/`：音箱版入口，复用 App 的主题、编辑器和图表；同一便携包包含两款 EXE。
+- `Core/Speakers/`：两种音箱模式、播放矩阵转换、位置检查与导出。
 - `Core/Models.cs`、`Presets.cs`：项目参数与内置模板。
 - `Core/Generator.cs`：方向叠加、到耳时间、能量平衡和最终处理。
 - `Core/HeadRenderer.cs`：实测人头数据、镜像与重采样。
@@ -57,7 +59,7 @@ CI 对推送与拉取请求执行构建和核心检查。发布前运行 `./buil
 - `App/MainWindow.xaml`、`ReflectionBatchEditor*`、`VisualControls.cs`：页面与图表。
 - `Tests/`：复现、路由、EQ、统计、音频和文件验证。
 
-离屏验收命令为 `SoundstageIRGenerator.exe --headless-check <输出目录>`，验证控件、编辑流程和离屏布局。测试项目与导出放在指定目录内；键鼠操作和实际显示器 DPI 切换由手动验收完成。
+离屏验收命令为 `SoundstageIRGenerator.exe --headless-check <输出目录>`，验证控件、编辑流程和离屏布局。音箱版对应命令为 `SoundstageSpeakers.exe --check <结果.txt>`。测试项目与导出放在指定目录内；键鼠操作和实际显示器 DPI 切换由手动验收完成。
 
 ## 可选：重新转换 FABIAN
 

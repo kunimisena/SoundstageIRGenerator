@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soundstage IR Generator · Guide</title><style>
 :root{color-scheme:light}body{margin:0;background:#f6f0e1;color:#39352d;font:16px/1.75 system-ui,"Microsoft YaHei",sans-serif}header{background:#eee7d8;padding:16px max(20px,calc((100vw - 1020px)/2));border-bottom:1px solid #324656}header b{letter-spacing:.12em;color:#426b71}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{padding:9px 16px;border:1px solid #405768;background:#e6decc;border-radius:5px;color:#39352d;cursor:pointer}button:hover{background:#dbe1d8}main{max-width:1020px;margin:auto;padding:24px}h1{font-size:30px}h2{margin-top:2em;color:#39352d}h3{color:#404040}a{color:#426b71}p{max-width:90ch}code,pre{font-family:Consolas,monospace;background:#eee7d8;border-radius:4px}code{padding:1px 4px}pre{padding:15px;overflow:auto;white-space:pre-wrap;font-size:14px}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td{padding:9px;border:1px solid #ddd}tr:first-child{background:#e6decc;font-weight:600}.bullet{margin:.4em 0}footer{padding:25px;color:#606060;border-top:1px solid #324656}figure{margin:24px 0}figure img{display:block;max-width:100%;height:auto;border:1px solid #ddd5c4;border-radius:4px}article[hidden]{display:none}
-</style><header><b>SOUNDSTAGE IR GENERATOR</b><div>4.13.0 · 离线双语指南 / Offline bilingual guide</div><nav><button onclick="show('zh-guide')">使用指南</button><button onclick="show('zh-design')">设计哲学</button><button onclick="show('zh-analysis')">卷积核图解</button><button onclick="show('en-guide')">User guide</button><button onclick="show('en-design')">Design philosophy</button><button onclick="show('en-analysis')">Kernel analysis</button></nav></header><main><article id="zh-guide"><h1>耳机空间音效与 HRTF 卷积核使用指南</h1>
+</style><header><b>SOUNDSTAGE IR GENERATOR</b><div>4.14.0 · 离线双语指南 / Offline bilingual guide</div><nav><button onclick="show('zh-guide')">使用指南</button><button onclick="show('zh-design')">设计哲学</button><button onclick="show('zh-analysis')">卷积核图解</button><button onclick="show('en-guide')">User guide</button><button onclick="show('en-design')">Design philosophy</button><button onclick="show('en-analysis')">Kernel analysis</button><button onclick="show('zh-speakers')">音箱版</button><button onclick="show('en-speakers')">Loudspeakers</button></nav></header><main><article id="zh-guide"><h1>耳机空间音效与 HRTF 卷积核使用指南</h1>
 <p>English · 回到首页 · 怎样读卷积核分析图 · 设计与处理链</p>
 <p>Soundstage IR Generator 为耳机回放生成四路径卷积矩阵。从模板出发，调整声场，生成卷积核，然后导出给 Equalizer APO，或直接处理一首双声道歌曲。</p>
 <p>开始使用 · 模板调整 · 配置与生成 · 逐源编辑 · 图表 · 导出 · 处理歌曲</p>
@@ -110,7 +110,7 @@
 右耳 = L * L_to_RightEar + R * R_to_RightEar</pre>
 <p><code>*</code> 表示卷积。WAV 为 IEEE float32，支持 44.1、48、96 kHz；使用时保留各路径的相对电平与时差。</p>
 <h3>Equalizer APO</h3>
-<p>将导出的 <code>_APO.txt</code> Include 到自己的 APO 配置。路由先从 L/R 复制临时声道，分别卷积，再赋值回输出：</p>
+<p>将导出的 <code>配置名_Equalizer_APO配置.txt</code> Include 到自己的 APO 配置。路由先从 L/R 复制临时声道，分别卷积，再赋值回输出：</p>
 <pre>Copy: LL=L LR=L RL=R RR=R
 # 中间由导出文件提供四组 Channel / Convolution 指令。
 Copy: L=LL+RL R=LR+RR</pre>
@@ -359,7 +359,7 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 Right ear = L * L_to_RightEar + R * R_to_RightEar</pre>
 <p>Here <code>*</code> is convolution. WAV output is IEEE float32 at 44.1, 48 or 96 kHz. Use every path with its original relative gain and timing.</p>
 <h3>Equalizer APO</h3>
-<p>Include the generated <code>_APO.txt</code> file in your own APO configuration. Its temporary channels are assigned from L/R, convolved separately, then replaced into the two output channels:</p>
+<p>Include the generated <code>&lt;name&gt;_Equalizer_APO_Config.txt</code> file in your own APO configuration. Its temporary channels are assigned from L/R, convolved separately, then replaced into the two output channels:</p>
 <pre>Copy: LL=L LR=L RL=R RR=R
 # Each temporary channel is convolved with its matching WAV.
 Copy: L=LL+RL R=LR+RR</pre>
@@ -520,4 +520,106 @@ y_r=H_{r\leftarrow L}*x_L+H_{r\leftarrow R}*x_R.</pre>
 <tr><td>T20 illustration</td><td>Least-squares slope over the wet EDC&#x27;s −5 to −25 dB interval; estimate <code>−60 / slope</code> seconds</td></tr>
 <tr><td>Spectrogram</td><td>Four STFT powers summed, one global color reference; displayed from 80 Hz to 16 kHz with a −60 dB floor</td></tr>
 </table></div>
-<p>To compare your own settings, save the JSON and keep the seed fixed, regenerate after each parameter change, and inspect the same subject and plot mode. The user guide lists the app&#x27;s plot subjects and controls.</p></article></main><footer>Original code and documentation: MIT / 自有代码与文档：MIT。FABIAN attribution: FABIAN-NOTICE.txt beside the application.</footer><script>function show(id){document.querySelectorAll('article').forEach(a=>a.hidden=a.id!==id);document.documentElement.lang=id.startsWith('en')?'en':'zh-CN';window.scrollTo(0,0);location.hash=id;}if(document.getElementById(location.hash.slice(1)))show(location.hash.slice(1));</script></html>
+<p>To compare your own settings, save the JSON and keep the seed fixed, regenerate after each parameter change, and inspect the same subject and plot mode. The user guide lists the app&#x27;s plot subjects and controls.</p></article><article id="zh-speakers" hidden><h1>音箱版</h1>
+<p>English · 首页</p>
+<p>发布目录中的 <code>SoundstageSpeakers.exe</code> 提供“简单混响”和“复杂空间音效”。启动时选择模式，随后使用与耳机版相同的模板、配置、图表和导出界面。窗口右上角可切换中文与英文。</p>
+<h2>简单混响</h2>
+<p>适合一般的音响染色任务。</p>
+<p>左右两条核分别送入左右音箱，编辑能量频谱、随频率变化的衰减和完整包络。联动参数时，左右仍有独立的随机细节。生成后校准混响能量占比；关闭直达声得到全混响。</p>
+<h2>复杂空间音效：F × C ≈ T</h2>
+<p>适合能够严格控制音响摆位，并接受 FABIAN 头部近似的用户。</p>
+<p class="bullet">• <strong>实际音箱／自由场 F</strong>：按输入的实际摆位生成完整的自由场双耳卷积响应。</p>
+<p class="bullet">• <strong>虚拟音箱／目标 T</strong>：按虚拟音箱、反射源和 EQ 设置，生成普通耳机版的目标响应。</p>
+<p class="bullet">• <strong>转换核 C</strong>：导出给音箱播放的四条核，使 F × C 尽量接近 T，允许共同的因果延迟。</p>
+<p>F 和 T 都使用原生成器的校准与输出链路，包括启用的人头非相干功率校正、每耳平滑最小相位 EQ、共同 EQ、带通和共同电平标定。实际播放参考使用 FABIAN，沿用当前共同频响补偿和 EQ 设置，输出基准为 0 dB；目标 T 使用界面选择的人头、EQ 和输出电平。</p>
+<p>这里的 F 是软件约定的<strong>校准后自由场参考</strong>。软件串联吻合验证的是这套参考与目标的关系；真实音箱、人头和房间的传递函数需要通过实际试听或测量评估。</p>
+<h3>两套音箱位置</h3>
+<p>“虚拟音箱”控制希望听到的声场；“实际音箱”控制需要补偿的播放路径。实际摆位以两耳中点为原点，正前方为 0°、左负右正、仰角向上为正，距离填写音箱到两耳中点的米数。</p>
+<p>模板确认后进入配置页，按实际音箱、虚拟音箱、人头设置的顺序编辑，再生成卷积核。复杂模式模板弹窗只提供确认，不直接生成。</p>
+<p>实际音箱默认启用空气吸收，以各自距离计算。采用远场 FABIAN 方向响应，不做近场修正。镜像等距时，共同传播延时与电平归一化，中心响应的距离影响仅来自空气吸收；关闭空气吸收后，这种摆位的中心响应不随距离改变。不等距时保留 1/r 相对电平与传播时差；固定位置检查仍使用真实几何距离。</p>
+<p>相对播放矩阵的求逆增益控制转换预算。求逆依靠精确的相位干涉；增大预算可能减少还原误差，也可能增加相消需求，使听音位置、人头差异及摆位误差更容易造成意料之外的不稳定结果。</p>
+<h3>图表分组</h3>
+<p>复杂模式的图表按结果对照、求逆与输出、实际音箱、目标声场、反射源分组。默认显示目标与还原结果对照。</p>
+<p>“求逆与输出 → 求逆算子 K”显示求解器实际采用的正则化算子，记录的是 C = I + K(T − F) 中的 K，包含播放路径中人头、空气吸收及自由场校准的影响。幅频、相位和群延迟来自求解时的系数；该频域算子尚未因果化，因此此选项不提供冲激和衰减图。“输出核 C”展示实际导出的四条卷积核。</p>
+<p>建议虚拟音箱角度接近实际音箱角度。相差过大可能需要极强相消，导致极端响应或明显还原误差；角度编辑区域直接显示该提示。</p>
+<figure><img loading="lazy" src="images/speakers-inverse-zh.png" alt="复杂模式的实际音箱设置与求逆算子频响"></figure>
+<h3>参数预检查与生成检查</h3>
+<p>修改复杂模式参数后自动进行方向单位冲激探针检查；超出求逆预算、重合摆位或极近距离会将实际音箱设置框与原因标红。预检查不合成长混响核，估计的是几何与目标方向的难度。</p>
+<p>位置检查使用七个固定采样点：中心、左右／前后各偏移 5 cm、左右转头各 5°。保持 C 及中心位置的校准滤波器不变，以独立等功率 L/R 激励计算各采样点的每耳功率频响，做 1/3 oct 平滑后，计算位置间的 dB 标准差，再在双耳与对数频率上取 RMS，得到“位置变化参考值”。没有位置范围设置项。</p>
+<p>生成后的红色提示位于图表旁和导出页，导出说明与 metadata.json 同样保存结果：</p>
+<div class="table"><table>
+<tr><td>指标</td><td>当前提示阈值</td></tr>
+<tr><td>实际驱动矩阵最大奇异值增益，含同相与差分输入</td><td>高于 18 dB</td></tr>
+<tr><td>相消代价：两箱单独贡献的功率和／合成后功率，1/3 oct 平滑</td><td>高于 12 dB</td></tr>
+<tr><td>相对复响应重建误差</td><td>高于 −15 dB</td></tr>
+<tr><td>平滑频响相对目标的 RMS 偏差</td><td>高于 1 dB</td></tr>
+<tr><td>因果化投影残差</td><td>高于 −50 dB</td></tr>
+<tr><td>固定位置采样的频响标准差</td><td>高于 3 dB</td></tr>
+</table></div>
+<p>这些是工程提示阈值。位置标准差用于比较同一套固定核随位置变化的频响离散程度，包含正常的人头位置变化；它不是声像定位准确度或保证有效的听音范围。检查结果不改变归一化，也不会自动调小音量。</p>
+<h3>求解</h3>
+<p>在每个频率用 s = √(‖F‖²_F / 2) 去掉共同尺度，令 A=F/s、B=T/s，求解：</p>
+<p><code>C = I + (AᴴA + λI)⁻¹Aᴴ(B − A)</code></p>
+<p>带外极低能量处，修正项平滑趋向零。相同 F 和 T 得到单位通路，共同带通不会变成独立求逆的大增益。λ 同时包含求逆增益预算及最弱奇异值功率的 1/6 oct 局部约束，降低窄谷的精确追补。保留复相位，按投影残差确定共同延迟。界面中的延迟来自实际生成结果。例如，默认宽阔监听的验证结果为 341.33 ms；用于视频或实时音频时，需要考虑结果中显示的延迟。</p>
+<h2>图表与工作流程</h2>
+<p>选择模板 → 配置并生成 → 导出与后处理。详细反射源编辑在独立窗口内；生成按钮位于图表旁，导出页也可重新生成。修改参数后，旧结果显示过期，重新生成后可导出。</p>
+<p>复杂模式默认显示“目标 T 与串联 F × C”的双耳合成响应对比，也能查看输出 C、目标 T、串联结果、自由场 F 及 F 的 EQ 各阶段。分析采用实际输出核，支持频响、脉冲、能量衰减、相位、群延迟、缩放、平移和图例开关。快速切换时过期分析被取消，图表选择不会重复重建自身。</p>
+<h2>导出与对照试听</h2>
+<p>简单模式导出两条单声道 WAV；复杂模式导出四条单声道路径及四通道路径包，顺序为 L → 左音箱、R → 左音箱、L → 右音箱、R → 右音箱。常规音箱播放导入名称含 <code>Equalizer_APO配置</code>／<code>Equalizer_APO_Config</code> 的主文件。</p>
+<p>复杂模式另提供 <code>名称_Cascade_Test.txt</code>：<strong>用耳机做软件串联对照时，单独导入这个文件</strong>。它按 C → F 顺序运行，F 的确切四条核位于 <code>FreeField_Reference</code> 子目录。不要同时再启用主配置，否则会重复处理。矩阵处理顺序必须保持，C → F 对应 F × C。</p>
+<p>配置内使用绝对 WAV 路径，请保持导出目录位置；播放采样率与文件一致。歌曲离线处理使用输出 C，支持外部 FFmpeg、−18 LUFS 加限幅、仅限幅及原始电平浮点 WAV。</p>
+<h2>模型依据</h2>
+<p class="bullet">• <a href="https://doi.org/10.17743/jaes.2017.0033">FABIAN 数据库论文</a></p>
+<p class="bullet">• <a href="https://www.ece.ucdavis.edu/cipic/wp-content/uploads/sites/12/2015/04/cipic_JASA_Nov_1998.pdf">Duda 与 Martens：距离效应背景（本版播放模型未启用近场修正）</a></p>
+<p class="bullet">• <a href="https://3d3a.princeton.edu/document/121">双音箱串扰消除研究</a></p></article><article id="en-speakers" hidden><h1>Loudspeaker edition</h1>
+<p>简体中文 · Home</p>
+<p><code>SoundstageSpeakers.exe</code> offers <strong>Simple reverb</strong> and <strong>Complex spatial audio</strong>. Choose a mode at startup, then use the same template, configuration, analysis and export interface as the headphone application. Chinese and English are available at the top right.</p>
+<h2>Simple reverb</h2>
+<p>For general loudspeaker sound coloration.</p>
+<p>Two kernels feed the left and right loudspeakers. Edit energy spectra, frequency-dependent decay and complete envelopes. Linked parameters retain independent random detail. Wet energy is calibrated after EQ; disabling direct sound produces fully wet output.</p>
+<h2>Complex spatial audio: F × C ≈ T</h2>
+<p>For users who can precisely control speaker placement and accept the FABIAN head approximation.</p>
+<p class="bullet">• <strong>Actual speakers / free field F:</strong> a complete binaural free-field convolution response generated for the entered playback geometry.</p>
+<p class="bullet">• <strong>Virtual speakers / target T:</strong> the ordinary headphone response generated from the virtual speakers, reflection sources and EQ settings.</p>
+<p class="bullet">• <strong>Transform C:</strong> four exported loudspeaker-drive kernels, solving F × C ≈ T with a common causal delay.</p>
+<p>Both F and T use the original calibration/output chain: enabled incoherent head-power correction, per-ear smoothed minimum-phase EQ, common EQ, bandpass and common level calibration. F uses FABIAN with the current common-response and EQ settings at a 0 dB output reference. T uses the selected head model, EQ and output level.</p>
+<p>F is the software&#x27;s <strong>calibrated free-field reference</strong>. A successful software cascade validates its relationship to T; actual loudspeaker, listener and room transfer functions are assessed through listening or measurement.</p>
+<h3>Actual versus virtual positions</h3>
+<p>Virtual speakers define the desired scene. Actual speakers define playback to compensate. Use the midpoint between the ears as origin: forward 0°, left negative, right positive, elevation positive upward. Enter speaker-to-ear-midpoint distance in metres.</p>
+<p>Confirm the template to enter configuration, then edit actual speakers, virtual speakers and head settings in that order before generating. Complex-mode template dialogs offer confirmation without immediate generation.</p>
+<p>Actual-speaker air absorption is enabled by default and uses each speaker&#x27;s distance. Playback uses far-field FABIAN directional responses without near-field correction. For mirrored, equidistant speakers, common travel time and level are normalized; distance affects the centre response only through air absorption. With air absorption off, the centre response is independent of that common distance. Unequal distances retain relative 1/r levels and travel delays. Fixed-pose checks still use the actual geometry.</p>
+<p>The relative inverse-gain setting controls the transform budget. Inversion relies on precise phase interference: increasing the budget may reduce reconstruction error while requiring stronger cancellation, making reproduction unexpectedly sensitive to listener position, head differences and placement errors.</p>
+<h3>Plot groups</h3>
+<p>Complex-mode plots are grouped into Comparison, Inverse &amp; output, Actual speakers, Target field and Reflection source. The default compares the target with the reconstructed result.</p>
+<p><strong>Inverse &amp; output → Inverse operator K</strong> displays the regularized operator actually used in C = I + K(T − F), including the head, air absorption and calibration in the playback reference. Magnitude, phase and group delay come from the recorded solver coefficients. This frequency-domain operator is shown before causal projection, so impulse and decay plots are unavailable for this selection. <strong>Output C</strong> shows the four kernels actually exported.</p>
+<p>Keep virtual speaker angles close to actual speaker angles. Large differences may require extreme cancellation and produce extreme responses or substantial reconstruction errors. This guidance is visible beside the virtual angle controls.</p>
+<figure><img loading="lazy" src="images/speakers-inverse-en.png" alt="Actual speaker controls and the inverse-operator magnitude response"></figure>
+<h3>Precheck and generated-result checks</h3>
+<p>Editing complex-mode parameters automatically runs directional unit-impulse probes. Demand beyond the inverse budget, coincident speaker paths or very close distances turns the actual-speaker group and its explanation red. This checks geometry and target directions without generating long random reverberation.</p>
+<p>Position checks use seven fixed poses: centre, lateral/fore-aft offsets of ±5 cm, and yaw of ±5°. C and centre calibration stay fixed. With independent equal-power L/R input, each ear’s power response is smoothed over 1/3 octave. The dB standard deviation across poses is combined as an RMS across ears and logarithmically spaced frequencies into the position-variation reference value. There are no position-range controls.</p>
+<p>Red result panels appear beside the plots and on the export page. The import guide and metadata.json retain the results:</p>
+<div class="table"><table>
+<tr><td>Metric</td><td>Warning threshold</td></tr>
+<tr><td>Actual drive-matrix maximum singular-value gain, including common and differential inputs</td><td>Above 18 dB</td></tr>
+<tr><td>Cancellation cost: summed separate-speaker contribution power / combined power, smoothed over 1/3 octave</td><td>Above 12 dB</td></tr>
+<tr><td>Relative complex reconstruction error</td><td>Above −15 dB</td></tr>
+<tr><td>Smoothed tonal RMS error relative to target</td><td>Above 1 dB</td></tr>
+<tr><td>Causal projection residual</td><td>Above −50 dB</td></tr>
+<tr><td>Frequency-response standard deviation across fixed poses</td><td>Above 3 dB</td></tr>
+</table></div>
+<p>These are engineering notification thresholds. The position standard deviation measures response dispersion across fixed poses, including natural head-motion effects. It is not a localization-accuracy score or a guaranteed listening area. Checks preserve normalization and do not automatically attenuate the output.</p>
+<h3>Solver</h3>
+<p>At each frequency, remove the common scale s = √(‖F‖²_F / 2), defining A=F/s and B=T/s:</p>
+<p><code>C = I + (AᴴA + λI)⁻¹Aᴴ(B − A)</code></p>
+<p>The correction fades towards zero at extremely low out-of-band energy. Identical F and T produce identity; the common output bandpass is not separately inverted into large boosts. λ combines the inverse-gain budget and a 1/6-octave local constraint on weakest singular-value power, reducing narrow-notch inversion. Complex phase is retained. Projection residual determines the common causal delay, displayed with the actual result. For example, the default Wide monitor validation produced 341.33 ms; account for the displayed delay when using the kernels with video or live audio.</p>
+<h2>Analysis and workflow</h2>
+<p>Templates → Configuration and generation → Export and post-processing. Detailed reflection sources open in a separate window. Generate beside the plots, or regenerate on the export page. Parameter changes mark existing output as stale until regeneration.</p>
+<p>Complex mode defaults to an overlay of target T and cascade F × C L/R responses. Other subjects include output C, target paths, cascade paths, free field F and F&#x27;s EQ stages. Actual output samples drive magnitude, impulse, energy-decay, phase and group-delay plots, with zoom, pan and clickable legends. Rapid switches cancel obsolete analysis; changing a subject does not recursively rebuild its selector.</p>
+<h2>Export and comparison</h2>
+<p>Simple mode exports two mono WAVs. Complex mode exports four mono paths and a four-channel path bundle, ordered as L → Left speaker, R → Left speaker, L → Right speaker, R → Right speaker. For ordinary speaker playback, import the main file containing <code>Equalizer_APO_Config</code> / <code>Equalizer_APO配置</code>.</p>
+<p>Complex exports also contain <code>name_Cascade_Test.txt</code>. <strong>For a headphone software-cascade comparison, import this file alone.</strong> It applies C first, then F. The exact F kernels are in <code>FreeField_Reference</code>. Do not also enable the main C configuration. Matrix order matters: C followed by F implements F × C.</p>
+<p>Configuration paths are absolute: keep the export directory in place and match device sample rate. Offline song processing uses output C, with external FFmpeg selection, −18 LUFS plus limiting, limiting only or original-level float WAV.</p>
+<h2>Model references</h2>
+<p class="bullet">• <a href="https://doi.org/10.17743/jaes.2017.0033">FABIAN database paper</a></p>
+<p class="bullet">• <a href="https://www.ece.ucdavis.edu/cipic/wp-content/uploads/sites/12/2015/04/cipic_JASA_Nov_1998.pdf">Duda and Martens: distance-effect background (near-field correction is not enabled in this playback model)</a></p>
+<p class="bullet">• <a href="https://3d3a.princeton.edu/document/121">Two-loudspeaker crosstalk cancellation</a></p></article></main><footer>Original code and documentation: MIT / 自有代码与文档：MIT。FABIAN attribution: FABIAN-NOTICE.txt beside the application.</footer><script>function show(id){document.querySelectorAll('article').forEach(a=>a.hidden=a.id!==id);document.documentElement.lang=id.startsWith('en')?'en':'zh-CN';window.scrollTo(0,0);location.hash=id;}if(document.getElementById(location.hash.slice(1)))show(location.hash.slice(1));</script></html>

@@ -174,7 +174,7 @@ FABIAN 还包含固定的边缘带宽延伸与非相干人头功率校准。它�
 
 ### Equalizer APO
 
-将导出的 `_APO.txt` Include 到自己的 APO 配置。路由先从 L/R 复制临时声道，分别卷积，再赋值回输出：
+将导出的 `配置名_Equalizer_APO配置.txt` Include 到自己的 APO 配置。路由先从 L/R 复制临时声道，分别卷积，再赋值回输出：
 
 ```text
 Copy: LL=L LR=L RL=R RR=R

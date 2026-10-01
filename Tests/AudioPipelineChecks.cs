@@ -16,7 +16,7 @@ public static class AudioPipelineChecks
         check(zeroKernel.All(double.IsFinite),"Zero mixing distance is finite");
         var actual=Generator.Generate(Presets.BuiltIn[0].Create());
         string apo=ApoExporter.Export(actual,Path.Combine(folder,"portable host 带空格"));
-        var config=File.ReadAllText(TestFiles.Get(apo,"APO.txt"));
+        var config=File.ReadAllText(Directory.GetFiles(apo,"*_Equalizer_APO*.txt").Single());
         check(config.Contains("Copy: LL=L LR=L RL=R RR=R")&&config.Contains("Copy: L=LL+RL R=LR+RR"),"APO replaces L/R with correct four-path matrix");
         foreach(int route in new[]{0,1,2,3})
         {

@@ -63,7 +63,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
         }
     }
     public bool EarEqEditable=>Ready&&P.Equalize;
-    public bool CenterEqEditable=>Ready&&P.Equalize&&!P.StrictMirror;
+    public bool CenterEqEditable=>Ready&&P.Equalize&&!P.StrictMirror&&!SimpleSpeaker;
     public double EarEqStrengthPercent
     {
         get=>P.EarEqStrengthPercent;
@@ -75,8 +75,8 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
         set {double v=EditingLimits.Clamp(value,0,100);if(Busy||v==P.CenterEqStrengthPercent)return;P.CenterEqStrengthPercent=v;Commit();}
     }
     public string WeightLabel=>SoundstageIR.Core.TextCatalog.T("T57400350D5");
-    public string EnergySummary=>Result==null?"":SoundstageIR.Core.TextCatalog.F("TA1E21B6668", (Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100), Result.ReflectionPercentAfterEq)+(Result.Warnings.Count>0?SoundstageIR.Core.TextCatalog.F("T4E7A1F9406", Result.Warnings.Count):"");
-    public string GenerationNotes=>Result==null?"":string.Join("\n",Result.Warnings.Select(TextCatalog.Diagnostic));
+    public string EnergySummary=>SpeakerResult!=null?SpeakerEnergySummary:Result==null?"":SoundstageIR.Core.TextCatalog.F("TA1E21B6668", (Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100), Result.ReflectionPercentAfterEq)+(Result.Warnings.Count>0?SoundstageIR.Core.TextCatalog.F("T4E7A1F9406", Result.Warnings.Count):"");
+    public string GenerationNotes=>SpeakerResult!=null?string.Join("\n",SpeakerResult.Warnings.Select(TextCatalog.Diagnostic)):Result==null?"":string.Join("\n",Result.Warnings.Select(TextCatalog.Diagnostic));
     public bool Busy {get;private set;}
     public bool Ready=>!Busy;
     public bool Generating {get;private set;}
@@ -90,7 +90,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public string Status {get=>TextCatalog.Diagnostic(rawStatus);private set=>rawStatus=value;}
     public double Progress {get;private set;}
     public GenerationResult? Result {get;private set;}
-    public string Metrics=>Result==null?"":SoundstageIR.Core.TextCatalog.F("T136BC05279", Result.Duration, Result.Project.SampleRate/1000.0, Result.Seconds, TextCatalog.Diagnostic(HeadRenderer.Description(Result.Project)), (Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100), Result.ReflectionPercentBeforeEq, Result.ReflectionPercentAfterEq, Result.WetBalance.GainDb, Result.WetBalance.Evaluations, Result.CommonGainDb, Result.ZeroSample, Result.OutputReferenceDb, TextCatalog.Diagnostic(Result.EqResidualReference), Result.EqResidualDb, Result.MaxBinGainDb, Result.PeakBoundDb, Result.ProjectionErrorDb, Result.DiscardedEnergyDb)+string.Join("\n",Result.EqReports.Select(e=>SoundstageIR.Core.TextCatalog.F("T076E536AA3", TextCatalog.Diagnostic(e.Stage), e.MaximumCutDb, e.MaximumBoostDb, e.Taps, e.ResponseResidualDb)))+"\n"+GenerationNotes;
+    public string Metrics=>SpeakerResult!=null?SpeakerMetrics:Result==null?"":SoundstageIR.Core.TextCatalog.F("T136BC05279", Result.Duration, Result.Project.SampleRate/1000.0, Result.Seconds, TextCatalog.Diagnostic(HeadRenderer.Description(Result.Project)), (Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100), Result.ReflectionPercentBeforeEq, Result.ReflectionPercentAfterEq, Result.WetBalance.GainDb, Result.WetBalance.Evaluations, Result.CommonGainDb, Result.ZeroSample, Result.OutputReferenceDb, TextCatalog.Diagnostic(Result.EqResidualReference), Result.EqResidualDb, Result.MaxBinGainDb, Result.PeakBoundDb, Result.ProjectionErrorDb, Result.DiscardedEnergyDb)+string.Join("\n",Result.EqReports.Select(e=>SoundstageIR.Core.TextCatalog.F("T076E536AA3", TextCatalog.Diagnostic(e.Stage), e.MaximumCutDb, e.MaximumBoostDb, e.Taps, e.ResponseResidualDb)))+"\n"+GenerationNotes;
     public string ExportLabel=>OutputNames.Label(P);
     public string SuggestedProjectFileName=>ExportLabel+".json";
     public string ExportParent {get;set;}
@@ -175,7 +175,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public async Task ApplyTemplateAsync(TemplateSelection selection)
     {
         if(Busy)return;
-        SetProject(selection.Project);SetStatus(SoundstageIR.Core.TextCatalog.T("T73D20904DB")+P.Name);PresetApplied?.Invoke();
+        if(selection.Speaker is {} speaker)SetSpeakerProject(speaker);else ApplyTemplateProject(selection.Project);SetStatus(SoundstageIR.Core.TextCatalog.T("T73D20904DB")+P.Name);PresetApplied?.Invoke();
         if(selection.Generate)await GenerateAsync();
     }
     internal static string FindRoot()
@@ -199,7 +199,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     {
         if(Localizing)return;
         int clamped=EditingLimits.Normalize(P);if(clamped>0)SetStatus(SoundstageIR.Core.TextCatalog.T("TF16C991F99"));
-        string next=ProjectIO.Serialize(P);if(next==snapshot)return;undo.Push(snapshot);redo.Clear();snapshot=next;
+        string next=SerializeState();if(next==snapshot)return;undo.Push(snapshot);redo.Clear();snapshot=next;
         RefreshResultIdentity();
         if(!string.IsNullOrEmpty(LastExport))Status=stale?SoundstageIR.Core.TextCatalog.T("T97412F29A5"):SoundstageIR.Core.TextCatalog.T("TF51FCBFD23");
         LastExport="";
@@ -207,16 +207,17 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     }
     void RefreshResultIdentity()
     {
+        if(Speaker!=null){RefreshSpeakerResultIdentity();return;}
         if(Result==null){Stale=true;return;}
         var compare=ProjectIO.Clone(P);compare.Name=Result.Project.Name;compare.TemplateName=Result.Project.TemplateName;
         Stale=ProjectIO.Serialize(compare)!=ProjectIO.Serialize(Result.Project);
         if(!stale){Result.Project.Name=P.Name;Result.Project.TemplateName=P.TemplateName;}
     }
     public void SetProject(Project p)
-    {undo.Push(snapshot);redo.Clear();P=p;Result=null;LastExport="";pendingEdits=false;AnalysisCache.Clear();ProjectFile="";snapshot=ProjectIO.Serialize(P);Stale=true;RefreshSources();Notify("");VisualChanged?.Invoke();}
+    {undo.Push(snapshot);redo.Clear();P=p;if(Speaker!=null)Speaker.Field=P;SpeakerResult=null;Result=null;LastExport="";pendingEdits=false;AnalysisCache.Clear();ProjectFile="";snapshot=SerializeState();Stale=true;RefreshSources();Notify("");VisualChanged?.Invoke();}
     public void Undo(){if(CommitTemplateEdits?.Invoke()==false||undo.Count==0)return;redo.Push(snapshot);Restore(undo.Pop());}
     public void Redo(){if(CommitTemplateEdits?.Invoke()==false||redo.Count==0)return;undo.Push(snapshot);Restore(redo.Pop());}
-    void Restore(string s){snapshot=s;P=ProjectIO.Deserialize(s);LastExport="";RefreshResultIdentity();RefreshSources();Notify("");VisualChanged?.Invoke();}
+    void Restore(string s){snapshot=s;RestoreState(s);LastExport="";RefreshResultIdentity();RefreshSources();Notify("");VisualChanged?.Invoke();}
     void RefreshSources()
     {
         Guid? id=Selected?.Id;Sources.Clear();foreach(var s in P.Sources)Sources.Add(s);Selection=[];
@@ -254,34 +255,37 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
         try
         {
             if(CommitTemplateEdits?.Invoke()==false)return false;
-            Commit();P.Validate();var input=ProjectIO.Clone(P);var version=snapshot;Busy=true;Generating=true;Progress=0;Notify("");CommandManager.InvalidateRequerySuggested();
+            Commit();ValidateState();speakerFailure=null;StopSpeakerPrecheck();var input=ProjectIO.Clone(P);var version=snapshot;Busy=true;Generating=true;Progress=0;Notify("");CommandManager.InvalidateRequerySuggested();
             cancellation=new();var progress=new Progress<(double Fraction,string Message)>(v=>{Progress=v.Fraction*100;Status=v.Message;Notify(nameof(Progress));Notify(nameof(Status));});
-            var r=await Task.Run(()=>Generator.Generate(input,progress,cancellation.Token));Result=r;Stale=snapshot!=version;Status=SoundstageIR.Core.TextCatalog.T("T2C954ED050");return true;
+            if(Speaker!=null){var speakerInput=ProjectIO.Clone(Speaker);SpeakerResult=await Task.Run(()=>SoundstageIR.Core.Speakers.SpeakerGenerator.Generate(speakerInput,progress,cancellation.Token));Result=SpeakerResult.ForAudio();}
+            else Result=await Task.Run(()=>Generator.Generate(input,progress,cancellation.Token));Stale=snapshot!=version;Status=SpeakerResultRisk?TextCatalog.T("Speaker.ReadyWithRisk"):SoundstageIR.Core.TextCatalog.T("T2C954ED050");return true;
         }
         catch(OperationCanceledException){Status=SoundstageIR.Core.TextCatalog.T("T2AFC7DC5EF");return false;}
-        catch(Exception e){Status=SoundstageIR.Core.TextCatalog.T("TCFDCD16119")+e.Message;return false;}
+        catch(Exception e){Status=SoundstageIR.Core.TextCatalog.T("TCFDCD16119")+e.Message;if(SpatialSpeaker)speakerFailure=Status;return false;}
         finally{Generating=false;Busy=false;cancellation?.Dispose();cancellation=null;Notify("");VisualChanged?.Invoke();CommandManager.InvalidateRequerySuggested();}
     }
     public void Cancel()=>cancellation?.Cancel();
     public async Task<string?> ExportAsync()
     {
         if(Busy||CommitTemplateEdits?.Invoke()==false)return null;Commit();if(Result==null||Stale){SetStatus(SoundstageIR.Core.TextCatalog.T("TB21EEC1263"));return null;}
-        try{Busy=true;Notify("");var r=Result;string path=ExportParent;LastExport=await Task.Run(()=>Exporter.Export(r,path));Status=SoundstageIR.Core.TextCatalog.T("T961EF8B1BC")+LastExport;return LastExport;}
+        try{Busy=true;Notify("");var r=Result;string path=ExportParent;LastExport=await Task.Run(()=>SpeakerResult is {} speaker?SoundstageIR.Core.Speakers.SpeakerExporter.Export(speaker,path):Exporter.Export(r,path));Status=SoundstageIR.Core.TextCatalog.T("T961EF8B1BC")+LastExport;return LastExport;}
         catch(Exception e){Status=SoundstageIR.Core.TextCatalog.T("TC55E9D64E5")+e.Message;return null;}
         finally{Busy=false;Notify("");CommandManager.InvalidateRequerySuggested();}
     }
     void SaveDialog()
     {
         if(CommitTemplateEdits?.Invoke()==false)return;
-        Commit();P.Validate();Directory.CreateDirectory(Path.Combine(Root,"projects"));
+        Commit();ValidateState();Directory.CreateDirectory(Path.Combine(Root,"projects"));
         var dialog=new SaveFileDialog{Title=SoundstageIR.Core.TextCatalog.T("T429EA3AF44"),Filter=SoundstageIR.Core.TextCatalog.T("T2678356BA9"),InitialDirectory=Path.Combine(Root,"projects"),FileName=SuggestedProjectFileName};
-        if(dialog.ShowDialog()==true){ProjectIO.Save(P,dialog.FileName);ProjectFile=dialog.FileName;SetStatus(SoundstageIR.Core.TextCatalog.T("T0EAF9C8B45")+ProjectFile);}
+        if(dialog.ShowDialog()==true){SaveProjectFile(dialog.FileName);ProjectFile=dialog.FileName;SetStatus(SoundstageIR.Core.TextCatalog.T("T0EAF9C8B45")+ProjectFile);}
     }
-    void OpenDialog(){var d=new OpenFileDialog{Title=SoundstageIR.Core.TextCatalog.T("TB48B651829"),Filter=SoundstageIR.Core.TextCatalog.T("T2678356BA9"),InitialDirectory=Path.Combine(Root,"projects")};if(d.ShowDialog()==true){SetProject(ProjectIO.Load(d.FileName));ProjectFile=d.FileName;SetStatus(SoundstageIR.Core.TextCatalog.T("TD26B962E05")+ProjectFile);PresetApplied?.Invoke();}}
+    void OpenDialog(){var d=new OpenFileDialog{Title=SoundstageIR.Core.TextCatalog.T("TB48B651829"),Filter=SoundstageIR.Core.TextCatalog.T("T2678356BA9"),InitialDirectory=Path.Combine(Root,"projects")};if(d.ShowDialog()==true){LoadProjectFile(d.FileName);ProjectFile=d.FileName;SetStatus(SoundstageIR.Core.TextCatalog.T("TD26B962E05")+ProjectFile);PresetApplied?.Invoke();}}
     void LoadCards()
     {
         PresetCards.Clear();
-        foreach(var p in Presets.All)PresetCards.Add(new(TextCatalog.Source(p.Name),TextCatalog.Source(p.Description),TextCatalog.Diagnostic(p.Details),p));
+        foreach(var p in Presets.All)PresetCards.Add(new(TextCatalog.Source(p.Name),
+            SimpleSpeaker&&p.Name=="自由场"?TextCatalog.T("Speaker.SimpleFree"):SimpleSpeaker&&p==Presets.Blank?TextCatalog.T("Speaker.SimpleBlank"):TextCatalog.Source(p.Description),
+            SimpleSpeaker?TextCatalog.F("Speaker.SimpleDetails",p.Rt,p.WetPercent):TextCatalog.Diagnostic(p.Details),p));
     }
     void Safe(Action action){try{action();}catch(Exception e){SetStatus(e.Message);}}
 }

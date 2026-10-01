@@ -9,12 +9,15 @@ public partial class MainWindow:Window
     bool? stackedLayout;
     double settingsRatio=.6,stackedSettingsRatio=.5;
     SourceEditorWindow? sourceWindow;
-    public MainWindow()
+    public MainWindow():this(null){}
+    public MainWindow(SoundstageIR.Core.Speakers.SpeakerMode? speakerMode)
     {
+        if(speakerMode is {} mode)VM.InitializeSpeaker(mode);
         InitializeComponent();Title="Soundstage IR Generator "+(System.Reflection.CustomAttributeExtensions.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>(typeof(MainWindow).Assembly)?.InformationalVersion.Split('+')[0]??typeof(MainWindow).Assembly.GetName().Version!.ToString(3));DataContext=VM;ResizePreviewHost.Install(this);
         VM.CommitTemplateEdits=CommitConfiguration;
-        VM.HasTemplateEdits=()=>EditorInput.HasDirty(SettingsBody)||AnalysisArea.HasPendingEdits||(sourceWindow?.HasPendingEdits??false);
-        VM.RequestTemplate=card=>{var dialog=new TemplateDialog(card){Owner=this};return dialog.ShowDialog()==true?dialog.Selection:null;};
+        VM.HasTemplateEdits=()=>SimpleKernels.HasPendingEdits||EditorInput.HasDirty(SettingsBody)||AnalysisArea.HasPendingEdits||(sourceWindow?.HasPendingEdits??false);
+        VM.RequestTemplate=RequestProjectTemplate;
+        InitializeSpeakerWindow();
         VM.PresetApplied+=()=>{ShowConfiguration();SettingsScroll.ScrollToTop();};
         SettingsBody.AddHandler(TextBox.TextChangedEvent,new TextChangedEventHandler((_,_)=>Dispatcher.BeginInvoke(()=>VM.PendingChanged())));
     }
@@ -22,7 +25,7 @@ public partial class MainWindow:Window
     {
         string guide=Path.Combine(VM.Root,"docs","guide.html");
         if(!File.Exists(guide)){MessageBox.Show(this,SoundstageIR.Core.TextCatalog.T("T012CF64049"),SoundstageIR.Core.TextCatalog.T("TB6E77060DB"));return;}
-        try{System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(new Uri(guide).AbsoluteUri+(SoundstageIR.Core.TextCatalog.English?"#en-guide":"#zh-guide")){UseShellExecute=true});}
+        try{System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(new Uri(guide).AbsoluteUri+(VM.IsSpeaker?(SoundstageIR.Core.TextCatalog.English?"#en-speakers":"#zh-speakers"):(SoundstageIR.Core.TextCatalog.English?"#en-guide":"#zh-guide"))){UseShellExecute=true});}
         catch(Exception ex){MessageBox.Show(this,ex.Message,SoundstageIR.Core.TextCatalog.T("T909A4608AD"));}
     }
     void WindowLoaded(object sender,RoutedEventArgs e)
@@ -76,7 +79,8 @@ public partial class MainWindow:Window
     async void EditCurrentTemplate(object sender,RoutedEventArgs e)
     {
         if(!CommitConfiguration())return;
-        var dialog=new TemplateDialog(VM.P){Owner=this};
+        if(VM.SimpleSpeaker){EditSimpleTemplate();return;}
+        var dialog=new TemplateDialog(VM.P,allowGenerate:!VM.SpatialSpeaker){Owner=this};
         if(dialog.ShowDialog()==true&&dialog.Selection is {} choice)await VM.ApplyTemplateAsync(choice);
     }
     void OpenAdvanced(object sender,RoutedEventArgs e)
@@ -97,7 +101,7 @@ public partial class MainWindow:Window
     {
         EditorInput.Commit(SettingsBody);
         if(EditorInput.HasErrors(SettingsBody)){VM.SetStatus(SoundstageIR.Core.TextCatalog.T("TB469D01528"));return false;}
-        if(!AnalysisArea.CommitEdits()||sourceWindow?.CommitEdits()==false)return false;
+        if(!SimpleKernels.CommitEdits()||!AnalysisArea.CommitEdits()||sourceWindow?.CommitEdits()==false)return false;
         VM.Commit();VM.PendingChanged();return true;
     }
     void AudioDragOver(object sender,DragEventArgs e){e.Effects=VM.Ready&&e.Data.GetDataPresent(DataFormats.FileDrop)?DragDropEffects.Copy:DragDropEffects.None;e.Handled=true;}

@@ -2,6 +2,7 @@ using System.Text;
 namespace SoundstageIR.Core;
 public static class ApoExporter
 {
+    public static string ConfigFileName(Project project) => OutputNames.File(project, TextCatalog.T("Export.ApoConfigFileName"));
     public static string Export(GenerationResult result,string executableDirectory)
     {
         string path=OutputNames.NewDirectory(Path.Combine(Path.GetFullPath(executableDirectory),"EqualizerAPO"),result.Project);
@@ -20,8 +21,8 @@ public static class ApoExporter
             config.AppendLine("Channel: "+channels[i]).AppendLine("Convolution: "+file);
         }
         config.AppendLine("Copy: L=LL+RL R=LR+RR").AppendLine("Channel: L R");
-        File.WriteAllText(Path.Combine(path,OutputNames.File(result.Project,"APO.txt")),config.ToString(),new UTF8Encoding(false));
-        File.WriteAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.T("T3BF241DC47")+result.Project.SampleRate+SoundstageIR.Core.TextCatalog.T("T6370457031"));
+        File.WriteAllText(Path.Combine(path,ConfigFileName(result.Project)),config.ToString(),new UTF8Encoding(false));
+        File.WriteAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.F("T3BF241DC47", ConfigFileName(result.Project))+result.Project.SampleRate+SoundstageIR.Core.TextCatalog.T("T6370457031"));
         File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.T("T78B83067E3")+TextCatalog.Diagnostic(HeadRenderer.Description(result.Project))+"。\n");
         File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.F("TFE48EFE512", result.Project.Equalize, result.Project.EarEqStrengthPercent, result.Project.CenterEqStrengthPercent));
         File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,SoundstageIR.Core.TextCatalog.T("T9F362DB7C7"))),SoundstageIR.Core.TextCatalog.F("T777D29EC43", result.OutputReferenceDb)+string.Join("\n",result.Warnings.Select(TextCatalog.Diagnostic))+"\n");

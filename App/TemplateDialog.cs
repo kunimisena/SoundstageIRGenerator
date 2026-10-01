@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using SoundstageIR.Core;
 namespace SoundstageIRGenerator;
-public sealed record TemplateSelection(Project Project,bool Generate);
+public sealed record TemplateSelection(Project Project,bool Generate,SoundstageIR.Core.Speakers.SpeakerProject? Speaker=null);
 public sealed class TemplateDialog:Window
 {
     internal readonly MainViewModel Model=new();
@@ -12,10 +12,12 @@ public sealed class TemplateDialog:Window
     readonly StackPanel body=new(){Margin=new Thickness(20)};
     readonly TextBlock message=new(){TextWrapping=TextWrapping.Wrap};
     public TemplateSelection? Selection {get;private set;}
-    public TemplateDialog(PresetCard card):this(PresetPresentation.Create(card.BuiltIn),card.Description){Model.LayoutIndex=(int)card.BuiltIn.Layout;Model.TemplateCoverage=card.BuiltIn.Layout==Distribution.Front?60:120;}
-    public TemplateDialog(Project project):this(ProjectIO.Clone(project),SoundstageIR.Core.TextCatalog.T("T4153B35A52")){}
-    TemplateDialog(Project project,string description)
+    public TemplateDialog(PresetCard card,bool allowGenerate=true):this(PresetPresentation.Create(card.BuiltIn),card.Description,allowGenerate){Model.LayoutIndex=(int)card.BuiltIn.Layout;Model.TemplateCoverage=card.BuiltIn.Layout==Distribution.Front?60:120;}
+    public TemplateDialog(Project project,bool allowGenerate=true):this(ProjectIO.Clone(project),SoundstageIR.Core.TextCatalog.T("T4153B35A52"),allowGenerate){}
+    readonly bool allowGenerate;
+    TemplateDialog(Project project,string description,bool allowGenerate)
     {
+        this.allowGenerate=allowGenerate;
         Model.SetProject(project);Model.TemplateCount=Math.Max(2,project.DirectionCount);Model.TemplateGroup=project.TemplateName;DataContext=Model;
         Style=(Style)Application.Current.FindResource(typeof(Window));
         Title=TextCatalog.Source(project.TemplateName)+SoundstageIR.Core.TextCatalog.T("T17E01C23CB");Width=1060;Height=800;MinWidth=580;MinHeight=480;
@@ -38,8 +40,8 @@ public sealed class TemplateDialog:Window
         var buttons=new WrapPanel{HorizontalAlignment=HorizontalAlignment.Right};DockPanel.SetDock(buttons,Dock.Right);footer.Children.Add(buttons);
         buttons.Children.Add(new Button{Content=SoundstageIR.Core.TextCatalog.T("T2CD0F3BE87"),IsCancel=true});
         var confirm=new Button{Content=SoundstageIR.Core.TextCatalog.T("T36F33ADAF0"),IsDefault=true};confirm.Click+=(_,_)=>Accept(false);buttons.Children.Add(confirm);
-        var generate=new Button{Content=SoundstageIR.Core.TextCatalog.T("T368672781F")};generate.Click+=(_,_)=>Accept(true);buttons.Children.Add(generate);
-        footer.Children.Add(new TextBlock{Text=SoundstageIR.Core.TextCatalog.T("TC15035EE01"),TextWrapping=TextWrapping.Wrap,VerticalAlignment=VerticalAlignment.Center,Margin=new Thickness(0,0,20,0)});
+        if(allowGenerate){var generate=new Button{Content=SoundstageIR.Core.TextCatalog.T("T368672781F")};generate.Click+=(_,_)=>Accept(true);buttons.Children.Add(generate);}
+        footer.Children.Add(new TextBlock{Text=SoundstageIR.Core.TextCatalog.T(allowGenerate?"TC15035EE01":"Speaker.TemplateConfirmHint"),TextWrapping=TextWrapping.Wrap,VerticalAlignment=VerticalAlignment.Center,Margin=new Thickness(0,0,20,0)});
         Content=root;ResizePreviewHost.Install(this);Closed+=(_,_)=>Model.VisualChanged-=Editor.RefreshState;
     }
     static TextBox AddField(Panel row,string label,string property)
@@ -59,7 +61,7 @@ public sealed class TemplateDialog:Window
         try
         {
             if(!CommitEdits())return null;
-            EditingLimits.Normalize(Model.P);Model.P.Validate();Selection=new(ProjectIO.Clone(Model.P),generate);return Selection;
+            EditingLimits.Normalize(Model.P);Model.P.Validate();Selection=new(ProjectIO.Clone(Model.P),generate&&allowGenerate);return Selection;
         }
         catch(Exception ex){message.Text=TextCatalog.Diagnostic(ex.Message);return null;}
     }

@@ -135,8 +135,8 @@ public static partial class AudioRenderer
             File.WriteAllText(Path.Combine(folder,"render.json"),ProjectIO.Serialize(new{inputName=Path.GetFileName(input),options.Format,mode=options.Mode.ToString(),normalize,report.LimiterCeilingDb,report.SampleRate,report.InputSamples,report.OutputSamples,report.TargetLufs,report.GainDb,report.SafetyGainDb,report.PeakBefore,report.Before,report.After,report.Note,kernelSamples=taps,zeroSample=result.ZeroSample,
                 loudness="ITU-R BS.1770 / EBU R128 gated integrated loudness; custom -18 LUFS music default, not EBU broadcast target",
                 limiter=limit?"4x oversampling, stereo linked, 0 dBFS ceiling, 5 ms lookahead / 50 ms release, latency compensated; decoded output true-peak verification; normalization uses common scalar correction, limit-only lowers limiter threshold without whole-song attenuation":"bypass",
-                kernelRoutes=Generator.RouteNames}));
-            ProjectIO.Save(result.Project,Path.Combine(folder,"project.json"));
+                kernelRoutes=result.OutputRoutes}));
+            if(result.ExportProject==null)ProjectIO.Save(result.Project,Path.Combine(folder,"project.json"));else File.WriteAllText(Path.Combine(folder,"project.json"),ProjectIO.Serialize(result.ExportProject));
             static string Db(double? value,string unit)=>value is double v?$"{v:F2} {unit}":SoundstageIR.Core.TextCatalog.T("T3ED0E6BB5C");
             File.WriteAllText(Path.Combine(folder,SoundstageIR.Core.TextCatalog.T("T0EF9B00F59")),SoundstageIR.Core.TextCatalog.F("T591813D222", sr, (normalize?SoundstageIR.Core.TextCatalog.T("T42287A0F96"):limit?SoundstageIR.Core.TextCatalog.T("T025876C5D8"):SoundstageIR.Core.TextCatalog.T("T9ECCCB1ECF")), Db(before.IntegratedLufs,"LUFS"), Db(after?.IntegratedLufs,"LUFS"), Db(after?.TruePeakDbTp,"dBTP"), gainDb, safetyGainDb, (limit?SoundstageIR.Core.TextCatalog.F("TC38BA8B915", limiterCeilingDb):""), note));
             File.Move(partial,output);progress?.Report((1,SoundstageIR.Core.TextCatalog.T("T24ACFE2F65")+output));return report;

@@ -19,3 +19,6 @@ settings/
 EqualizerAPO/
 /releases/
 # Core/Data/FABIAN.bin is required, intentionally tracked.
+
+SpeakerExports/
+SpeakerEqualizerAPO/

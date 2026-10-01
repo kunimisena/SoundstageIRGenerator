@@ -1,0 +1,7 @@
+<UserControl x:Class="SoundstageIRGenerator.SimpleKernelPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:SoundstageIRGenerator">
+ <StackPanel IsEnabled="{Binding Ready}">
+  <CheckBox Content="{DynamicResource Speaker.Link}" IsChecked="{Binding LinkSpeakerKernels}" Click="LinkChanged"/>
+  <GroupBox Header="{DynamicResource Speaker.LeftKernel}"><local:ReflectionBatchEditor x:Name="LeftEditor"/></GroupBox>
+  <GroupBox x:Name="RightGroup" Header="{DynamicResource Speaker.RightKernel}"><local:ReflectionBatchEditor x:Name="RightEditor"/></GroupBox>
+ </StackPanel>
+</UserControl>

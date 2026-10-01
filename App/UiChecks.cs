@@ -194,7 +194,7 @@ public partial class MainWindow
             var exported=await VM.ExportAsync();Check(exported!=null,"Export WAV");
             var wave=Exporter.ReadWave(Directory.GetFiles(exported!,"*_Matrix_PATHS_LL_RL_LR_RR.wav").Single());
             Check(wave.Channels.Zip(VM.Result!.Kernels).All(v=>v.First.SequenceEqual(v.Second)),"Exported samples equal actual result");
-            var apo=await VM.ExportApoAsync(VM.Root);Check(File.ReadAllText(Directory.GetFiles(apo!,"*_APO.txt").Single()).Contains("Copy: L=LL+RL R=LR+RR"),"APO routing unchanged");
+            var apo=await VM.ExportApoAsync(VM.Root);Check(File.ReadAllText(Directory.GetFiles(apo!,"*_Equalizer_APO*.txt").Single()).Contains("Copy: L=LL+RL R=LR+RR"),"APO routing unchanged");
             var originalName=VM.P.Name;var sameResult=VM.Result;var kernelIdentity=VM.Result!.Kernels;
             AnalysisArea.NameEditor.Text="命名回归";Check(CommitConfiguration(),"Commit rename without regeneration");await Layout(client);
             Check(VM.CanExport&&ReferenceEquals(VM.Result,sameResult)&&ReferenceEquals(VM.Result!.Kernels,kernelIdentity)&&VM.Result.Project.Name=="命名回归","Rename updates export metadata without regenerating audio");
@@ -202,7 +202,7 @@ public partial class MainWindow
             var renamedWave=await VM.ExportAsync();var renamedApo=await VM.ExportApoAsync(VM.Root);
             Check(Path.GetFileName(renamedWave!).StartsWith(VM.ExportLabel+"_")&&Path.GetFileName(renamedApo!).StartsWith(VM.ExportLabel+"_"),"WAV and APO directories use current configuration name");
             var renamedJson=Directory.GetFiles(renamedApo!,"*_project.json").Single();
-            Check(ProjectIO.Load(renamedJson).Name=="命名回归"&&File.ReadAllText(Directory.GetFiles(renamedApo!,"*_APO.txt").Single()).Contains("宽阔监听_命名回归_L_to_LeftEar.wav"),"Exported JSON and APO references use current name");
+            Check(ProjectIO.Load(renamedJson).Name=="命名回归"&&File.ReadAllText(Directory.GetFiles(renamedApo!,"*_Equalizer_APO*.txt").Single()).Contains("宽阔监听_命名回归_L_to_LeftEar.wav"),"Exported JSON and APO references use current name");
             VM.Undo();await Layout(client);Check(VM.P.Name==originalName&&VM.CanExport&&VM.Result!.Project.Name==originalName,"Undo rename retains valid kernels and restores metadata");
             VM.Redo();await Layout(client);Check(VM.P.Name=="命名回归"&&VM.CanExport,"Redo rename retains valid kernels");
             await VM.ApplyTemplateAsync(new(Presets.BuiltIn.Single(p=>p.Name=="自由场").Create(),false));await Layout(client);

@@ -29,6 +29,7 @@ internal static class LanguageChecks
         }
         try
         {
+            PlotRenderChecks.CheckMagnitudeRange();Check(true,"Magnitude axis expands, follows visible curves and resets without rebuilding geometry");
             foreach(var e in TextCatalog.Entries.Values)
             {
                 if(string.IsNullOrWhiteSpace(e.En)||Regex.IsMatch(e.En,"[\\u4e00-\\u9fff]"))throw new Exception("Incomplete English resource: "+e.Zh);
@@ -108,11 +109,11 @@ internal static class LanguageChecks
                 string file=Directory.GetFiles(exported,"*"+route+".wav").Single();var wav=Exporter.ReadWave(file);int index=Array.IndexOf(Generator.RouteNames,route);
                 Check(wav.Channels[0].SequenceEqual(result.Kernels[index].Select(v=>(double)(float)v)),"English WAV export matches preview: "+route);
             }
-            var notes=File.ReadAllText(Directory.GetFiles(exported,"*_README.txt").Single(p=>!p.EndsWith("_APO_README.txt")));
+            var notes=File.ReadAllText(Directory.GetFiles(exported,"*_README.txt").Single());
             Check(notes.Contains("Headphone spatial-audio kernels")&&notes.Contains("Head model: FABIAN"),"English export instructions");
             var reloaded=ProjectIO.Load(Directory.GetFiles(exported,"*project.json").Single());Check(ProjectIO.Serialize(reloaded)==generated,"Cross-language JSON round trip");
             Check(ProjectIO.Serialize(ProjectIO.Load(Directory.GetFiles(exported,"*project.json").Single()))==generated,"Saved names remain unchanged across languages");
-            Check(File.ReadAllText(Directory.GetFiles(exported,"*APO.txt").Single()).Contains("Copy: L=LL+RL R=LR+RR"),"APO routing remains intact");
+            Check(File.ReadAllText(Directory.GetFiles(exported,"*_Equalizer_APO*.txt").Single()).Contains("Copy: L=LL+RL R=LR+RR"),"APO routing remains intact");
             File.WriteAllLines(Path.Combine(folder,"language-results.txt"),checks.Append($"PASS {checks.Count} assertions"));window.Close();return 0;
         }
         catch(Exception ex){File.WriteAllLines(Path.Combine(folder,"language-results.txt"),checks.Append("FAIL "+ex));window?.Close();return 1;}
