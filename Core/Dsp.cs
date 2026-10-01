@@ -46,39 +46,52 @@ public static class Dsp
     public static double[] SmoothedPowerAt(double[] h,int sr,int denominator)
         =>SmoothedDbAt(h,sr,denominator).Select(db=>Math.Pow(10,db/10)).ToArray();
     public static double[] SmoothedDbAt(double[] h,int sr,int denominator)
+        =>SmoothedDbAt(h,sr,denominator,Frequencies,20,20000);
+    public static double[] SmoothedDbAt(double[] h,int sr,int denominator,double[] frequencies,double minHz,double maxHz)
     {
-        if(denominator<=0)throw new ArgumentOutOfRangeException(nameof(denominator));
         if(h.Any(v=>!double.IsFinite(v)))throw new InvalidOperationException("响应包含非有限数值。");
         double peak=h.Select(Math.Abs).DefaultIfEmpty(0).Max();
-        if(peak==0)return Enumerable.Repeat(double.NegativeInfinity,Frequencies.Length).ToArray();
+        if(peak==0)return Enumerable.Repeat(double.NegativeInfinity,frequencies.Length).ToArray();
         var spectrum=Spectrum(h.Select(v=>v/peak).ToArray(),Pow2(Math.Max(h.Length,checked(sr*4))));
-        int half=spectrum.Length/2;double df=(double)sr/spectrum.Length,offset=20*Math.Log10(peak),width=Math.Pow(2,.5/denominator);
-        var power=new double[half+1];var cellWidth=new double[half+1];
-        for(int k=1;k<=half;k++){power[k]=Power(spectrum[k]);cellWidth[k]=Math.Log((k+.5)/(k-.5));}
-        var output=new double[Frequencies.Length];
+        return SmoothedSpectrumDb(spectrum,sr,denominator,frequencies,minHz,maxHz)
+            .Select(v=>v+20*Math.Log10(peak)).ToArray();
+    }
+    public static double[] SmoothedSpectrumDb(Complex[] spectrum,int sr,int denominator,double[] frequencies,double minHz,double maxHz)
+    {
+        return SmoothedPowerSpectrum(Enumerable.Range(0,spectrum.Length/2+1).Select(k=>Power(spectrum[k])).ToArray(),sr,denominator,frequencies,minHz,maxHz)
+            .Select(v=>10*Math.Log10(v)).ToArray();
+    }
+    // Linear averaging also accepts signed real cross spectra.
+    public static double[] SmoothedPowerSpectrum(double[] power,int sr,int denominator,double[] frequencies,double minHz,double maxHz)
+    {
+        if(denominator<=0||minHz<=0||maxHz<=minHz||maxHz>sr*.5)throw new ArgumentOutOfRangeException(nameof(denominator));
+        int half=power.Length-1;double df=(double)sr/(2*half),width=Math.Pow(2,.5/denominator);
+        var cellWidth=new double[half+1];
+        for(int k=1;k<=half;k++)cellWidth[k]=Math.Log((k+.5)/(k-.5));
+        var output=new double[frequencies.Length];
         for(int i=0;i<output.Length;i++)
         {
-            double lo=Math.Max(.5,Math.Max(20,Frequencies[i]/width)/df),hi=Math.Min(half+.5,Math.Min(20000,Frequencies[i]*width)/df),sum=0;
+            double lo=Math.Max(.5,Math.Max(minHz,frequencies[i]/width)/df),hi=Math.Min(half+.5,Math.Min(maxHz,frequencies[i]*width)/df),sum=0;
             int first=Math.Max(1,(int)Math.Floor(lo+.5)),last=Math.Min(half,(int)Math.Ceiling(hi-.5));
             for(int k=first;k<=last;k++)
             {
                 double a=Math.Max(lo,k-.5),b=Math.Min(hi,k+.5);
                 if(b>a)sum+=power[k]*(a==k-.5&&b==k+.5?cellWidth[k]:Math.Log(b/a));
             }
-            output[i]=10*Math.Log10(sum/Math.Log(hi/lo))+offset;
+            output[i]=sum/Math.Log(hi/lo);
         }
         return output;
     }
+    public static double BandpassStopHigh(int sr)=>Math.Min(22000,sr*.5*.995);
+    public static double BandpassDb(double f,int sr)
+    {
+        if(f<20){double u=Math.Clamp((f-10)/10,0,1);return -100*(.5+.5*Math.Cos(Math.PI*u));}
+        if(f>20000){double u=Math.Clamp((f-20000)/(BandpassStopHigh(sr)-20000),0,1);return -100*(.5-.5*Math.Cos(Math.PI*u));}
+        return 0;
+    }
     public static double[] OutputBandpass(int sr)
     {
-        double stopHigh=Math.Min(22000,sr*.5*.995);
-        double Magnitude(double f)
-        {
-            double db=0;
-            if(f<20){double u=Math.Clamp((f-10)/10,0,1);db=-100*(.5+.5*Math.Cos(Math.PI*u));}
-            else if(f>20000){double u=Math.Clamp((f-20000)/(stopHigh-20000),0,1);db=-100*(.5-.5*Math.Cos(Math.PI*u));}
-            return Math.Pow(10,db/20);
-        }
+        double Magnitude(double f)=>Math.Pow(10,BandpassDb(f,sr)/20);
         // One second of causal minimum-phase response resolves the steep infrasonic edge.
         // This is tail support, not a one-second leading delay.
         return MinimumPhase(Magnitude,sr,sr);
@@ -100,7 +113,7 @@ public static class NoiseKernel
 {
     public static double[] Centers(int sr){var a=new List<double>();for(double f=20;f<sr/2.0;f*=Math.Pow(2,1.0/3))a.Add(f);a.Add(sr/2.0);return a.ToArray();}
     public static double EndSeconds(Excitation e)
-    {var shape=e.Envelope;double slope=Math.Min(-6,(shape[^1].Y-shape[^2].Y)/(shape[^1].X-shape[^2].X));return (e.OnsetMs+e.BuildMs)/1000+e.Decay.Max(k=>k.Y)*(1+20/-slope)+.02;}
+    {var shape=e.Envelope;double slope=Math.Min(-6,(shape[^1].Y-shape[^2].Y)/(shape[^1].X-shape[^2].X));return (e.OnsetMs+e.BuildMs)/1000+e.Decay.Max(k=>k.Y)*(1+20/-slope);}
     public static double EnvelopeDb(Excitation e,double u)
     {
         var shape=e.Envelope;
@@ -140,8 +153,10 @@ public static class NoiseKernel
             for(int i=start;i<len;i++)
             {
                 double t=(double)i/sr-on,v;
-                v=Math.Pow(10,FullShape(build>0&&t<build?t/build-1:(t-build)/rt)/20);
-                double remaining=(len-1-i)/(sr*.02);if(remaining<1)v*=.5-.5*Math.Cos(Math.PI*Math.Max(0,remaining));
+                double envelopeDb=FullShape(build>0&&t<build?t/build-1:(t-build)/rt);
+                v=Math.Pow(10,envelopeDb/20);
+                // Fade each band's designed late envelope, not individual noise samples.
+                if(t>=build)v*=TailWindow(envelopeDb);
                 envelope[i-start]=v;norm+=v*v;
             }
             // Unit impulse spectral energy convention: E[|G(f)|²] follows the requested energy curve.
@@ -149,6 +164,11 @@ public static class NoiseKernel
             for(int i=start;i<len;i++)output[i]+=a[i].Real*envelope[i-start]*gain;
         }
         return output;
+    }
+    public static double TailWindow(double envelopeDb)
+    {
+        double u=Math.Clamp((-envelopeDb-70)/10,0,1);
+        return .5+.5*Math.Cos(Math.PI*u);
     }
     public static double ArrivalProbability(double relativeTime,double buildSeconds,int sr)
     {

@@ -115,6 +115,19 @@ public partial class MainWindow
             Check(WetPercentEditor.IsEnabled&&WetPercentSlider.IsEnabled&&VM.ReflectionEnergyPercent==requestedWet&&WetPercentSlider.Value==requestedWet,"Re-enabling direct after JSON reload restores requested balance");
             Check(await VM.GenerateAsync(),"Generate default kernels");await AnalysisArea.RefreshAsync();await Layout(client);
             Check(VM.CanExport&&VM.ExportState.Contains("可以导出")&&AnalysisArea.ResultPlot.Data!=null,"Fresh kernels displayed and exportable");
+            Check(Math.Abs(VM.Result!.ReflectionPercentAfterEq-VM.P.ReflectionEnergyPercent)<.02&&VM.EnergySummary.Contains("目标")&&VM.EnergySummary.Contains("最终"),"Result shows target and measured post-EQ wet balance");
+            Check(VM.Metrics.Contains("混响整体预修正"),"Result details expose common wet gain compensation");
+            Check(AnalysisArea.PlotBandpass.IsChecked!=true&&AnalysisArea.ResultPlot.Data!.MinY==-60&&AnalysisArea.ResultPlot.Data.Lines[0].X[0]==20,"Default frequency view focuses on audible band");
+            var unchangedResult=VM.Result;var standardPlot=AnalysisArea.ResultPlot.Data;
+            AnalysisArea.PlotBandpass.IsChecked=true;await AnalysisArea.RefreshAsync();
+            Check(AnalysisArea.ResultPlot.Data!.MinY==-100&&AnalysisArea.ResultPlot.Data.Lines[0].X[0]==5,"Bandpass checkbox expands frequency and dB ranges");
+            Check(ReferenceEquals(unchangedResult,VM.Result)&&VM.CanExport,"Bandpass display does not invalidate or regenerate kernels");
+            AnalysisArea.PlotBandpass.IsChecked=false;await AnalysisArea.RefreshAsync();
+            Check(ReferenceEquals(standardPlot,AnalysisArea.ResultPlot.Data),"Returning to normal range reuses cached plot");
+            AnalysisArea.PlotKind.SelectedIndex=1;await AnalysisArea.RefreshAsync();
+            Check(!AnalysisArea.PlotBandpass.IsEnabled,"Bandpass range applies only to magnitude plots");
+            AnalysisArea.PlotKind.SelectedIndex=0;await AnalysisArea.RefreshAsync();
+            Check(AnalysisArea.PlotBandpass.IsEnabled,"Magnitude plot restores bandpass control");
             var plotted=AnalysisArea.ResultPlot.Data;int builds=VM.AnalysisCache.BuildCount;
             int visualEvents=0;VM.VisualChanged+=()=>visualEvents++;
             for(int i=0;i<20;i++){VM.Commit();VM.PendingChanged();await AnalysisArea.RefreshAsync();}

@@ -25,6 +25,7 @@ public static class ApoExporter
         File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),"人头模型："+HeadRenderer.Description(result.Project)+"。\n");
         File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),$"空间 EQ：总开关 {result.Project.Equalize}，一级 {result.Project.EarEqStrengthPercent:0.##}%，二级 {result.Project.CenterEqStrengthPercent:0.##}%（严格镜像不使用二级）。\n");
         File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),$"实际参考电平 {result.OutputReferenceDb:F2} dB。\n"+string.Join("\n",result.Warnings)+"\n");
+        File.AppendAllText(Path.Combine(path,OutputNames.File(result.Project,"APO使用说明.txt")),$"混响能量占比：目标 {(result.Project.Direct.Enabled?result.Project.ReflectionEnergyPercent:100):F3}%，最终 {result.ReflectionPercentAfterEq:F3}%。整体混响预修正 {result.WetBalance.GainDb:+0.000;-0.000;0} dB。\n");
         if(result.Project.HeadModel==HeadModelKind.Fabian)
         {
             var notice=Path.Combine(AppContext.BaseDirectory,"FABIAN-NOTICE.txt");

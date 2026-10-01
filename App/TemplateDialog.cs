@@ -27,6 +27,7 @@ public sealed class TemplateDialog:Window
         body.Children.Add(new TextBlock{Text=description,TextWrapping=TextWrapping.Wrap,Margin=new Thickness(0,0,0,12)});
         var globals=new WrapPanel();
         WetPercentEditor=AddField(globals,"混响能量占比 / %",nameof(MainViewModel.ReflectionEnergyPercent));
+        WetPercentEditor.ToolTip="目标为 EQ 与带通后的混响分量占比；通过整体混响增益预修正保持。";
         WetPercentEditor.SetBinding(IsEnabledProperty,new Binding(nameof(MainViewModel.ReflectionEnergyEditable)));
         var air=new CheckBox{Content="直达声空气吸收",VerticalAlignment=VerticalAlignment.Center};air.SetBinding(CheckBox.IsCheckedProperty,new Binding("P.Direct.AirAbsorption"));globals.Children.Add(air);
         var distance=AddField(globals,"空气吸收距离 / m","P.Direct.AirAbsorptionDistance");distance.SetBinding(IsEnabledProperty,new Binding("P.Direct.AirAbsorption"));body.Children.Add(globals);

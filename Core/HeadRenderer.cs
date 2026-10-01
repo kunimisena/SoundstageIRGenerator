@@ -84,20 +84,15 @@ public static class FabianData
     {
         if(sr is not (44100 or 48000 or 96000))throw new ArgumentException("FABIAN 采样率不受支持。");
         if(ear is <0 or >1)throw new ArgumentOutOfRangeException(nameof(ear));
-        // App negative azimuth = left; SOFA positive azimuth = left.
-        // Always symmetrize anatomy, irrespective of random-mirror mode. Choose the
-        // nearest measured direction on the dense ~2-degree grid, avoiding phase-
-        // altering interpolation or separately aligning the ears to their peaks.
-        double az=Math.Abs(appAz);
-        var left=Nearest(az,el);
-        var mirror=Nearest((360-left.Az)%360,left.El);
-        bool median=Math.Abs(Math.Sin(az*Math.PI/180)*Math.Cos(el*Math.PI/180))<1e-9;
-        int selected=appAz>0&&!median?1-ear:ear;
-        var h=new double[left.H[0].Length];
-        for(int i=0;i<h.Length;i++) h[i]=(left.H[selected][i]+mirror.H[1-selected][i])*.5;
-        // At a snapped median point enforce identical responses, even if the
-        // irregular polar ring picked a tiny numerical azimuth offset.
-        if(median)for(int i=0;i<h.Length;i++)h[i]=(left.H[0][i]+left.H[1][i])*.5;
+        // Use the measured LEFT ear over the full sphere as the anatomical reference.
+        // Reflect source azimuth for the right ear; never average complex responses.
+        // App negative azimuth is left, whereas SOFA positive azimuth is left.
+        double az=ear==0?-appAz:appAz;
+        bool median=Math.Abs(Math.Sin(appAz*Math.PI/180)*Math.Cos(el*Math.PI/180))<1e-9;
+        // Canonicalize the symmetry plane/poles so nearest-grid ties select one IR.
+        if(median)az=Math.Abs(appAz);
+        var direction=Nearest(az,el);
+        var h=(double[])direction.H[0].Clone();
         if(compensate)h=Dsp.Convolve(h,database.Value.Ctf);
         return new(Resample(h,sr),ResampleDelay(sr));
     }

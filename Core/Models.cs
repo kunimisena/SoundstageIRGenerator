@@ -89,7 +89,7 @@ public sealed class Project
     public long Seed { get; set; } = 20260920;
     public bool StrictMirror { get; set; }
     public bool Equalize { get; set; } = true;
-    public int Smooth1 { get; set; } = 24;
+    public int Smooth1 { get; set; } = 12;
     public int Smooth2 { get; set; } = 3;
     public double EarEqStrengthPercent { get; set; } = 100;
     public double CenterEqStrengthPercent { get; set; } = 0;

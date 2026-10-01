@@ -5,6 +5,8 @@ int passed=0;void Check(bool c,string text){if(!c)throw new Exception("FAIL "+te
 var target=args.FirstOrDefault()??Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,"../../../../../artifacts/tests"));Directory.CreateDirectory(target);
 if(args.Contains("--audio-tools")){await AudioToolChecks.Run(Check,target,args.Skip(2).FirstOrDefault());File.WriteAllText(Path.Combine(target,"audio-tool-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--final-presets")){FinalPresetChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"final-preset-results.txt"),$"PASS {passed} assertions\n");return;}
+if(args.Contains("--wet-balance")){WetBalanceChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"wet-balance-results.txt"),$"PASS {passed} assertions\n");return;}
+if(args.Contains("--spectral")){SpectralChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"spectral-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--eq-accuracy")){EqAccuracyChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"eq-accuracy-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--energy-only")){EnergyChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"energy-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--release-only")){ReleaseChecks.Run(Check,target,args.FirstOrDefault(a=>a.EndsWith("wide-monitor-before.wav")));File.WriteAllText(Path.Combine(target,"release-results.txt"),$"PASS {passed} assertions");return;}
@@ -15,6 +17,8 @@ if(args.Contains("--mastering-only")){await MasteringChecks.Run(Check,target);Fi
 if(args.Contains("--audio-pipeline")){await AudioPipelineChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"audio-pipeline-results.txt"),$"PASS {passed} assertions\n");return;}
 if(args.Contains("--preset-only")){PresetRevisionChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"preset-results.txt"),$"PASS {passed} assertions\\n");return;}
 if(args.Contains("--head-only")){HeadModelChecks.Run(Check,target);File.WriteAllText(Path.Combine(target,"head-results.txt"),$"PASS {passed} assertions\n");return;}
+WetBalanceChecks.Run(Check,target);
+SpectralChecks.Run(Check,target);
 FinalPresetChecks.Run(Check,target);
 EqStrengthChecks.Run(Check,target);
 EqAccuracyChecks.Run(Check,target);
@@ -42,11 +46,11 @@ var cs=new CancellationTokenSource();cs.Cancel();bool cancelled=false;try{Genera
 var watch=Stopwatch.StartNew();var result=Generator.Generate(project);Console.WriteLine($"Generate: {watch.Elapsed.TotalSeconds:F2}s, {result.Duration:F3}s kernel, EQ RMS {result.EqResidualDb:F2}dB");
 Check(result.Kernels[0].SequenceEqual(result.Kernels[3])&&result.Kernels[1].SequenceEqual(result.Kernels[2]),"Exact final mirror");
 Check(result.Kernels.All(x=>x.All(double.IsFinite)),"Finite kernels");Check(result.ZeroSample/48000<.002,"Common guard below 2ms");
-var noeq=ProjectIO.Clone(project);noeq.Equalize=false;var raw=Generator.Generate(noeq);Check(result.Raw.Zip(raw.Raw).All(pair=>pair.First.SequenceEqual(pair.Second)),"EQ does not regenerate noise");
+var noeq=ProjectIO.Clone(project);noeq.Equalize=false;var raw=Generator.Generate(noeq);Check(SpectralTestReference.SameSources(result,raw),"EQ does not regenerate noise");
 Complex Dtft(double[] x,double f,int sr){Complex z=0;for(int i=0;i<x.Length;i++)z+=x[i]*Complex.FromPolarCoordinates(1,-2*Math.PI*f*i/sr);return z;}
-foreach(double f in new[]{93.0,753,7500})for(int c=0;c<4;c++){Complex expected=Dtft(result.Raw[c],f,48000)*Dtft(result.EarEq[c/2],f,48000)*Dtft(result.SecondEq,f,48000)*Dtft(result.Bandpass,f,48000)*Math.Pow(10,result.CommonGainDb/20);Complex actual=Dtft(result.Kernels[c],f,48000);Check((expected-actual).Magnitude<1e-5*Math.Max(1,expected.Magnitude),"EQ route "+c+" @"+f);}
+foreach(double f in new[]{93.0,753,7500})for(int c=0;c<4;c++)Check(SpectralTestReference.Route(result,c,f),"EQ route "+c+" @"+f);
 var asym=ProjectIO.Clone(project);asym.StrictMirror=false;var ar=Generator.Generate(asym);Check(ar.SecondEq.Length>1,"Two EQ stages");Check(!ar.Kernels[0].SequenceEqual(ar.Kernels[3]),"Random asymmetry");
-var stageLeft=Dsp.Convolve(Dsp.Sum(ar.Raw[0],ar.Raw[1]),ar.EarEq[0]);var stageRight=Dsp.Convolve(Dsp.Sum(ar.Raw[2],ar.Raw[3]),ar.EarEq[1]);var expectedEq=Dsp.DesignEq(Dsp.Sum(stageLeft,stageRight,.5),48000,asym.Smooth2);Check(expectedEq.Zip(ar.SecondEq).Max(v=>Math.Abs(v.First-v.Second))<1e-10,"Second EQ uses complex ear sum after first stage");
+var expectedEq=SpectralTestReference.SecondEq(ar);Check(expectedEq.Zip(ar.SecondEq).Max(v=>Math.Abs(v.First-v.Second))<1e-10,"Second EQ uses complex ear sum after first stage");
 var mono=new ReflectionPair{Azimuth=0,Left=exc.Clone()};var median=ProjectIO.Clone(noeq);median.Sources=[mono];var mr=Generator.Generate(median);Check(median.DirectionCount==1,"Median source single count");Check(mr.Contributions[0].LeftInputKernel.SequenceEqual(mr.Contributions[0].RightInputKernel),"Median excitation mirror");
 var changed=ProjectIO.Clone(noeq);changed.Sources[0].Left.GainDb+=3;var rr=Generator.Generate(changed);Check(rr.Contributions[1].LeftInputKernel.SequenceEqual(raw.Contributions[1].LeftInputKernel),"Editing one source leaves others unchanged");
 string folder=Exporter.Export(result,target);var wav=Exporter.ReadWave(TestFiles.Get(folder,"Matrix_PATHS_LL_RL_LR_RR.wav"));Check(wav.SampleRate==48000&&wav.Channels.Length==4,"WAV header");Check(wav.Channels.Zip(result.Kernels).All(p=>p.First.SequenceEqual(p.Second)),"All exported samples match preview");

@@ -57,6 +57,7 @@ public sealed class GenerationResult
     public double ReflectionPercentBeforeEq {get;init;}
     public double ReflectionPercentAfterEq {get;init;}
     public double ReflectionGain {get;init;}=1;
+    public WetBalanceReport WetBalance {get;init;}=new(0,0,0,true);
     public double[][] FinalDirectPaths {get;init;}=[];
     public double[][] FinalReflectionPaths {get;init;}=[];
     public double ZeroSample {get;init;}
@@ -69,6 +70,10 @@ public sealed class GenerationResult
     public double MaxBinGainDb {get;init;}
     public double Seconds {get;init;}
     public double EqResidualDb {get;init;}
+    public int SynthesisFftLength {get;init;}
+    public int CorrectionSupport {get;init;}
+    public double ProjectionErrorDb {get;init;}
+    public double DiscardedEnergyDb {get;init;}
     public double Duration=>Kernels[0].Length/(double)Project.SampleRate;
 }
 public static class Generator
@@ -115,44 +120,33 @@ public static class Generator
         {
             for(int ear=0;ear<2;ear++){ct.ThrowIfCancellationRequested();var q=head.At(az,el,ear);var y=q.Apply(kernel,sr);AddDelayed(ref dest[ear*2+input],y,(q.Delay-referenceDelay)*sr+guard);}
         }
-        double reflectionGain=1;
+        double reflectionGain=1;WetBalanceReport wetBalance;
         {
             var wet=NewPaths(1);foreach(var contribution in contributions)Accumulate(wet,contribution.EarPaths);
             reflectionGain=EnergyBalance.Mix(direct,wet,p.ReflectionEnergyPercent,sr);
+            progress?.Report((.76,"统计直达声与混响频谱能量"));
+            wetBalance=WetBalanceSolver.Solve(p,direct,wet,ct,message=>progress?.Report((.78,message)));
+            double preGain=Math.Pow(10,wetBalance.GainDb/20);
+            foreach(var h in wet)Scale(h,preGain);
+            reflectionGain*=preGain;
             foreach(var contribution in contributions)foreach(var h in contribution.EarPaths)Scale(h,reflectionGain);
             sum=NewPaths(1);Accumulate(sum,direct);Accumulate(sum,wet);
         }
         double before=EnergyBalance.Percent(EnergyBalance.Energy(direct,sr),EnergyBalance.Energy(EnergyBalance.Subtract(sum,direct),sr));
         Pad(sum);Pad(direct);if(p.StrictMirror){sum[3]=(double[])sum[0].Clone();sum[2]=(double[])sum[1].Clone();}
-        var raw=sum.Select(x=>(double[])x.Clone()).ToArray();double[][] eq=[[1.0],[1.0]];double[] eq2=[1.0];
-        var reports=new List<EqReport>();var warnings=new List<string>();
-        double[] Design(double[] response,int smoothing,double strength,string stage)
+        var raw=sum.Select(x=>(double[])x.Clone()).ToArray();
+        progress?.Report((.79,"频域平滑校正与带通目标合成"));
+        var synthesis=SpectralSynthesis.Apply(p,raw,direct,ct);
+        sum=synthesis.Kernels;var eq=synthesis.EarEq;var eq2=synthesis.SecondEq;var bandpass=synthesis.Bandpass;
+        var reports=synthesis.Reports;var warnings=new List<string>();
+        if(!wetBalance.Converged)warnings.Add($"混响占比预修正未完全收敛：目标 {p.ReflectionEnergyPercent:F3}%，频谱预计 {wetBalance.PredictedPercent:F3}%。");
+        foreach(var report in reports)
         {
-            var design=EqDesigner.Design(response,sr,smoothing,strength,stage,ct);reports.Add(design.Report);
-            var report=design.Report;
-            if(report.RelativeBoostDb>12||report.RelativeCutDb< -24)warnings.Add($"{stage}：相对平均增益，最大提升 {report.RelativeBoostDb:F1} dB @ {report.BoostHz:F0} Hz，最大衰减 {report.RelativeCutDb:F1} dB @ {report.CutHz:F0} Hz。");
-            if(report.DesignErrorDb>.1)warnings.Add($"{stage}：实际 EQ 与设计曲线最大相差 {report.DesignErrorDb:F2} dB（{report.Taps} 点），修正幅度未截断。");
-            if(report.ResponseResidualDb>.5)warnings.Add($"{stage}：校正后平滑响应相对目标的 RMS 偏差 {report.ResponseResidualDb:F2} dB。");
-            return design.Impulse;
+            if(report.RelativeBoostDb>12||report.RelativeCutDb< -24)warnings.Add($"{report.Stage}：相对平均增益，最大提升 {report.RelativeBoostDb:F1} dB @ {report.BoostHz:F1} Hz，最大衰减 {report.RelativeCutDb:F1} dB @ {report.CutHz:F1} Hz。");
+            if(report.ResponseResidualDb>.5)warnings.Add($"{report.Stage}：校正后平滑响应相对目标的 RMS 偏差 {report.ResponseResidualDb:F2} dB。");
         }
-        if(p.Equalize)
-        {
-            progress?.Report((.79,"一级平滑最小相位 EQ"));ct.ThrowIfCancellationRequested();
-            eq[0]=Design(Dsp.Sum(sum[0],sum[1]),p.Smooth1,p.EarEqStrengthPercent/100,p.StrictMirror?"一级共同 EQ":"一级左耳 EQ");
-            eq[1]=p.StrictMirror?(double[])eq[0].Clone():Design(Dsp.Sum(sum[2],sum[3]),p.Smooth1,p.EarEqStrengthPercent/100,"一级右耳 EQ");
-            for(int c=0;c<4;c++){ct.ThrowIfCancellationRequested();sum[c]=Dsp.Convolve(sum[c],eq[c/2]);}
-            if(!p.StrictMirror)
-            {
-                progress?.Report((.85,"二级双耳复响应合成 EQ"));
-                var left=Dsp.Sum(sum[0],sum[1]);var right=Dsp.Sum(sum[2],sum[3]);
-                eq2=Design(Dsp.Sum(left,right,.5),p.Smooth2,p.CenterEqStrengthPercent/100,"二级共同 EQ");
-                for(int c=0;c<4;c++){ct.ThrowIfCancellationRequested();sum[c]=Dsp.Convolve(sum[c],eq2);}
-            }
-        }
-        progress?.Report((.90,"最终 20 Hz–20 kHz 最小相位带通"));
-        ct.ThrowIfCancellationRequested();var bandpass=Dsp.OutputBandpass(sr);
-        for(int c=0;c<4;c++){ct.ThrowIfCancellationRequested();sum[c]=Dsp.Convolve(sum[c],bandpass);}
-        progress?.Report((.92,"共同增益与最终核分析"));Pad(sum);ct.ThrowIfCancellationRequested();
+        if(synthesis.ProjectionErrorDb>.1)warnings.Add($"有限长度合成的平滑幅频偏差 {synthesis.ProjectionErrorDb:F2} dB；尾部移除能量 {synthesis.DiscardedEnergyDb:F1} dB。");
+        progress?.Report((.92,"共同增益与最终核分析"));ct.ThrowIfCancellationRequested();
         bool combined=p.Equalize&&!p.StrictMirror&&p.CenterEqStrengthPercent>0;
         double[] ReferenceDb(double[][] paths)
         {
@@ -164,18 +158,16 @@ public static class Generator
         double gainDb=output.CommonGainDb,gain=Math.Pow(10,gainDb/20),referenceDb=p.OutputDb;
         if(output.FinalPeakDb>0)warnings.Add($"最大频点路径幅度和 {output.FinalPeakDb:F1} dB；可据此设置播放余量。");
         if(output.SamplePeakBoundDb>0)warnings.Add($"短瞬态仍可能超过数字满刻度，任意输入峰值的保守上界为 {output.SamplePeakBoundDb:F1} dB；播放增益及耳机 EQ 需要相应余量。");
-        var finalDirect=NewPaths(1);
-        for(int c=0;c<4;c++)
-        {
-            ct.ThrowIfCancellationRequested();
-            finalDirect[c]=Dsp.Convolve(Dsp.Convolve(Dsp.Convolve(direct[c],eq[c/2]),eq2),bandpass);Scale(finalDirect[c],gain);
-        }
+        var finalDirect=synthesis.Direct;
+        foreach(var path in finalDirect)Scale(path,gain);
         var finalWet=EnergyBalance.Subtract(sum,finalDirect);
         double after=EnergyBalance.Percent(EnergyBalance.Energy(finalDirect,sr),EnergyBalance.Energy(finalWet,sr));
+        if(wetBalance.Evaluations>0&&Math.Abs(after-p.ReflectionEnergyPercent)>.05)
+            warnings.Add($"最终混响占比 {after:F3}%，目标 {p.ReflectionEnergyPercent:F3}%；有限长度输出的实测偏差 {after-p.ReflectionEnergyPercent:+0.000;-0.000;0} 个百分点。");
         double residual=Math.Sqrt(ReferenceDb(sum).Select(v=>Math.Pow(v-referenceDb,2)).Average());
         if(!double.IsFinite(residual))throw new InvalidOperationException("最终校正响应无法有效分析。");
         progress?.Report((1,"完成"));
-        return new(){ReflectionPercentBeforeEq=before,ReflectionPercentAfterEq=after,ReflectionGain=reflectionGain,FinalDirectPaths=finalDirect,FinalReflectionPaths=finalWet,Project=p,Raw=raw,Kernels=sum,EarEq=eq,SecondEq=eq2,Bandpass=bandpass,Contributions=contributions,DirectPaths=direct,ZeroSample=guard,CommonGainDb=gainDb,OutputReferenceDb=referenceDb,EqResidualReference=combined?"两耳复响应平均":"每耳同相输入响应",EqReports=reports,Warnings=warnings,PeakBoundDb=output.SamplePeakBoundDb,MaxBinGainDb=output.FinalPeakDb,Seconds=watch.Elapsed.TotalSeconds,EqResidualDb=residual};
+        return new(){WetBalance=wetBalance,SynthesisFftLength=synthesis.FftLength,CorrectionSupport=synthesis.Support,ProjectionErrorDb=synthesis.ProjectionErrorDb,DiscardedEnergyDb=synthesis.DiscardedEnergyDb,ReflectionPercentBeforeEq=before,ReflectionPercentAfterEq=after,ReflectionGain=reflectionGain,FinalDirectPaths=finalDirect,FinalReflectionPaths=finalWet,Project=p,Raw=raw,Kernels=sum,EarEq=eq,SecondEq=eq2,Bandpass=bandpass,Contributions=contributions,DirectPaths=direct,ZeroSample=guard,CommonGainDb=gainDb,OutputReferenceDb=referenceDb,EqResidualReference=combined?"两耳复响应平均":"每耳同相输入响应",EqReports=reports,Warnings=warnings,PeakBoundDb=output.SamplePeakBoundDb,MaxBinGainDb=output.FinalPeakDb,Seconds=watch.Elapsed.TotalSeconds,EqResidualDb=residual};
     }
     public static int FirstPeak(double[] h)
     {double max=h.Max(Math.Abs);for(int i=0;i<h.Length;i++)if(Math.Abs(h[i])>=max*.1&&(i==0||Math.Abs(h[i])>=Math.Abs(h[i-1]))&&(i==h.Length-1||Math.Abs(h[i])>=Math.Abs(h[i+1])))return i;return 0;}

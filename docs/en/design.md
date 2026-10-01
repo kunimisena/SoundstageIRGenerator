@@ -47,7 +47,7 @@ The seed, stable source ID, input stream and fixed band order determine each rea
 
 ## Head models and the common response
 
-The sphere offers a compact head-shadow and arrival-time model. FABIAN supplies head, pinna and torso responses; the renderer samples the nearest direction from the fixed HATO 0 dataset. Complex averaging of mirrored ear responses makes anatomical symmetry match the parameter layout.
+The sphere offers a compact head-shadow and arrival-time model. FABIAN supplies head, pinna and torso responses; the renderer samples the nearest direction from the fixed HATO 0 dataset. The measured left-ear responses over the full sphere form the anatomical reference. The right ear uses the left-ear response at the mirrored source direction, retaining the selected IR's original complex response and time reference.
 
 FABIAN defaults to the dataset author's smooth minimum-phase inverse common transfer function. Removing that shared spectrum lets directional differences combine with the listener's existing headphone calibration. Disabling it provides the complete dataset spectrum for comparison. Headphone calibration remains in the listener's playback chain.
 
@@ -63,11 +63,17 @@ M_l=H_{l\leftarrow L}+H_{l\leftarrow R},\quad M_r=H_{r\leftarrow L}+H_{r\leftarr
 
 With independent mirrored random detail, stage one equalizes the smoothed magnitude of each ear response. Stage two designs a common EQ from `(Q_l M_l + Q_r M_r)/2`. Strict random mirroring uses one common first-stage EQ. Filters are minimum phase; strength scales the correction in dB before filter construction.
 
-EQ gain follows the smoothed target. Actual minimum-phase FIR response error determines whether its support needs extending. Local positive-power integration avoids cancellation between loud and quiet spectral regions; zero or nonfinite references produce an explicit error. A common scalar calibrates the selected output reference level. Frequency peaks are reported as playback-headroom information.
+EQ gain follows the smoothed target. Correction uses a fixed time budget derived from raw path length; finite-support response error is reported separately. Local positive-power integration avoids cancellation between loud and quiet spectral regions; zero or nonfinite references produce an explicit error. A common scalar calibrates the selected output reference level. Frequency peaks are reported as playback-headroom information.
 
-Defaults are 100% for stage one, 0% for stage two, and smoothing of 1/24 and 1/3 octave respectively. Common correction designed from identical inputs also changes lateral content. Adjustable strength lets the listener choose the balance for their music.
+Defaults are 100% for stage one, 0% for stage two, and smoothing of 1/12 and 1/3 octave respectively. Common correction designed from identical inputs also changes lateral content. Adjustable strength lets the listener choose the balance for their music.
 
-A shared 20 Hz–20 kHz minimum-phase bandpass and a common gain calibration follow EQ. Analysis uses the generated kernels, exposing fine detail, smoothed spectra, impulses and decay so that listening observations can be compared with actual output.
+A flat 20 Hz–20 kHz bandpass target is combined with both minimum-phase EQ stages in the frequency domain, followed by the original common gain calibration. Smoothed inversion includes the 10–20 Hz and upper transition regions; deep stopbands retain endpoint correction. Output length equals raw length plus the correction budget minus one. The budget is the larger of raw length and one second. A larger zero-padded FFT buffer supports synthesis; the output end is tapered and its response deviation is reported. Each reflection band receives a half-cosine envelope taper from −70 dB to zero at −80 dB before band-energy normalization. Analysis uses the generated kernels, exposing fine detail, smoothed spectra, impulses and decay so that listening observations can be compared with actual output.
+
+## Precompensating the final wet fraction
+
+The generator caches direct and reflected complex spectra and component energy densities, then solves for one global wet amplitude coefficient. First-stage smoothing caches direct power, reflected power and the real cross spectrum; candidate gains combine these terms linearly. When stage two is enabled, the first-stage minimum-phase responses are retained to form the corrected complex ear sum. Energy prediction includes both EQ stages and the bandpass. A scalar root search operates in log gain. Random kernels and head responses are generated once; final time-domain synthesis follows the solve.
+
+Precompensation scales the complete reflected field uniformly, preserving relative source spectra, directional weights and temporal structure. Direct and reflected sound then share the established spatial EQ. The final fraction is measured again from finite output kernels, with the gain, predicted fraction, evaluation count and residual reported.
 
 ## From FABIAN to the sound at your ears
 
@@ -109,7 +115,7 @@ This approach serves the goal of adding adjustable space to a headphone tonal ba
 
 ## Preset authorship
 
-Wide monitor embeds the author-approved configuration, including source identities, curve shapes, 8% reflected energy and 1/12-octave first-stage EQ smoothing. General defaults remain 1/24 octave.
+Wide monitor embeds the author-approved configuration, including source identities, curve shapes, 8% reflected energy and 1/12-octave first-stage EQ smoothing. General defaults remain 1/12 octave.
 
 Control room is an authored statistical field informed by control-room listening comparisons: direct sound dominates, an early energy drop leads into a quieter short tail, and upper-frequency reflected energy and decay gradually decrease. The 0.22 s tail scale and 5% wet energy are design choices. The eight mirrored directions have modest differences in level and timing. The full envelope uses points −2, −6, −20, −36, −60 dB at normalized positions −1, 0, 0.08, 0.35, 1. This separates a quick early decline from a small residual tail. Measured output is checked separately from these reference scales.
 

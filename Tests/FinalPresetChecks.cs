@@ -46,7 +46,7 @@ public static class FinalPresetChecks
             }
             else
             {
-                check(result.Contributions.Count>0&&Math.Abs(result.ReflectionPercentBeforeEq-5)<1e-6,$"Control room actual integrated wet fraction is 5 percent {rate}");
+                check(result.Contributions.Count>0&&Math.Abs(result.ReflectionPercentAfterEq-5)<.02,$"Control room actual integrated wet fraction is 5 percent {rate}");
                 var late=result.Contributions.Sum(c=>c.LeftInputKernel.Skip((int)(rate*.1)).Sum(v=>v*v)+c.RightInputKernel.Skip((int)(rate*.1)).Sum(v=>v*v));
                 var all=result.Contributions.Sum(c=>c.LeftInputKernel.Sum(v=>v*v)+c.RightInputKernel.Sum(v=>v*v));
                 check(late/all<.01,$"Control room source tail energy after 100 ms below 1 percent {rate}");

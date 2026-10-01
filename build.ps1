@@ -18,7 +18,7 @@ try {
             dotnet run --no-build --project '.\Tests\SoundstageIR.Tests.csproj' -c Release -- "$studioRoot\artifacts\acceptance" --statistics --long
             if($LASTEXITCODE -ne 0){throw 'Full validation failed'}
         }else{
-            foreach($suite in @('final-presets','eq-strength-only','head-only','preset-only','shared-edit','release-only','energy-only','eq-accuracy')){
+            foreach($suite in @('wet-balance','spectral','final-presets','eq-strength-only','head-only','preset-only','shared-edit','release-only','energy-only','eq-accuracy')){
                 dotnet run --no-build --project '.\Tests\SoundstageIR.Tests.csproj' -c Release -- "$studioRoot\artifacts\$suite" "--$suite"
                 if($LASTEXITCODE -ne 0){throw "Validation failed: $suite"}
             }

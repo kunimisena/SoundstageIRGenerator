@@ -60,7 +60,7 @@ These are template reference values; directions retain different spectral, decay
 
 Built-in templates use FABIAN with common-response removal enabled, strict random mirroring disabled, first-stage EQ at 100% and second-stage EQ at 0%. Each field can be tuned further and saved using Export configuration.
 
-Wide monitor is the author’s listening recommendation. Its table lists ranges across individual directions; it uses 5 m of direct-sound air absorption and 1/12-octave first-stage smoothing. Other templates use 1/24; second-stage strength is 0% throughout. Built-in source defaults are rounded to three decimal places in the actual parameter data. User-entered precision is retained in editing, JSON and synthesis. Random source identities are preserved.
+Wide monitor is the author’s listening recommendation. Its table lists ranges across individual directions; it uses 5 m of direct-sound air absorption and 1/12-octave first-stage smoothing. Other templates use 1/12; second-stage strength is 0% throughout. Built-in source defaults are rounded to three decimal places in the actual parameter data. User-entered precision is retained in editing, JSON and synthesis. Random source identities are preserved.
 
 Control room uses a 5% reflected-energy share, a restrained early section and a lighter short tail. Its spectral energy falls gradually above the midrange. Free field uses the same head and output EQ controls, with zero reflection sources and 0% wet energy.
 
@@ -68,7 +68,9 @@ Control room uses a 5% reflected-energy share, a restrained early section and a 
 
 A source's 0 dB uses a common reference across all directions. Setting every reflection to −6 dB is equivalent to setting every reflection to 0 dB at the same wet percentage. Relative differences determine directional weighting.
 
-The percentage is `Ewet / (Edry + Ewet)`, after head filtering and before final EQ, using independent equal-power inputs with flat PSD over 20 Hz–20 kHz, summed across both ears. Dry/wet interference terms are excluded from this component ratio. The perceived balance also depends on the correlation of the input channels. EQ can change it; both pre- and post-EQ figures are reported. 25% means wet/dry energy = 1/3; amplitude coefficients use the square root of the energy ratio.
+The percentage is `Ewet / (Edry + Ewet)`, targeting the result after head filtering, final EQ and band limiting, using independent equal-power inputs with flat PSD over 20 Hz–20 kHz, summed across both ears. Dry/wet interference terms are excluded from this component ratio. The perceived balance also depends on input-channel correlation. 25% means wet/dry energy = 1/3.
+
+The generator retains the direct and reflected spectra, predicts the EQ-induced shift, and solves for one broadband wet gain before final synthesis. Every reflection direction, input and frequency shares this scalar, preserving relative source weights, spectral shapes, phases and envelopes. Both EQ stages are designed from the compensated mixture. Results report the target, pre-EQ and final measured fractions, followed by the original common output calibration. Any remaining fraction error from finite support or incomplete convergence is reported.
 
 Disabling direct sound displays a locked 100% wet balance. Re-enabling it restores the requested percentage. The template dialog shows the same state, and configuration files retain both the switch and the requested balance.
 
@@ -98,7 +100,7 @@ Ordinary edits do not redraw unrelated sources. Copying a source or pasting para
 
 ## EQ and analysis
 
-Stage 1 corrects each ear's smoothed coherent-input response; defaults are 100% and 1/24 octave. Stage 2 designs a common EQ from the complex average of both corrected ear responses; defaults are 0% and 1/3 octave. Strength scales correction in dB, with 0% bypassing the stage. Both stages compute the full gain required by the smoothed target. Double-precision design extends the EQ kernel according to its actual frequency-response error; generation notes report strong correction and remaining errors.
+Stage 1 corrects each ear's smoothed coherent-input response; defaults are 100% and 1/12 octave. Stage 2 designs a common EQ from the complex average of both corrected ear responses; defaults are 0% and 1/3 octave. Strength scales correction in dB, with 0% bypassing the stage. Both stages compute the full gain required by the smoothed target. Double-precision smoothing includes the bandpass transition regions. Both EQ stages and the bandpass target are combined in the frequency domain. The raw scene determines the correction time budget, with one second of bandpass support for short scenes. Generation notes report strong correction, smoothed residuals and finite-length synthesis error.
 
 The second stage uses the complex mean of the two coherent-input ear responses as its reference. Its common correction applies to the entire output matrix.
 
@@ -142,3 +144,5 @@ Mono/stereo inputs are resampled to the kernel rate; the tail is retained. Outpu
 ## Portable data
 
 Keep the complete application folder in a writable location. Configurations, kernels, APO configurations and processed songs live beside the EXE in `projects/`, `exports/`, `EqualizerAPO/` and `processed-audio/`. Clean distribution archives exclude personal data. Do not upload an entire used application folder as a public release.
+
+Magnitude plots default to 20 Hz–20 kHz. Enable “显示带通范围” (Show bandpass range) to inspect the transition and stopbands from 5 Hz down to −100 dB. Disable it to restore the normal range. This changes visualization only.

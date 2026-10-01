@@ -6,8 +6,40 @@ public static class HeadModelChecks
     static Complex At(double[] h,double f,int sr)
     {Complex z=0;for(int n=0;n<h.Length;n++)z+=h[n]*Complex.FromPolarCoordinates(1,-2*Math.PI*f*n/sr);return z;}
     static Complex At(EarTransfer h,double f,int sr)=>At(h.Impulse,f,sr)*Complex.FromPolarCoordinates(1,-2*Math.PI*f*h.Delay);
+    static void CheckMeasuredMirror(Action<bool,string> check)
+    {
+        // Read the embedded original samples independently of the rendering method.
+        using var stream=typeof(FabianData).Assembly.GetManifestResourceStream("SoundstageIR.Core.FABIAN.bin")!;
+        using var reader=new BinaryReader(stream);reader.ReadBytes(8);int sr=reader.ReadInt32(),count=reader.ReadInt32(),taps=reader.ReadInt32(),ctf=reader.ReadInt32();reader.ReadBytes(ctf*4);
+        var originals=new List<(double Az,double El,double[] Left)>();
+        for(int i=0;i<count;i++)
+        {
+            double az=reader.ReadSingle(),el=reader.ReadSingle();var left=new double[taps];
+            for(int j=0;j<taps;j++)left[j]=reader.ReadSingle();reader.ReadBytes(taps*4);originals.Add((az,el,left));
+        }
+        double[] Original(double appAz,double el,int ear)
+        {
+            double az=ear==0?-appAz:appAz;
+            if(Math.Abs(Math.Sin(appAz*Math.PI/180)*Math.Cos(el*Math.PI/180))<1e-9)az=Math.Abs(appAz);
+            double a=az*Math.PI/180,e=el*Math.PI/180;
+            return originals.MaxBy(d=>Math.Sin(e)*Math.Sin(d.El*Math.PI/180)+Math.Cos(e)*Math.Cos(d.El*Math.PI/180)*Math.Cos(a-d.Az*Math.PI/180)).Left;
+        }
+        foreach(var (az,el) in new[]{(-60.0,0.0),(60.0,0.0),(0.0,0.0),(180.0,0.0),(-30.0,20.0),(30.0,20.0),(-45.0,60.0),(0.0,90.0)})
+            for(int ear=0;ear<2;ear++)
+            {
+                var rendered=FabianData.At(az,el,ear,sr,false);var original=Original(az,el,ear);
+                check(rendered.Impulse.SequenceEqual(original)&&rendered.Delay==0,$"Native single-ear mirror preserves every measured sample and time reference {az}/{el}/{ear}");
+            }
+        var same=FabianData.At(-60,0,0,sr,false);double db=20*Math.Log10(At(same,8265,sr).Magnitude);
+        check(db>-.3&&db<0,"8.265 kHz retains original near-unity response instead of the averaging-induced -14.75 dB notch");
+        var frontLeft=FabianData.At(0,0,0,sr,false);var frontRight=FabianData.At(0,0,1,sr,false);
+        check(frontLeft.Impulse.SequenceEqual(frontRight.Impulse),"Median response is copied from one ear without averaging");
+        same.Impulse[0]+=1;
+        check(FabianData.At(-60,0,0,sr,false).Impulse.SequenceEqual(Original(-60,0,0)),"Returned IR cannot modify embedded reference data");
+    }
     public static void Run(Action<bool,string> check,string folder)
     {
+        CheckMeasuredMirror(check);
         check(FabianData.DirectionCount==11950,"FABIAN embedded source direction count");
         var sphere=Presets.BuiltIn[0].Create();sphere.HeadModel=HeadModelKind.Sphere;sphere.Sources=sphere.Sources.Take(1).ToList();sphere.Seed=20260920;
         var p=ProjectIO.Clone(sphere);p.HeadModel=HeadModelKind.Fabian;p.FabianCtfCompensation=true;
@@ -53,11 +85,10 @@ public static class HeadModelChecks
             if(sr==48000)
             {
                 var noeq=ProjectIO.Clone(pp);noeq.Equalize=false;var dry=Generator.Generate(noeq);
-                check(dry.Raw.Zip(strict.Raw).All(v=>v.First.SequenceEqual(v.Second)),"EQ bypass leaves head and random kernels unchanged");
+                check(SpectralTestReference.SameSources(dry,strict),"EQ bypass leaves head and random kernels unchanged");
                 for(int ch=0;ch<4;ch++)foreach(double f in new[]{103.0,801,7523})
                 {
-                    var expected=At(strict.Raw[ch],f,sr)*At(strict.EarEq[ch/2],f,sr)*At(strict.SecondEq,f,sr)*At(strict.Bandpass,f,sr)*Math.Pow(10,strict.CommonGainDb/20);
-                    check((expected-At(strict.Kernels[ch],f,sr)).Magnitude<1e-5*Math.Max(1,expected.Magnitude),$"FABIAN actual exported EQ chain {ch}/{f}");
+                    check(SpectralTestReference.Route(strict,ch,f),$"FABIAN actual exported EQ chain {ch}/{f}");
                 }
                 var old=Generator.Generate(sphere);
                 check(old.Contributions[0].LeftInputKernel.SequenceEqual(strict.Contributions[0].LeftInputKernel),"Head switch preserves source random realization");
@@ -66,8 +97,7 @@ public static class HeadModelChecks
                 check(!independent.Raw[0].SequenceEqual(independent.Raw[3]),"Non-strict reflection randomness remains independent");
                 check(independent.DirectPaths.Zip(dry.DirectPaths).All(v=>v.First.SequenceEqual(v.Second)),"Random mirror mode does not change physical head or direct sound");
                 noeq.Equalize=true;noeq.CenterEqStrengthPercent=100;var two=Generator.Generate(noeq);
-                var left=Dsp.Convolve(Dsp.Sum(two.Raw[0],two.Raw[1]),two.EarEq[0]);var right=Dsp.Convolve(Dsp.Sum(two.Raw[2],two.Raw[3]),two.EarEq[1]);
-                var expectedEq=Dsp.DesignEq(Dsp.Sum(left,right,.5),sr,noeq.Smooth2);
+                var expectedEq=SpectralTestReference.SecondEq(two);
                 check(expectedEq.Zip(two.SecondEq).Max(v=>Math.Abs(v.First-v.Second))<1e-10,"FABIAN two-stage EQ uses corrected complex ear sum");
                 var apo=ApoExporter.Export(two,Path.Combine(folder,"fabian-apo"));
                 check(File.Exists(Path.Combine(apo,"FABIAN-NOTICE.txt")),"APO export includes head attribution");

@@ -5,14 +5,84 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 45
+    outputs:
+      assertions: ${{ steps.checks.outputs.assertions }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
       - name: Build, validate and publish without FFmpeg
+        id: checks
         shell: pwsh
-        run: ./build.ps1
+        run: |
+          ./build.ps1
+          $count = 0
+          Get-ChildItem artifacts -Recurse -Filter '*results.txt' | ForEach-Object {
+            $text = Get-Content $_.FullName -Raw
+            if ($text -match 'PASS (\d+) assertions') { $count += [int]$Matches[1] }
+          }
+          "assertions=$count" >> $env:GITHUB_OUTPUT
+          "Core validation: $count assertions passed." >> $env:GITHUB_STEP_SUMMARY
+  release:
+    needs: windows
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Check versioned release request
+        id: request
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $changed = @(git diff --name-only HEAD^ HEAD)
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot compare release version' }
+          [xml]$props = Get-Content Directory.Build.props
+          $version = [string]$props.Project.PropertyGroup.Version
+          if (($changed -contains 'Directory.Build.props') -and $version -match '^\d+\.\d+\.\d+$' -and (Test-Path "docs/releases/$version.md")) {
+            "version=$version" >> $env:GITHUB_OUTPUT
+            'publish=true' >> $env:GITHUB_OUTPUT
+          }
+      - uses: actions/setup-dotnet@v4
+        if: steps.request.outputs.publish == 'true'
+        with:
+          dotnet-version: '8.0.x'
+      - name: Package from clean source
+        if: steps.request.outputs.publish == 'true'
+        shell: pwsh
+        run: ./tools/package.ps1
+      - name: Publish version and leave commit comment
+        if: steps.request.outputs.publish == 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ steps.request.outputs.version }}
+          CHECK_COUNT: ${{ needs.windows.outputs.assertions }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = $env:RELEASE_VERSION
+          $tag = "v$version"
+          $assets = @("publish/packages/SoundstageIRGenerator-$version-win-x64.zip", "publish/packages/SoundstageIRGenerator-$version-source.zip", 'publish/packages/SHA256SUMS.txt')
+          gh release create $tag @assets --draft --target $env:GITHUB_SHA --title "Soundstage IR Generator $version" --notes-file "docs/releases/$version.md"
+          if ($LASTEXITCODE -ne 0) { throw 'Draft release creation failed' }
+          gh release edit $tag --draft=false --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }
+          $url = "https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag"
+          $body = "已发布 $version：FABIAN 单耳镜像修正、四路径 EQ/带通合成、EQ 后混响占比预修正及图表范围开关。`n`nWindows Release 构建及 $env:CHECK_COUNT 项核心检查通过；从干净源码生成 Windows x64 程序包、源码包和 SHA-256 校验文件。`n`nPublished $version with FABIAN single-ear mirroring, joint EQ/bandpass synthesis and post-EQ wet-balance compensation. Windows build and $env:CHECK_COUNT core assertions passed.`n`nRelease: $url"
+          @{body=$body} | ConvertTo-Json | Set-Content artifacts/release-comment.json -Encoding utf8
+          gh api --method POST "repos/$env:GITHUB_REPOSITORY/commits/$env:GITHUB_SHA/comments" --input artifacts/release-comment.json
+          if ($LASTEXITCODE -ne 0) { throw 'Release published, but commit comment failed' }
+          "Published [$tag]($url) with three verified build assets." >> $env:GITHUB_STEP_SUMMARY

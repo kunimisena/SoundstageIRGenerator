@@ -75,7 +75,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
         set {double v=EditingLimits.Clamp(value,0,100);if(Busy||v==P.CenterEqStrengthPercent)return;P.CenterEqStrengthPercent=v;Commit();}
     }
     public string WeightLabel=>"源相对权重 dB";
-    public string EnergySummary=>Result==null?"":$"混响能量：EQ 前 {Result.ReflectionPercentBeforeEq:0.0}% → EQ 后 {Result.ReflectionPercentAfterEq:0.0}%"+(Result.Warnings.Count>0?$" · {Result.Warnings.Count} 条生成提示（悬停查看）":"");
+    public string EnergySummary=>Result==null?"":$"混响能量：目标 {(Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100):0.0}% · 最终 {Result.ReflectionPercentAfterEq:0.0}%"+(Result.Warnings.Count>0?$" · {Result.Warnings.Count} 条生成提示（悬停查看）":"");
     public string GenerationNotes=>Result==null?"":string.Join("\n",Result.Warnings);
     public bool Busy {get;private set;}
     public bool Ready=>!Busy;
@@ -89,7 +89,7 @@ public sealed partial class MainViewModel:INotifyPropertyChanged
     public string Status {get;private set;}="选择模板开始，或打开已有配置。";
     public double Progress {get;private set;}
     public GenerationResult? Result {get;private set;}
-    public string Metrics=>Result==null?"":$"{Result.Duration:F3} s  ·  {Result.Project.SampleRate/1000.0:G} kHz  ·  计算 {Result.Seconds:F2} s\n{HeadRenderer.Description(Result.Project)}\n混响分量能量：EQ 前 {Result.ReflectionPercentBeforeEq:F2}% / EQ 后 {Result.ReflectionPercentAfterEq:F2}%\n共同标定 {Result.CommonGainDb:+0.00;-0.00;0} dB  ·  前导 {Result.ZeroSample:F0} 样本\n参考电平 {Result.OutputReferenceDb:F2} dB\n{Result.EqResidualReference}：平滑残差 RMS {Result.EqResidualDb:F2} dB  ·  频点峰值上界 {Result.MaxBinGainDb:F1} dB\n峰值增益保守上界 {Result.PeakBoundDb:F1} dB\n"+string.Join("\n",Result.EqReports.Select(e=>$"{e.Stage}：增益范围 {e.MaximumCutDb:F1}～{e.MaximumBoostDb:F1} dB · {e.Taps} 点 · 设计偏差 {e.DesignErrorDb:F3} dB"))+"\n"+GenerationNotes;
+    public string Metrics=>Result==null?"":$"{Result.Duration:F3} s  ·  {Result.Project.SampleRate/1000.0:G} kHz  ·  计算 {Result.Seconds:F2} s\n{HeadRenderer.Description(Result.Project)}\n混响分量能量：目标 {(Result.Project.Direct.Enabled?Result.Project.ReflectionEnergyPercent:100):F2}% / EQ 前 {Result.ReflectionPercentBeforeEq:F2}% / 最终 {Result.ReflectionPercentAfterEq:F2}%\n混响整体预修正 {Result.WetBalance.GainDb:+0.00;-0.00;0} dB · {Result.WetBalance.Evaluations} 次频谱计算\n共同标定 {Result.CommonGainDb:+0.00;-0.00;0} dB  ·  前导 {Result.ZeroSample:F0} 样本\n参考电平 {Result.OutputReferenceDb:F2} dB\n{Result.EqResidualReference}：平滑残差 RMS {Result.EqResidualDb:F2} dB  ·  频点峰值上界 {Result.MaxBinGainDb:F1} dB\n峰值增益保守上界 {Result.PeakBoundDb:F1} dB\n有限长度合成偏差 {Result.ProjectionErrorDb:F3} dB · 尾部移除能量 {Result.DiscardedEnergyDb:F1} dB\n"+string.Join("\n",Result.EqReports.Select(e=>$"{e.Stage}：增益范围 {e.MaximumCutDb:F1}～{e.MaximumBoostDb:F1} dB · {e.Taps} 点时间预算 · 参考平滑残差 {e.ResponseResidualDb:F3} dB"))+"\n"+GenerationNotes;
     public string ExportLabel=>OutputNames.Label(P);
     public string SuggestedProjectFileName=>ExportLabel+".json";
     public string ExportParent {get;set;}

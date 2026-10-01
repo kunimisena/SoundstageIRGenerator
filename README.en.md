@@ -118,7 +118,7 @@ FABIAN supplies the measured head responses (CC BY 4.0). Brown–Duda supplies t
 
 ## Status and attribution
 
-Application version: **4.10.0**. [Build and validation record](docs/VALIDATION.md).
+Application version: **4.11.0**. [Build and validation record](docs/VALIDATION.md).
 
 Original code and documentation use the [MIT License](LICENSE): use, modify and redistribute them while retaining the copyright and license notice.
 

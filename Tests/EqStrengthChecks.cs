@@ -30,15 +30,13 @@ public static class EqStrengthChecks
         }
         var reference=Generator.Generate(p);
         p.CenterEqStrengthPercent=0;var stage1=Generator.Generate(p);
-        check(stage1.SecondEq.SequenceEqual(new[]{1.0})&&stage1.EarEq.Zip(reference.EarEq).All(v=>v.First.SequenceEqual(v.Second)),"Second-stage bypass preserves first-stage EQ");
-        check(stage1.Raw.Zip(reference.Raw).All(v=>v.First.SequenceEqual(v.Second)),"EQ strength leaves statistical kernels unchanged");
+        check(stage1.SecondEq.SequenceEqual(new[]{1.0})&&SpectralTestReference.FirstEq(stage1),"Second-stage bypass designs first EQ from the precompensated mix");
+        check(SpectralTestReference.SameSources(stage1,reference),"EQ strength leaves statistical kernels unchanged");
         p.EarEqStrengthPercent=0;var allZero=Generator.Generate(p);p.Equalize=false;var bypass=Generator.Generate(p);
         check(allZero.Kernels.Zip(bypass.Kernels).All(v=>v.First.SequenceEqual(v.Second)),"Both strengths zero equals master bypass sample for sample");
         p.Equalize=true;p.EarEqStrengthPercent=35;p.CenterEqStrengthPercent=50;
         var partial=Generator.Generate(p);
-        var left=Dsp.Convolve(Dsp.Sum(partial.Raw[0],partial.Raw[1]),partial.EarEq[0]);
-        var right=Dsp.Convolve(Dsp.Sum(partial.Raw[2],partial.Raw[3]),partial.EarEq[1]);
-        var expected=Dsp.DesignEq(Dsp.Sum(left,right,.5),p.SampleRate,p.Smooth2,.5);
+        var expected=SpectralTestReference.SecondEq(partial);
         check(expected.Length==partial.SecondEq.Length&&expected.Zip(partial.SecondEq).Max(v=>Math.Abs(v.First-v.Second))<1e-10,"Second stage recalculated after partial first-stage correction");
         var exported=Exporter.Export(partial,folder);
         var read=ProjectIO.Load(TestFiles.Get(exported,"project.json"));

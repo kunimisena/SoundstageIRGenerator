@@ -30,7 +30,7 @@ public static class EqAccuracyChecks
                 if(name=="broad boost and cut")check(rpt.MaximumCutDb< -18,"Cut exceeds former -18dB ceiling "+sr);
                 check(rpt.DesignErrorDb<.1,"Actual EQ follows uncapped target "+name+"/"+sr);
                 check(rpt.ResponseResidualDb<.6&&rpt.ResponseResidualDb<oldError*.2,"Smoothed correction removes former clipped residual "+name+"/"+sr);
-                if(name=="low frequency notch")check(rpt.Taps>4096*sr/48000,"EQ support extends for low-frequency correction "+sr);
+                if(name=="low frequency notch")check(rpt.Taps>4096*sr/48000,"EQ support resolves low-frequency correction within fixed budget "+sr);
             }
         }
         File.WriteAllLines(Path.Combine(folder,"eq-accuracy.csv"),rows);

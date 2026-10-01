@@ -16,8 +16,10 @@ FABIAN_CTF_measured_inverted_smoothed.sofa (2020-01-22).
 Modifications by Soundstage IR Generator:
 - float32 embedded table; original SOFA sample timing and gain retained.
 - nearest directional sample on the original approximately 2-degree grid.
-- mirror-paired complex FIR averaging to enforce anatomical left/right symmetry;
-  the same symmetric head is used in both random-mirror modes.
+- measured left-ear HRIRs over the full sphere form the anatomical reference;
+  the right ear uses the left-ear HRIR at the mirrored source direction.
+  Selected IRs retain their complex response and time reference without averaging.
+  The same symmetric head is used in both random-mirror modes.
 - optional official 1/3-octave smoothed minimum-phase inverse CTF convolution.
 - 44.1/48/96 kHz windowed-sinc sample-rate conversion with explicit common lead-in.
 - no individual path normalization, independent peak alignment, or minimum-phase

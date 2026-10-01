@@ -4,7 +4,7 @@ namespace SoundstageIRGenerator;
 public static class Analysis
 {
     static readonly string[] Colors=["#52DBBF","#EAB66E","#7BAAFF","#D9A4ED","#FFFFFF","#EF8596"];
-    public static PlotData Build(GenerationResult r,Guid? source,int subject,int kind,bool smooth)
+    public static PlotData Build(GenerationResult r,Guid? source,int subject,int kind,bool smooth,bool bandpass=false)
     {
         double[][] paths;string[] names;double zero=r.ZeroSample;int sr=r.Project.SampleRate;
         switch(subject)
@@ -16,13 +16,18 @@ public static class Analysis
             case 5:
                 var c=r.Contributions.FirstOrDefault(c=>c.Id==source);if(c==null)return new("卷积结果中没有所选反射源，请生成卷积核","Hz","dB",true,[]);
                 paths=subject==4?[c.LeftInputKernel,c.RightInputKernel]:c.EarPaths;names=subject==4?["L 激励","R 激励"]:["L→左耳","R→左耳","L→右耳","R→右耳"];if(subject==4)zero=0;break;
-            case 6:paths=[r.EarEq[0],r.EarEq[1],r.SecondEq,r.Bandpass];names=["一级左耳","一级右耳","共同第二级","最终带通"];zero=0;break;
+            case 6:paths=[r.EarEq[0],r.EarEq[1],r.SecondEq,r.Bandpass];names=["一级左耳修正","一级右耳修正","共同第二级修正","带通目标"];zero=0;break;
             default:paths=r.Kernels;names=["L→左耳","R→左耳","L→右耳","R→右耳"];break;
         }
         var lines=new List<PlotLine>();for(int c=0;c<paths.Length;c++)
         {
             var h=paths[c];double[] x,y;
-            if(kind==0){x=Dsp.Frequencies;y=smooth?Dsp.SmoothedPowerAt(h,sr,r.Project.Smooth1):Dsp.PowerAt(h,sr);y=y.Select(Dsp.Db).ToArray();}
+            if(kind==0)
+            {
+                double low=bandpass?5:20,high=bandpass?Math.Min(22000,sr*.5*.995):20000;
+                x=bandpass?Enumerable.Range(0,1601).Select(i=>low*Math.Pow(high/low,i/1600.0)).ToArray():Dsp.Frequencies;
+                y=smooth?Dsp.SmoothedDbAt(h,sr,r.Project.Smooth1,x,low,high):Dsp.PowerAt(h,sr,x).Select(Dsp.Db).ToArray();
+            }
             else if(kind==1)
             {
                 int step=Math.Max(1,h.Length/1800);var xs=new List<double>();var ys=new List<double>();
@@ -42,6 +47,6 @@ public static class Analysis
             lines.Add(new(names[c],x,y,Colors[c]));
         }
         string[] titles=[smooth?"功率平滑幅频（仅显示平滑）":"实际幅频 · 不平滑","脉冲响应 · 共同直达零点","实际核的反向积分能量衰减","展开相位 · 已扣除共同前导","群延迟 · 已扣除共同前导"];
-        return new(titles[kind],kind is 1 or 2?"ms":"Hz",kind==1?"幅度":kind==3?"度":kind==4?"ms":"dB",kind is 0 or 3 or 4,lines,kind==0&&subject!=6?-60:kind==2?-80:null,kind==0&&subject!=6?20:kind==2?0:null);
+        return new(titles[kind],kind is 1 or 2?"ms":"Hz",kind==1?"幅度":kind==3?"度":kind==4?"ms":"dB",kind is 0 or 3 or 4,lines,kind==0&&bandpass?-100:kind==0&&subject!=6?-60:kind==2?-80:null,kind==0&&subject!=6?20:kind==2?0:null);
     }
 }

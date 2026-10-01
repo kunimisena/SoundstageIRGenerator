@@ -41,9 +41,10 @@ public partial class ResultPanel:UserControl
         int request=++version;var model=vm??DataContext as MainViewModel;var result=model?.Result;
         if(result==null){ResultPlot.Data=null;return;}
         int subject=Math.Max(0,PlotSubject.SelectedIndex),kind=Math.Max(0,PlotKind.SelectedIndex);
+        PlotBandpass.IsEnabled=kind==0;
         try
         {
-            var data=await model!.AnalysisCache.GetAsync(result,model.Selected?.Id,subject,kind,PlotSmooth.IsChecked==true);
+            var data=await model!.AnalysisCache.GetAsync(result,model.Selected?.Id,subject,kind,PlotSmooth.IsChecked==true,PlotBandpass.IsChecked==true);
             if(request==version&&!ReferenceEquals(ResultPlot.Data,data))ResultPlot.Data=data;
         }
         catch(Exception ex){if(request==version)model!.SetStatus("分析失败："+ex.Message);}
