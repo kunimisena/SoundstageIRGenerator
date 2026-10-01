@@ -1,6 +1,6 @@
 # 设计哲学与信号模型
 
-[English](../en/design.md) · [首页](../../README.md)
+[English](../en/design.md) · [首页](../../README.md) · [卷积核图解](analysis.md)
 
 ## 以听感和调校为中心
 

@@ -1,6 +1,6 @@
 # Design philosophy and signal model
 
-[简体中文](../zh-CN/design.md) · [Home](../../README.en.md)
+[简体中文](../zh-CN/design.md) · [Home](../../README.en.md) · [Illustrated kernel analysis](analysis.md)
 
 ## Listening and tuning come first
 

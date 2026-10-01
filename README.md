@@ -4,11 +4,11 @@
 
 为双声道音乐设计可调的耳机声场，生成用于卷积播放的脉冲响应（IR）。结合 FABIAN 头相关传递函数（HRTF）、统计混响和最小相位 EQ，调整空间感与音色，导出四路径 WAV 卷积核及 Equalizer APO 配置。
 
-[下载 Windows x64](https://github.com/kunimisena/SoundstageIRGenerator/releases/latest) · [English](README.en.md) · [使用指南](docs/zh-CN/guide.md) · [设计哲学](docs/zh-CN/design.md) · [构建说明](docs/zh-CN/development.md)
+[下载 Windows x64](https://github.com/kunimisena/SoundstageIRGenerator/releases/latest) · [English](README.en.md) · [使用指南](docs/zh-CN/guide.md) · [卷积核图解](docs/zh-CN/analysis.md) · [设计哲学](docs/zh-CN/design.md) · [构建说明](docs/zh-CN/development.md)
 
 Windows 离线工具，配合 Equalizer APO 使用。界面支持简体中文和英文，可在窗口右上角切换，语言选择会自动保存。可以从“宽阔监听”开始，调节混响能量、频谱、衰减与方向分布，生成自己的双耳空间音效。
 
-![耳机声场、HRTF 与卷积核频响编辑](docs/images/editor.png)
+![中文配置界面与实际生成的四路径卷积核频响](docs/images/configuration-zh.png)
 
 ## 作者前言
 
@@ -88,6 +88,12 @@ Windows 离线工具，配合 Equalizer APO 使用。界面支持简体中文和
 *“宽阔监听”配置在 Equalizer APO 中的四路径卷积与声道合成。*
 
 歌曲处理：在“导出与后处理 → 处理歌曲”中点击“选择 ffmpeg.exe…”，选择支持 libsoxr、且同目录有 ffprobe.exe 的完整构建。路径会自动记住，可点击“检查可用性”验证。也支持从程序旁 `tools/ffmpeg/`、系统 PATH 自动查找。公开发布包不附带 FFmpeg；卷积核生成与导出可直接使用。
+
+## 看看实际生成的声场
+
+![控制室、宽阔监听与悠长大厅的混响衰减和最终能量占比](docs/images/analysis-decay-zh.png)
+
+上图来自 48 kHz 下实际生成的控制室、宽阔监听和悠长大厅卷积核。左侧将各模板的混响能量分别归一化，用来比较衰减形状；右侧显示最终混响占比，分别为 **5%、8% 和 80%**。长尾和较湿的声场是两种可以分别调整的特征。[卷积核图解](docs/zh-CN/analysis.md)进一步解释四路径频响、衰减估计和拖尾的时频变化。
 
 ## 我们想做的事情
 

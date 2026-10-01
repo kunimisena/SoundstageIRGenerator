@@ -1,154 +1,234 @@
-# Headphone spatial audio and HRTF convolution guide
+# User guide
 
-[简体中文](../zh-CN/guide.md) · [Home](../../README.en.md)
+[简体中文](../zh-CN/guide.md) · [Home](../../README.en.md) · [Reading the analysis plots](analysis.md) · [Signal model](design.md)
 
-Soundstage IR Generator creates four-path binaural impulse responses (IRs) for Equalizer APO or matrix convolution. Head-related transfer functions (HRTFs) describe directional responses at both ears; reverb controls shape ambience, spectrum and decay.
+Soundstage IR Generator creates a four-path convolution matrix for headphone playback. Begin with a template, shape the field, generate its kernels, then export them to Equalizer APO or render a stereo audio file.
 
-## Interface language
+[Get started](#get-started) · [Template editing](#shape-the-template) · [Configuration](#configure-and-generate) · [Individual sources](#edit-individual-sources) · [Plots](#read-and-interact-with-the-plots) · [Export](#export-and-routing) · [Audio files](#song-rendering)
 
-Choose **English** or **简体中文** at the top right of the window. On first launch, Chinese systems use Simplified Chinese; other systems use English. Later launches use the saved choice in `settings/language.json` beside the application.
+## Get started
 
-Switching updates pages, template descriptions, plots and result details while retaining the current configuration and generated kernels. Configuration names, source names and paths remain user data and are preserved. Built-in templates created in English use English default names. Project JSON files work in either language. Language selection is temporarily disabled during generation or export.
+Extract the complete Windows portable folder into a writable location and run `SoundstageIRGenerator.exe`. The download includes the .NET runtime. Kernel generation and WAV/APO export are ready to use; song rendering additionally uses FFmpeg.
 
-## Three pages
+Choose **English** at the top right. On first launch, Chinese systems use Simplified Chinese and other systems use English. The saved choice in `settings/language.json` is used thereafter. Switching language updates pages, template descriptions, plots and result details while preserving parameters and generated kernels. The selector is temporarily disabled while processing.
 
-| Page | Purpose |
+User-defined configuration names, source names and paths stay as written. Built-in templates created in English receive English default names. A configuration JSON works in either language, so an imported project can retain Chinese names in the English interface.
+
+| Page | What to do there |
 |---|---|
-| Templates | Ten authored fields, a blank template and a parameter dialog |
-| Configuration | Direct sound, head model, reflection curves, randomness, EQ and result plots |
-| Export and post-process | WAV and Equalizer APO export, plus song rendering |
+| **Templates** | Pick a starting field and open its shared parameter editor |
+| **Configuration** | Set direct sound, head processing, wet balance, randomness and EQ; generate and inspect kernels |
+| **Export and post-process** | Export WAV/APO files or process a song using the current result |
 
-Click a template card to set its starting parameters. **Confirm** loads the configuration. **Confirm and generate kernels** also starts computation. Cancel retains the current project. The template page also provides **Import configuration…**.
+![English template-selection page](../images/templates-en.png)
 
-The template dialog contains the overall spectrum, decay-time and envelope editors, plus the direction generator. Return to Templates and choose **Edit current template…** to revisit this stage. Cancel keeps the current project; confirmation loads the changes.
+For a first listen, select **Wide Monitor**, leave its parameters at their defaults, and click **Confirm and generate kernels**. The application opens Configuration and computes the result. Then select Export and post-process and export the APO configuration.
 
-Configuration places direct sound, head model, wet energy, random settings and EQ beside the result plot, or above it in a narrow window. Drag the divider to adjust their proportions; the narrow layout uses a horizontal divider and switching back retains the chosen column ratio. **Edit individual sources…** opens a separate window for direction, group, multi-selection and per-source L/R excitation editing. **Complete** closes that window while retaining its edits in the project.
+## Shape the template
 
-The plot toolbar places **Import configuration…** and **Export configuration…** to the right of **Generate kernels**. Configuration JSON files store parameters and random seeds; exporting a configuration does not require generated kernels. Configuration name, kernel sample rate and output gain are edited in the generation area, alongside Undo and Redo. Parameter changes mark the displayed result as requiring an update.
+Click a template card to open its parameter dialog. **Confirm** loads the settings without starting computation; **Confirm and generate kernels** loads and computes them. **Cancel** keeps the existing project.
 
-Changing overall template curves or distribution generates downstream sources. Per-source details remain separate. Reopening the template without changing these overall parameters preserves detailed edits. Undo in Configuration can restore the state before confirming a changed template.
+Return to Templates and choose **Edit current template…** whenever you want to adjust the shared controls again. The three curves act on the template's reflection sources together, allowing broad edits without visiting every direction.
 
-Export has its own Generate kernels button. It explains whether kernels are missing, outdated, being generated or ready to export. WAV, APO and song rendering use the same current result. Song rendering is an expandable section on this page. All expandable sections start open; click the arrow header or its explicit expand/collapse label to toggle them.
+![Wide Monitor template dialog, with energy, decay and envelope curves](../images/template-editor-en.png)
 
-Analysis is cached per generated result. While dragging a window edge, a scaled preview follows the new size. Releasing the edge reflows the page and restores sharp plots; the wide/narrow layout transition also waits until release. This applies to the main window, template dialog and source editor. Legend, zoom and pan interactions reuse curve geometry and text drawings.
+### Three curves with different jobs
 
-Export paths, result information and processing status support text selection and Ctrl+C. Copy path copies the WAV or APO export directory; Copy result information copies the complete analysis text.
+| Control | Meaning | A useful adjustment |
+|---|---|---|
+| **Energy spectrum / dB** | Broad integrated-energy contour of the reflected kernels | Lower the upper-frequency region for a darker reflected field |
+| **Decay time scale / s · By frequency** | Tail time scale at each frequency | Shorten high-frequency tails while retaining lower-frequency decay |
+| **Complete energy envelope / dB** | Local mean energy across onset, buildup and decay | Make the early section fall quickly into a quieter tail, or build it more gradually |
 
-Export displays the current output name. Applying a template updates the configuration name and clears the previous export path. Renaming updates WAV, APO and JSON filenames; a name-only edit can be exported immediately with unchanged kernel samples.
+Drag curve points to edit, double-click to add a point, and right-click to remove one. **Edit exact control points** provides numerical editing. Frequency curves use logarithmic frequency coordinates and shape-preserving interpolation. The decay slider moves the overall time scale while retaining frequency ratios within the editing bounds; **Reset scale** restores the multiplier.
 
-## Tune these first
+The energy and decay curves are related by synthesis, but each describes a different property. Extending the decay redistributes a band's target energy over more time; it does not automatically increase total reflected energy. The global **Reverberant energy / %** controls the balance against direct sound.
 
-1. **Head model:** built-in templates use FABIAN with common-response removal enabled. The spherical model is an alternative that simulates head shadow and arrival-time differences. Configuration files store the selected model and its parameters.
-2. **Wet energy percentage:** adjusts the overall dry/reverberant balance more directly than changing every direction's gain.
-3. **Overall decay-time multiplier:** changes tail length; envelope energy is recalibrated, so a longer tail alone does not increase the target integrated energy.
-4. **Spectral contour:** broad changes color the reflections. This is distinct from final-output EQ.
-5. **Second EQ strength:** starts at 0%. Increase it if you want more correction toward the coherent reference, then compare actual music.
+### Distance-based timing
 
-Keep the same seed and change one thing at a time. Match listening level when comparing.
+**First-reflection excess path / m** is additional travel relative to the direct reference. Divide it by 343 m/s to obtain the relative onset time: 0.343 m means 1 ms. **Density build-up path / m** sets the scale over which the reflection density develops. The energy envelope during that interval can rise, stay level or fall.
 
-## Built-in template reference
+Use **Build-up** to inspect the beginning of the envelope and **Full range** for its tail. The envelope's distance axis is an equivalent accumulated path, not the radius of a physical room. **Air absorption distance / m** separately controls direct-sound spectral loss when enabled.
 
-These are template reference values; directions retain different spectral, decay and weight settings. RT is the 1 kHz tail reference, not an identical measured decay at every direction. The template dialog provides overall adjustments.
+Decay editing spans 0.005–30 s; excess and buildup paths span 0–3430 m; air-absorption distance spans 0–10000 m. Values outside the supported editing range are clamped. Larger values can produce much longer kernels.
 
-| Template / UI name | Directions | Layout | RT ref. s | First excess m | Mixing m | Wet energy % |
-|---|---:|---|---:|---:|---:|---:|
-| Compact monitor / 紧凑监听 | 6 | Ring | 0.20 | 0.35 | 0.8 | 8 |
-| Wide monitor / 宽阔监听 | 8 | Ring | 0.56–0.78 | 0.28–0.34 | 0.88–1.44 | 8 |
-| Front space / 前向空间 | 6 | Front | 0.24 | 0.30 | 0.7 | 9 |
-| Warm surround / 温暖环绕 | 12 | Ring | 0.55 | 0.55 | 2.5 | 28 |
-| Bright short hall / 明亮短厅 | 8 | Sphere | 0.48 | 0.60 | 3.0 | 32 |
-| Overhead surround / 上方包围 | 12 | Hemisphere | 0.62 | 0.65 | 3.5 | 24 |
-| Control room / 控制室 | 8 | Sphere | 0.22 | 0.65 | 1.0 | 5 |
-| Free field / 自由场 | 0 | Direct only | — | — | — | 0 |
-| Gentle concert hall / 柔和音乐厅 | 12 | Sphere | 1.35 | 0.75 | 6.0 | 65 |
-| Blank / 空白模板 | 0 | No reflections | — | — | — | Actual 0 until sources are added |
-| Long hall / 悠长大厅 | 12 | Sphere | 2.30 | 0.85 | 9.0 | 80 |
+### Direction distribution and downstream edits
 
-Built-in templates use FABIAN with common-response removal enabled, strict random mirroring disabled, first-stage EQ at 100% and second-stage EQ at 0%. Each field can be tuned further and saved using Export configuration.
+Choose a horizontal ring, sphere, hemisphere, front sector or mirrored pairs. Direction count, orientation and coverage shape the distribution; **Generate directions** applies it. Templates use a small set of directions; the generator accepts even counts from 2 to 32. A median-plane direction is represented once.
 
-Wide monitor is the author’s listening recommendation. Its table lists ranges across individual directions; it uses 5 m of direct-sound air absorption and 1/12-octave first-stage smoothing. Other templates use 1/12; second-stage strength is 0% throughout. Built-in source defaults are rounded to three decimal places in the actual parameter data. User-entered precision is retained in editing, JSON and synthesis. Random source identities are preserved.
+Confirming changes to the shared curves or distribution regenerates the downstream sources. Reopening and confirming without changing those settings preserves individual-source edits. **Undo** on Configuration can restore the project before a confirmed template edit.
 
-Control room uses a 5% reflected-energy share, a restrained early section and a lighter short tail. Its spectral energy falls gradually above the midrange. Free field uses the same head and output EQ controls, with zero reflection sources and 0% wet energy.
+## Configure and generate
 
-## Relative weights and wet percentage
+![English Configuration page showing a generated Wide Monitor field](../images/configuration-en.png)
 
-A source's 0 dB uses a common reference across all directions. Setting every reflection to −6 dB is equivalent to setting every reflection to 0 dB at the same wet percentage. Relative differences determine directional weighting.
+The settings and result plot share a draggable divider. Wide windows place them side by side; narrower windows stack them. Generation controls stay with the plot: **Configuration name**, **Sample rate / Hz**, **Output gain / dB**, **Generate kernels**, and JSON import/export.
 
-The percentage is `Ewet / (Edry + Ewet)`, targeting the result after head filtering, final EQ and band limiting, using independent equal-power inputs with flat PSD over 20 Hz–20 kHz, summed across both ears. Dry/wet interference terms are excluded from this component ratio. The perceived balance also depends on input-channel correlation. 25% means wet/dry energy = 1/3.
+Parameter changes leave the previous plot visible and mark it as outdated. Click **Generate kernels** to update it. The export page reports whether the result is missing, outdated, being generated or ready. WAV, APO and audio processing all use that same generated result.
 
-The generator retains the direct and reflected spectra, predicts the EQ-induced shift, and solves for one broadband wet gain before final synthesis. Every reflection direction, input and frequency shares this scalar, preserving relative source weights, spectral shapes, phases and envelopes. Both EQ stages are designed from the compensated mixture. Results report the target, pre-EQ and final measured fractions, followed by the original common output calibration. Any remaining fraction error from finite support or incomplete convergence is reported.
+### Direct sound and head model
 
-Disabling direct sound displays a locked 100% wet balance. Re-enabling it restores the requested percentage. The template dialog shows the same state, and configuration files retain both the switch and the requested balance.
+**Speaker azimuth / ±°** controls the mirrored left/right speaker pair; **Speaker elevation / °** sets its elevation. Built-in templates use ±30° speakers. **Enable direct sound** includes their head-filtered direct responses.
 
-## The three curves
+**FABIAN · Pinnae, head and torso** supplies measured directional responses. **Remove common response** applies the dataset's inverse common transfer function. The spherical model supplies a simpler head-shadow and arrival-time alternative, with its own radius and shadow controls. The head model processes both the speakers and reflected directions.
 
-- **Energy spectrum:** the broad integrated-energy contour of a direction kernel, with shape-preserving interpolation on a log-frequency axis.
-- **Decay time scale:** a frequency-dependent decay time scale. With a custom non-exponential envelope, this is a tail reference scale, not necessarily the RT60 obtained by an arbitrary regression method.
-- **Full envelope:** local mean energy against excess accumulated propagation distance. The energy-decay analysis separately shows the backward-integrated EDC. The buildup segment can rise, remain level or fall; increasing reflection density need not increase energy.
+Direct **Air absorption** uses the specified distance to color the direct spectrum. This distance does not add inverse-distance gain or a bulk propagation wait. The displayed time origin follows the reference ipsilateral direct peak; exported kernels retain their common lead-in and relative ear timing.
 
-First-reflection excess distance divided by 343 gives its onset relative to direct sound. Mixing distance controls the buildup segment and density scale. Air-absorption distance separately colors direct sound; it does not position a speaker or impose inverse-distance gain or a bulk propagation wait. Display zero is the reference ipsilateral direct peak; exported files retain a common lead-in and interaural timing.
+### Reflected energy
 
-Editing ranges include 0.005–30 s decay, 0–3430 m excess/mixing distance and 0–10000 m air-absorption distance. Extreme values are clamped. Longer kernels take more memory and time.
+**Reverberant energy / %** targets `Ewet / (Edry + Ewet)` after head processing, final EQ and band limiting. The reference is independent, equal-power inputs over 20 Hz–20 kHz, summed over both ears; dry/wet interference terms are excluded from this component ratio. At 25%, wet/dry energy is 1/3.
 
+Individual source gains set relative weights. Making every source −6 dB instead of 0 dB leaves the final field unchanged at the same wet target. Use relative differences to favor some directions, and the percentage to set the total reflected share.
 
+The generator predicts how final EQ changes component energy and solves for one broadband wet gain. It applies that scalar to the whole reflected field, preserving directional weights, spectral shapes, phases and envelopes. Results report the target and achieved fraction. With direct sound disabled, the displayed fraction is locked to 100%; re-enabling it restores the requested value.
 
-All four final paths share one scalar calibration to the selected output reference level, preserving relative levels and timing. Results and export notes report frequency gain and conservative transient peak bounds to help set playback headroom. These measurements are informational.
+### Random detail and symmetry
 
-With stage two bypassed, output calibration and residuals use the individual ear responses. When stage two is enabled, they use its complex ear-average reference. Residuals are measured against the selected output reference level. Hover over the generation-notes line beside the plot, or read the complete notes in Results information on the export page.
+Keep **Random seed** fixed for controlled comparisons. **New seed** changes the fine random realization. Ordinary edits retain other sources' random detail; seeds and stable source IDs are saved in the project.
 
-## Symmetry, direction and randomness
+Source parameters are always mirrored with L/R excitation exchanged. **Mirror random detail** controls whether the paired random realizations also mirror sample for sample. It defaults off. FABIAN anatomy remains mirrored in either case. Strict random mirroring uses a shared first-stage EQ; independent mirror detail allows separate per-ear correction and the common second stage.
 
-Edit left-half parameters; the other half always mirrors them and swaps L/R inputs. Median-plane directions are not duplicated. 强制随机镜像 (Force random mirror) defaults off: corresponding statistics match, but realizations may differ. Enabling it enforces sample-level mirror symmetry and uses a single shared first EQ.
+### Frequency-response correction
 
-L/R excitations at one direction are independent by default. Auto-R inherits L timing and changes its spectral energy through relative gain and tilt; manual R editing is available. Different directions do not simply reuse the same noise. The same direction/input kernel feeds both ear filters.
+![Frequency-response correction settings and the generated EQ filters](../images/eq-en.png)
 
-Ordinary edits do not redraw unrelated sources. Copying a source or pasting parameters assigns independent random detail; stable IDs and the seed are saved. Layouts include a horizontal ring, sphere, hemisphere, front sector and mirrored pairs, up to 32 directions.
+**Enable frequency-response correction** controls the correction chain. FABIAN's common head-power calibration precedes the adjustable tonal stages. [The signal-model chapter](design.md#head-models-and-the-common-response) explains how this differs from the dataset's common-response removal.
 
-## EQ and analysis
+| Control | Default | What it changes |
+|---|---:|---|
+| **Stage 1 · Per-ear EQ strength / %** | 100 | Correction of each ear's smoothed response to identical L/R inputs |
+| Stage 1 **Smoothing: 1/N octave · N** | 12 | Width of the power smoothing used to design stage 1 |
+| **Stage 2 · Center EQ strength / %** | 0 | Common correction based on the complex average of the two stage-1-corrected ear responses |
+| Stage 2 **Smoothing: 1/N octave · N** | 3 | Width of the power smoothing used to design stage 2 |
 
-Stage 1 corrects each ear's smoothed coherent-input response; defaults are 100% and 1/12 octave. Stage 2 designs a common EQ from the complex average of both corrected ear responses; defaults are 0% and 1/3 octave. Strength scales correction in dB, with 0% bypassing the stage. Both stages compute the full gain required by the smoothed target. Double-precision smoothing includes the bandpass transition regions. Both EQ stages and the bandpass target are combined in the frequency domain. The raw scene determines the correction time budget, with one second of bandpass support for short scenes. Generation notes report strong correction, smoothed residuals and finite-length synthesis error.
+Enter the denominator: 12 means 1/12 octave, while 3 means 1/3 octave. Larger denominators retain finer detail. Strength scales the correction in dB; 0% bypasses that stage. With strict random mirroring, stage 2 is unused.
 
-The second stage uses the complex mean of the two coherent-input ear responses as its reference. Its common correction applies to the entire output matrix.
+All paths share the final scalar output calibration. Different input correlations still produce different spectra through the matrix; the individual paths are not each flattened independently. The [response examples](analysis.md#individual-paths-and-combined-responses) show the distinction. Strong correction, finite-length error and remaining smoothed deviation are reported under **Result details**.
 
-Plot subjects include final paths, direct sound, selected reflections, pre-head excitation, EQ filters and coherent-input responses. Plot types include magnitude, IR, EDC, phase and group delay. Use the wheel to zoom and drag to pan; double-click the plot or use 复位视图 (Reset view) to restore the axes. Click legends to toggle curves, double/right-click to isolate, and use 显示全部曲线 (Show all curves) to restore them. Display smoothing affects the graph only.
+## Edit individual sources
+
+Select **Edit individual sources…** on Configuration to open the detailed editor. The left list represents the editable half; the direction view shows the complete mirrored field. Click a direction to select it, or drag empty space to rotate the view. **Reset orientation** restores the view.
+
+![Individual-source editor with direction view and spectral/decay controls](../images/source-editor-en.png)
+
+Choose the L or R excitation in the source editor. Automatic R excitation inherits L timing, with relative gain and spectral tilt; manual mode exposes its full parameters. L and R random realizations are independent by default, as are different directions. For one direction and one input, the same kernel feeds both ear filters, preserving their shared excitation.
+
+Use the source list and **Actions** menu for multi-selection, parameter copying and deletion. Copying parameters preserves target directions and assigns independent random detail. Source-level changes can be inspected before the head or after it using the plot subject selector. **Complete** closes the editor and retains edits in the project. Generate again to update the final result.
+
+## Read and interact with the plots
+
+Choose the **subject** first, then the **plot type**. For example, select **Final per-ear response to identical inputs** and **Magnitude response** to inspect the stage-1 reference after processing.
+
+| Subject | Signal shown |
+|---|---|
+| **Final four paths** | The four finished kernels exported to WAV |
+| **Final per-ear response to identical inputs** | Complex L/R input-path sums at each ear after correction |
+| **Per-ear response to identical inputs before EQ** | The corresponding pre-EQ sums |
+| **Four direct-sound paths** | Direct-path component before the final spatial EQ |
+| Selected source before/after head processing | The selected source's excitation kernels or its ear paths, before final output correction |
+| EQ filters | Head calibration, stage 1, stage 2 and bandpass responses |
+
+| Plot type | What to look for |
+|---|---|
+| **Magnitude response** | Individual path spectra or the selected combined reference |
+| **Impulse response** | Relative arrivals and tail structure around the shared time origin |
+| **Energy decay** | Backward-integrated remaining energy, normalized for each displayed kernel |
+| **Unwrapped phase** | Unwrapped phase with the common lead-in removed |
+| **Group delay** | Frequency-dependent phase slope, also with the common lead-in removed |
+
+Wheel to zoom, drag to pan, and double-click the plot or choose **Reset view** to reset. Click a legend entry to toggle a curve; double-click or use the context menu to isolate it. **Show all curves** restores the complete set.
+
+**Smooth display** changes only the drawn magnitude curve, using the stage-1 smoothing width; it does not modify or regenerate the kernels. **Show bandpass range** extends the magnitude view down to 5 Hz and −100 dB. Turning it off restores the normal 20 Hz–20 kHz view. The 20 Hz and 20 kHz frequencies are inside the bandpass target's passband.
+
+The illustrated [analysis chapter](analysis.md) walks through actual output spectra, decay curves and a time-frequency view. A kernel's file duration, a decay control and a measured RT estimate describe different things.
 
 ## Export and routing
 
-Folders use `template_date_time`; renamed projects also include the project name. WAVs, the path bundle, JSON and configuration files share that prefix. Collisions use readable `_02` counters without overwriting.
+![Export page with current-kernel status, WAV export and Equalizer APO export](../images/export-en.png)
 
-The table lists filename suffixes, always meaning input → ear:
+**Export configuration…** saves editable JSON parameters and seeds. It works before generation. **Export WAV** saves calculated impulse responses to **Export parent folder**. **Export Equalizer APO configuration** creates an `EqualizerAPO/` subfolder beside the application with the four WAVs and their routing file.
 
-| File | Path |
-|---|---|
-| `L_to_LeftEar.wav` | L input → left ear |
-| `R_to_LeftEar.wav` | R input → left ear |
-| `L_to_RightEar.wav` | L input → right ear |
-| `R_to_RightEar.wav` | R input → right ear |
+Folders use readable template/project names and a timestamp. Renaming updates output names; name-only edits keep the kernel samples. Repeated exports use counters such as `_02` rather than overwriting existing results. Paths and result text can be selected and copied; **Copy path** and **Copy result details** provide complete copies.
 
-`Matrix_PATHS_LL_RL_LR_RR.wav` packs these paths in that order; for convolution engines with matrix routing.
+### Four files, two output ears
 
-APO export writes absolute paths in `template_APO.txt`. Ordinary WAV export includes the matching APO configuration as well. Include it in your own configuration; the final assignment is `L=LL+RL R=LR+RR`, without an extra unprocessed dry copy. Re-export if files move. Match device and kernel sample rates. This program never changes the system configuration.
+The suffixes state **input → ear**. The four-channel bundle uses this order:
 
-Kernels use a shared gain calibration. Export notes report reference gain, peak bounds and common lead-in; allow playback headroom. The final steep bandpass keeps 20 Hz and 20 kHz inside the passband rather than making them −3 dB edges.
+| Bundle channel | WAV suffix | Meaning |
+|---:|---|---|
+| 1 | `L_to_LeftEar.wav` | L input → left ear |
+| 2 | `R_to_LeftEar.wav` | R input → left ear |
+| 3 | `L_to_RightEar.wav` | L input → right ear |
+| 4 | `R_to_RightEar.wav` | R input → right ear |
+
+The bundle is named `Matrix_PATHS_LL_RL_LR_RR.wav`. It is a matrix path package, not a conventional four-speaker recording. For the four mono files, the output equations are:
+
+```text
+Left ear  = L * L_to_LeftEar  + R * R_to_LeftEar
+Right ear = L * L_to_RightEar + R * R_to_RightEar
+```
+
+Here `*` is convolution. WAV output is IEEE float32 at 44.1, 48 or 96 kHz. Use every path with its original relative gain and timing.
+
+### Equalizer APO
+
+Include the generated `_APO.txt` file in your own APO configuration. Its temporary channels are assigned from L/R, convolved separately, then replaced into the two output channels:
+
+```text
+Copy: LL=L LR=L RL=R RR=R
+# Each temporary channel is convolved with its matching WAV.
+Copy: L=LL+RL R=LR+RR
+```
+
+The exported file contains all four Channel/Convolution sections and absolute WAV paths. The last Copy replaces L/R with the processed sums; an additional unprocessed copy is unnecessary. Match the device sample rate to the kernels. If files are moved, export again to obtain correct paths.
+
+Keep the headphone EQ you normally use as the playback reference; the spatial kernels already contain their own field correction and bandpass. **Output gain / dB** and playback gain let you manage level. Result details include measured frequency peaks and a conservative transient bound; these are different from the common energy/reference calibration.
 
 ## Song rendering
 
-In **导出与后处理 → 处理歌曲** (Export & processing → Song processing), click **选择 ffmpeg.exe…** and select a complete FFmpeg build with libsoxr support and `ffprobe.exe` in the same directory. Selection checks the tools automatically; **检查可用性** checks again. Supported input includes WAV, FLAC, MP3 and M4A; export WAV, FLAC or M4A with the full convolution tail.
+Open **Export and post-process → Process audio** to produce an ordinary stereo song with the current sound field baked in.
 
-The path is stored separately in `settings/audio-tools.json` under the application workspace, outside project JSON. Opening a project preserves local tool settings. **自动查找** clears the explicit selection and searches nearby `tools/ffmpeg/`, `%ProgramFiles%/ffmpeg/bin/` and PATH. An invalid explicit selection produces an error instead of silently switching builds.
+![Process audio panel with FFmpeg selection, output format and level modes](../images/song-rendering-en.png)
 
-Checks cover versions, convolution options, resampling, loudness and limiting, and run again before rendering. Obtain a build from [FFmpeg downloads](https://ffmpeg.org/download.html). Attribution and licenses are in the root `THIRD_PARTY_NOTICES.md`.
+1. Click **Select ffmpeg.exe…** and choose a complete FFmpeg build containing `ffprobe.exe` in the same folder and supporting libsoxr. Selection checks the tools; **Check availability** checks them again. [FFmpeg downloads](https://ffmpeg.org/download.html) lists available builds.
+2. Drop an audio file into the panel or use **Choose audio file**. Mono and stereo input are supported, including WAV, FLAC, MP3 and M4A.
+3. Choose **Output format**, **Output parent folder** and a level-processing mode.
+4. Click **Process and export audio**. The input is resampled to the kernel rate, convolved, and exported with its complete tail. The input file is retained.
 
-Mono/stereo inputs are resampled to the kernel rate; the tail is retained. Outputs are float32 WAV, 24-bit FLAC or AAC/M4A, without overwriting input.
+The application remembers the selected FFmpeg location in `settings/audio-tools.json`, separately from project JSON. **Find automatically** clears the explicit path and checks nearby `tools/ffmpeg/`, `%ProgramFiles%/ffmpeg/bin/` and `PATH`. The portable download uses your chosen FFmpeg installation.
 
-- Default: measure convolved loudness, apply fixed gain toward −18 LUFS, then linked stereo limiting.
-- Limit only: no LUFS gain correction; limiting and encoding safety adjustments may change loudness.
-- Bypass: inspect unmastered processing.
+| Level mode | Behavior |
+|---|---|
+| **Normalize to target LUFS, then limit** | Measures convolved loudness, applies fixed gain toward the target (default −18 LUFS), then performs linked stereo limiting |
+| **Keep convolved level; limit peaks only** | Omits the loudness-normalization gain and limits peaks |
+| **Bypass: raw convolution output** | Exports the unmastered convolution result; float32 WAV can retain levels beyond integer full scale |
 
-−18 LUFS is the default target for sharing. The finished file is measured again; actual loudness and true peak are recorded in `render.json`.
+Output choices are float32 WAV, 24-bit FLAC and AAC/M4A. Encoding or peak management can affect the finished level; the final loudness and true peak are measured and recorded in `render.json`. Loudness gain is written into the samples, rather than depending on ReplayGain tags.
 
-## Portable data
+A rendered song already contains the spatial effect. Play it with duplicate spatial convolution disabled; personal headphone EQ can remain active.
 
-Keep the complete application folder in a writable location. Configurations, kernels, APO configurations and processed songs live beside the EXE in `projects/`, `exports/`, `EqualizerAPO/` and `processed-audio/`. Clean distribution archives exclude personal data. Do not upload an entire used application folder as a public release.
+## Template reference
 
-Magnitude plots default to 20 Hz–20 kHz. Enable “显示带通范围” (Show bandpass range) to inspect the transition and stopbands from 5 Hz down to −100 dB. Disable it to restore the normal range. This changes visualization only.
+These values describe the authored starting fields. Individual directions can have different energy, decay and envelope curves. The 1 kHz tail reference is not a measured whole-kernel RT60.
+
+| English template name | Directions | Layout | 1 kHz tail reference / s | Wet energy / % |
+|---|---:|---|---:|---:|
+| Compact Monitor | 6 | Ring | 0.20 | 8 |
+| Wide Monitor | 8 | Ring | 0.56–0.78 across directions | 8 |
+| Frontal Space | 6 | Front sector | 0.24 | 9 |
+| Warm Surround | 12 | Ring | 0.55 | 28 |
+| Bright Short Hall | 8 | Sphere | 0.48 | 32 |
+| Overhead Surround | 12 | Hemisphere | 0.62 | 24 |
+| Control Room | 8 | Sphere | 0.22 | 5 |
+| Free Field | 0 | Direct only | — | 0 |
+| Gentle Concert Hall | 12 | Sphere | 1.35 | 65 |
+| Long Hall | 12 | Sphere | 2.30 | 80 |
+| Blank Template | 0 | Add your own directions | — | Actual 0 until reflections are added |
+
+Built-in templates use FABIAN with common-response removal, independent mirrored random detail, stage 1 at 100% / 1⁄12 octave and stage 2 at 0% / 1⁄3 octave. Wide Monitor is the author's everyday starting point and includes 5 m of direct-sound air absorption. Default source data are rounded to readable values; user-entered precision is retained in editing and JSON.
+
+## Saving and returning to a project
+
+Save with **Export configuration…**, then use **Import configuration…** to continue editing later. The JSON stores curves, directions, head settings, EQ, source identities and seeds. Generate after loading to recreate the field.
+
+The writable portable folder holds `projects/`, `exports/`, `EqualizerAPO/`, `processed-audio/` and local `settings/`. Keep the complete application folder together. For a reproducible comparison, share the configuration JSON along with the application version, headphone setup and changes you made.

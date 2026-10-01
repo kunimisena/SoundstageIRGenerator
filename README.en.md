@@ -6,9 +6,11 @@ Design a headphone soundstage for stereo music and generate impulse responses (I
 
 [Download Windows x64](https://github.com/kunimisena/SoundstageIRGenerator/releases/latest) · [简体中文](README.md) · [User guide](docs/en/guide.md) · [Design philosophy](docs/en/design.md) · [Build instructions](docs/en/development.md)
 
-An offline Windows tool for customizable binaural audio and virtual speaker playback over headphones. Start with Wide monitor, then shape reverb energy, spectrum, decay and direction. The application interface and documentation are available in English and Simplified Chinese. Switch languages at the top right of the window; the choice is saved automatically.
+An offline Windows tool for customizable binaural audio and virtual speaker playback over headphones. Start with Wide Monitor, then shape reverb energy, spectrum, decay and direction. The application interface and documentation are available in English and Simplified Chinese. Switch languages at the top right of the window; the choice is saved automatically.
 
-![Headphone soundstage, HRTF and convolution response editing](docs/images/editor.png)
+![English Configuration page with FABIAN, reverberant energy and generated four-path responses](docs/images/configuration-en.png)
+
+The English interface shown above is available in the Windows application. [Follow the illustrated guide](docs/en/guide.md) or [learn to read the kernel plots](docs/en/analysis.md).
 
 ## Author’s foreword
 
@@ -65,7 +67,7 @@ I asked the AI to check the project's open-source licensing. If there is any inf
 
 ## What you can do
 
-- Start with ten authored fields or a blank template. Wide monitor is selected on startup. Save and load configurations as JSON files.
+- Start with ten authored fields or a blank template. Wide Monitor is selected on startup. Save and load configurations as JSON files.
 - Adjust a whole field or individual directions: spectral energy, frequency-dependent decay, onset, density buildup and the full energy envelope.
 - Compare FABIAN head/pinna/torso responses with a simple spherical head. Parameter symmetry and random-realization symmetry are separate choices.
 - FABIAN extends its boundary magnitudes outside the audible band while retaining in-band notches. The EQ chain first calibrates noncoherent head power across enabled directions, then applies the two adjustable tonal stages.
@@ -76,20 +78,27 @@ I asked the AI to check the project's open-source licensing. If there is any inf
 
 ## Start listening
 
-1. Open `SoundstageIRGenerator.exe` from the complete Windows x64 portable folder. The .NET runtime is included. **The UI is Chinese**; the English guide maps the controls.
-2. Click a template, set its initial parameters, then choose **确认** (Confirm) or **确认并生成卷积核** (Confirm and generate). Edit overall curves in the template dialog, then head and EQ controls in Configuration. Generate kernels beside the plot; import and export JSON configurations with the buttons to its right. Edit individual sources in a separate window.
-3. Select **导出与后处理** (Export & processing) for WAV, Equalizer APO or optional song rendering.
-4. Choose **导出配置…** (Export configuration) to save your settings. Changes require regeneration. Project, WAV, APO and song outputs carry the template name, with readable counters for collisions.
+1. Download the Windows x64 ZIP and extract the **whole folder**. Run `SoundstageIRGenerator.exe`; the .NET runtime is included. Select **English** at the top right if needed.
+2. In **Templates**, select **Wide Monitor**. Its parameter dialog lets you adjust the reflected spectrum, decay and envelope together. Choose **Confirm** to keep editing, or **Confirm and generate kernels** to calculate immediately.
+3. In **Configuration**, adjust the head model, **Reverberant energy / %**, random detail and EQ. Click **Generate kernels** beside the plot after changing parameters. **Export configuration…** saves an editable JSON project.
+4. In **Export and post-process**, check that the kernels match the current parameters, then choose **Export Equalizer APO configuration** or **Export WAV**.
+5. For Equalizer APO, include the exported `_APO.txt` file in your playback configuration. It routes the four kernels automatically. Keep the WAV files at their exported paths and match the playback-device sample rate to the kernels.
 
-For kernels and APO export, FFmpeg is not required. For song rendering, choose **选择 ffmpeg.exe…** in Export & processing → Song processing. Select a build with libsoxr support and `ffprobe.exe` in the same directory. The application remembers the path; **检查可用性** checks the tools. Automatic discovery also supports `tools/ffmpeg/` beside the EXE and `PATH`. The clean distribution does not include FFmpeg. See the [guide](docs/en/guide.md#song-rendering).
+![English template cards for monitor, surround, hall and direct-only fields](docs/images/templates-en.png)
 
-![Exported four-path convolution in Equalizer APO](docs/images/equalizer-apo.png)
+For a shareable audio file, open **Process audio** on the export page, select **ffmpeg.exe**, choose a song, and click **Process and export audio**. The program produces an ordinary stereo file with the full tail. **Normalize to target LUFS, then limit** defaults to −18 LUFS; **Keep convolved level; limit peaks only** leaves out the loudness-gain step. [Song-rendering instructions](docs/en/guide.md#song-rendering) explain FFmpeg setup and all three modes.
+
+## A closer look at the generated field
+
+![Measured reflected-energy decay and wet fractions for three built-in templates](docs/images/analysis-decay-en.png)
+
+These curves come from generated **Control Room**, **Wide Monitor** and **Long Hall** kernels at 48 kHz. The left plot compares the shape of the reflected decay, normalized separately for each template. The right plot shows their final reflected-energy fractions: **5%, 8% and 80%**. A long tail and a large wet fraction are separate choices. [Analysis examples and methods](docs/en/analysis.md) cover the four-path spectrum, decay estimates and frequency-dependent tail.
 
 ## What this is designed to do
 
 Listening comes first; parameters remain inspectable. Smooth spectral and decay trends describe the broad character; causal random kernels supply fine temporal and spectral detail. Both direct sound and reverberation pass through the head model. The final result is a fixed, reproducible 2×2 linear system.
 
-Wide monitor is the author’s recommended everyday starting point. Control room offers a dry, short reflected field; Free field contains head-filtered direct speakers. Templates also cover surround and hall-like fields. Tune overall curves, refine individual directions, and save the parameters to reproduce the result. [Read the design and signal path](docs/en/design.md).
+Wide Monitor is the author’s recommended everyday starting point. Control Room offers a dry, short reflected field; Free Field contains head-filtered direct speakers. Templates also cover surround and hall-like fields. Tune overall curves, refine individual directions, and save the parameters to reproduce the result. [Read the design and signal path](docs/en/design.md).
 
 ## From kernels to headphone playback
 
@@ -103,7 +112,7 @@ FABIAN supplies directional head responses, the generator's EQ shapes the digita
 | `Core/` | Statistical synthesis, head filtering, EQ, analysis and export |
 | `Core/Data/` | Embedded FABIAN table, attribution, hashes and authored preset data |
 | `Tests/` | Console validation suites |
-| `docs/` | Matched Chinese/English guides and local HTML help |
+| `docs/` | Chinese/English guides, illustrated analysis and local HTML help |
 | `tools/` | Optional dataset conversion and packaging |
 | `publish/` | Local portable application and release bundles; ignored by Git |
 

@@ -1,0 +1,66 @@
+{
+  "sourceCommit": "42c782826e9fd68503345deae77885837203f291",
+  "version": "4.13.0",
+  "sampleRate": 48000,
+  "seed": 20260920,
+  "routeOrder": [
+    "L→Left ear",
+    "R→Left ear",
+    "L→Right ear",
+    "R→Right ear"
+  ],
+  "presets": {
+    "control-room": {
+      "ZeroSample": 94,
+      "ReflectionPercentAfterEq": 5.000000061010647,
+      "CommonGainDb": 0.07154227353295611,
+      "OutputReferenceDb": 0,
+      "EqResidualDb": 0.347206074616127,
+      "Duration": 1.7251458333333334,
+      "SampleRate": 48000,
+      "Seed": 20260920,
+      "finalFloat32WavSha256": "7447a547128fed2b6180eb4072ec5f940320b60a4bda6f7d8b648fbb2cae993a",
+      "fullBandWetT20ExtrapolatedSeconds": 0.17103122365947918,
+      "fullBandWetT20FitR2": 0.9645119931205157
+    },
+    "wide-monitor": {
+      "ZeroSample": 94,
+      "ReflectionPercentAfterEq": 8.000005174501107,
+      "CommonGainDb": 0.04573637978098145,
+      "OutputReferenceDb": 0,
+      "EqResidualDb": 0.28599326834845373,
+      "Duration": 2.7491458333333334,
+      "SampleRate": 48000,
+      "Seed": 20260920,
+      "finalFloat32WavSha256": "736f449714b3026eeaf0792faf1c4b8eef63966eacb7b8dbdde8eb043aa7d7e0",
+      "fullBandWetT20ExtrapolatedSeconds": 0.6982665540431254,
+      "fullBandWetT20FitR2": 0.9976805014673672
+    },
+    "long-hall": {
+      "ZeroSample": 94,
+      "ReflectionPercentAfterEq": 79.99999616797437,
+      "CommonGainDb": 0.16285124874275303,
+      "OutputReferenceDb": 0,
+      "EqResidualDb": 0.5861878507561797,
+      "Duration": 8.702104166666667,
+      "SampleRate": 48000,
+      "Seed": 20260920,
+      "finalFloat32WavSha256": "3b3275f8e763c1c094eda55fb6ee6628b85f55367e8a81f260655bcfef32fba8",
+      "fullBandWetT20ExtrapolatedSeconds": 1.2592266239333298,
+      "fullBandWetT20FitR2": 0.9915997192505811
+    }
+  },
+  "methods": {
+    "smoothingOctaveDenominator": 12,
+    "edc": "full-band final wet component, sum of squares across four paths",
+    "t20FitDbInterval": [
+      -5,
+      -25
+    ],
+    "t20Estimate": "-60 / fitted dB-per-second slope",
+    "spectrogramWindow": "Hann",
+    "spectrogramWindowSamples": 2048,
+    "spectrogramHopSamples": 256,
+    "spectrogramColorFloorDb": -60
+  }
+}

@@ -3,7 +3,7 @@ from pathlib import Path
 import html,re
 root=Path(__file__).resolve().parents[1]
 def inline(s):
- s=html.escape(s)
+ s=html.escape(s).replace(r'\|', '|')
  s=re.sub(r'`([^`]+)`',r'<code>\1</code>',s)
  s=re.sub(r'\*\*([^*]+)\*\*',r'<strong>\1</strong>',s)
  s=re.sub(r'\[([^\]]+)\]\((https?://[^)]+)\)',r'<a href="\2">\1</a>',s)
@@ -24,22 +24,28 @@ def render(s):
   if math:block.append(line);continue
   if line.startswith('|'):
    if not table:out.append('<div class="table"><table>');table=True
-   cells=line.strip('|').split('|')
+   cells=re.split(r'(?<!\\)\|',line.strip('|'))
    if all(re.fullmatch(r'\s*:?-+:?\s*',c) for c in cells):continue
    out.append('<tr>'+''.join('<td>'+inline(c.strip())+'</td>' for c in cells)+'</tr>');continue
   if table:out.append('</table></div>');table=False
   if not line.strip():continue
+  picture=re.fullmatch(r'!\[([^\]]*)\]\(([^)]+)\)',line)
+  if picture:
+   alt,src=picture.groups()
+   if src.startswith('../images/'):src='images/'+src[len('../images/'):]
+   out.append('<figure><img loading="lazy" src="'+html.escape(src,quote=True)+'" alt="'+html.escape(alt,quote=True)+'"></figure>')
+   continue
   m=re.match(r'^(#{1,3}) (.+)',line)
   if m:out.append(f'<h{len(m[1])}>{inline(m[2])}</h{len(m[1])}>')
   elif line.startswith('- '):out.append('<p class="bullet">• '+inline(line[2:])+'</p>')
   else:out.append('<p>'+inline(line)+'</p>')
  if table:out.append('</table></div>')
  return '\n'.join(out)
-sections=[('zh-guide','使用指南','zh-CN/guide.md'),('zh-design','设计哲学','zh-CN/design.md'),('en-guide','User guide','en/guide.md'),('en-design','Design philosophy','en/design.md')]
+sections=[('zh-guide','使用指南','zh-CN/guide.md'),('zh-design','设计哲学','zh-CN/design.md'),('zh-analysis','卷积核图解','zh-CN/analysis.md'),('en-guide','User guide','en/guide.md'),('en-design','Design philosophy','en/design.md'),('en-analysis','Kernel analysis','en/analysis.md')]
 nav=''.join(f'<button onclick="show(\'{i}\')">{label}</button>' for i,label,_ in sections)
 body=''.join(f'<article id="{i}"'+('' if j==0 else ' hidden')+'>'+render((root/'docs'/file).read_text(encoding='utf-8'))+'</article>' for j,(i,label,file) in enumerate(sections))
 page='''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Soundstage IR Generator · Guide</title><style>
-:root{color-scheme:light}body{margin:0;background:#f6f0e1;color:#39352d;font:16px/1.75 system-ui,"Microsoft YaHei",sans-serif}header{background:#eee7d8;padding:16px max(20px,calc((100vw - 1020px)/2));border-bottom:1px solid #324656}header b{letter-spacing:.12em;color:#426b71}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{padding:9px 16px;border:1px solid #405768;background:#e6decc;border-radius:5px;color:#39352d;cursor:pointer}button:hover{background:#dbe1d8}main{max-width:1020px;margin:auto;padding:24px}h1{font-size:30px}h2{margin-top:2em;color:#39352d}h3{color:#404040}a{color:#426b71}p{max-width:90ch}code,pre{font-family:Consolas,monospace;background:#eee7d8;border-radius:4px}code{padding:1px 4px}pre{padding:15px;overflow:auto;white-space:pre-wrap;font-size:14px}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td{padding:9px;border:1px solid #ddd}tr:first-child{background:#e6decc;font-weight:600}.bullet{margin:.4em 0}footer{padding:25px;color:#606060;border-top:1px solid #324656}article[hidden]{display:none}
+:root{color-scheme:light}body{margin:0;background:#f6f0e1;color:#39352d;font:16px/1.75 system-ui,"Microsoft YaHei",sans-serif}header{background:#eee7d8;padding:16px max(20px,calc((100vw - 1020px)/2));border-bottom:1px solid #324656}header b{letter-spacing:.12em;color:#426b71}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{padding:9px 16px;border:1px solid #405768;background:#e6decc;border-radius:5px;color:#39352d;cursor:pointer}button:hover{background:#dbe1d8}main{max-width:1020px;margin:auto;padding:24px}h1{font-size:30px}h2{margin-top:2em;color:#39352d}h3{color:#404040}a{color:#426b71}p{max-width:90ch}code,pre{font-family:Consolas,monospace;background:#eee7d8;border-radius:4px}code{padding:1px 4px}pre{padding:15px;overflow:auto;white-space:pre-wrap;font-size:14px}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td{padding:9px;border:1px solid #ddd}tr:first-child{background:#e6decc;font-weight:600}.bullet{margin:.4em 0}footer{padding:25px;color:#606060;border-top:1px solid #324656}figure{margin:24px 0}figure img{display:block;max-width:100%;height:auto;border:1px solid #ddd5c4;border-radius:4px}article[hidden]{display:none}
 </style><header><b>SOUNDSTAGE IR GENERATOR</b><div>4.13.0 · 离线双语指南 / Offline bilingual guide</div><nav>'''+nav+'''</nav></header><main>'''+body+'''</main><footer>Original code and documentation: MIT / 自有代码与文档：MIT。FABIAN attribution: FABIAN-NOTICE.txt beside the application.</footer><script>function show(id){document.querySelectorAll('article').forEach(a=>a.hidden=a.id!==id);document.documentElement.lang=id.startsWith('en')?'en':'zh-CN';window.scrollTo(0,0);location.hash=id;}if(document.getElementById(location.hash.slice(1)))show(location.hash.slice(1));</script></html>'''
 (root/'docs/guide.html').write_text(page,encoding='utf-8')
 print('Offline guide generated.')
